@@ -7,22 +7,29 @@
 //
 
 import Foundation
+import Wendy
 
-class AddGroceryListItemPendingTask: PendingTasksTaskRunner {
+class AddGroceryListItemPendingTask: PendingTask {
 
     static let pendingTaskRunnerTag = String(describing: AddGroceryListItemPendingTask.self)
 
     var dataId: String?
     var groupId: String?
-    var pendingTaskRunnerTag: String = AddGroceryListItemPendingTask.pendingTaskRunnerTag
+    var tag: String = AddGroceryListItemPendingTask.pendingTaskRunnerTag
+    var manuallyRun: Bool = false
 
     convenience init(groceryListItemName: String) {
         self.init()
         self.dataId = groceryListItemName
     }
 
-    class func runTask(dataId: String?, complete: @escaping (Bool) -> Void) {
-        complete(true)
+    func canRunTask() -> Bool {
+        return true
+    }
+
+    func runTask(complete: @escaping (Bool) -> Void) {
+        complete(false)
     }
 
 }
+

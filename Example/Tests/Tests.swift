@@ -2,7 +2,6 @@
 
 import Quick
 import Nimble
-import Wendy-iOS
 
 class TableOfContentsSpec: QuickSpec {
     override func spec() {
