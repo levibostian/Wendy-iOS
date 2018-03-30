@@ -33,6 +33,7 @@ internal class PendingTasksManager {
         persistedPendingTasks.forEach { (persistedPendingTask) in
             var blankPendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
             blankPendingTask.populate(from: persistedPendingTask)
+            blankPendingTask.taskId = persistedPendingTask.id
             pendingTasks.append(blankPendingTask)
         }
 

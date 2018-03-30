@@ -31,7 +31,7 @@ class PendingTaskTableViewCell: UITableViewCell {
         self.item = item
         self.position = position
 
-        self.dataIdLabel.text = item.dataId
+        self.dataIdLabel.text = "id: \(item.taskId!) data: \(item.dataId!)"
 
         self.addSubview(self.dataIdLabel)
 

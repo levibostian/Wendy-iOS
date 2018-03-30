@@ -13,6 +13,7 @@ class AddGroceryListItemPendingTask: PendingTask {
 
     static let pendingTaskRunnerTag = String(describing: AddGroceryListItemPendingTask.self)
 
+    var taskId: Double?
     var dataId: String?
     var groupId: String?
     var tag: String = AddGroceryListItemPendingTask.pendingTaskRunnerTag

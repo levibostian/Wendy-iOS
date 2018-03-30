@@ -9,6 +9,7 @@ import Foundation
 
 public protocol PendingTask {
 
+    var taskId: Double? { get set }
     var dataId: String? { get set }
     var manuallyRun: Bool { get set }
     var groupId: String? { get set }
