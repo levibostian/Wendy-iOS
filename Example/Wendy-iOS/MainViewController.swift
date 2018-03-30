@@ -36,14 +36,32 @@ class MainViewController: UIViewController {
         return view
     }()
 
+    fileprivate let pendingTaskTableView: UITableView = {
+        let view = UITableView()
+        return view
+    }()
+
+    fileprivate var wendyPendingTasks: [PendingTask] = [] {
+        didSet {
+            self.pendingTaskTableView.reloadData()
+        }
+    }
+
+    fileprivate func populateWendyPendingTasks() {
+        self.wendyPendingTasks = PendingTasks.sharedInstance.getAllTasks()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
+        WendyConfig.addTaskRunnerListener(self)
 
         self.textFieldStackView.addArrangedSubview(dataTextField)
         self.textFieldStackView.addArrangedSubview(addTaskButton)
 
         self.view.addSubview(textFieldStackView)
+        self.view.addSubview(pendingTaskTableView)
         self.view.backgroundColor = UIColor.white
 
         self.setupview()
@@ -53,6 +71,11 @@ class MainViewController: UIViewController {
 
     fileprivate func setupview() {
         self.addTaskButton.addTarget(self, action: #selector(MainViewController.addTaskButtonPressed(_:)), for: UIControlEvents.touchUpInside)
+
+        self.pendingTaskTableView.delegate = self
+        self.pendingTaskTableView.dataSource = self
+        self.pendingTaskTableView.register(PendingTaskTableViewCell.self, forCellReuseIdentifier: String(describing: PendingTaskTableViewCell.self))
+        self.populateWendyPendingTasks()
     }
 
     @objc func addTaskButtonPressed(_ sender: Any) {
@@ -84,8 +107,45 @@ class MainViewController: UIViewController {
                 make.trailing.equalToSuperview()
                 make.top.equalToSuperview()
             })
+            self.pendingTaskTableView.snp.makeConstraints({ (make) in
+                make.top.equalTo(self.textFieldStackView.snp.bottom)
+                make.leading.equalToSuperview()
+                make.trailing.equalToSuperview()
+                if #available(iOS 11.0, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                } else {
+                    make.bottom.equalToSuperview()
+                }
+            })
         }
         super.updateViewConstraints()
+    }
+
+}
+
+extension MainViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.wendyPendingTasks.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PendingTaskTableViewCell.self), for: indexPath) as! PendingTaskTableViewCell
+        let item = self.wendyPendingTasks[indexPath.row]
+        cell.populateCell(item, position: indexPath.row)
+        return cell
+    }
+
+}
+
+extension MainViewController: TaskRunnerListener {
+
+    func newTaskAdded(_ task: PendingTask) {
+        self.populateWendyPendingTasks()
     }
 
 }

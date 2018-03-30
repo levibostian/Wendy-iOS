@@ -9,24 +9,23 @@
 import Foundation
 
 public class PendingTasks {
-    
-    public static let sharedInstance: PendingTasks = PendingTasks()
-    
-    public typealias PendingTasksOnCompleteListener = (PendingTasksRunnerResult) -> Void
-    public typealias PendingTasksOnErrorListener = (Swift.Error) -> Void
-    
-    fileprivate var globalCompleteListener: PendingTasksOnCompleteListener?
-    fileprivate var globalOnErrorListener: PendingTasksOnErrorListener?
-    
-    internal var pendingTasksFactory: PendingTasksFactory?
-    
-//    public func config(pendingTasksFactory: PendingTasksFactory, globalCompleteListener: @escaping PendingTasksOnCompleteListener, globalOnErrorListener: @escaping PendingTasksOnErrorListener) {
-//        self.globalCompleteListener = globalCompleteListener
-//        self.globalOnErrorListener = globalOnErrorListener
-//        self.pendingTasksFactory = pendingTasksFactory
-//    }
+
+    public static var sharedInstance: PendingTasks = PendingTasks()
+
+    // Setup this way to (1) be a less buggy way of making sure that the developer remembers to call setup() to populate pendingTasksFactory.
+    fileprivate var initPendingTasksFactory: PendingTasksFactory?
+    internal lazy var pendingTasksFactory: PendingTasksFactory = {
+        guard let tasksFactory = initPendingTasksFactory else {
+            fatalError("You forgot to setup Wendy via PendingTasks.setup()")
+        }
+        return tasksFactory
+    }()
 
     private init() {
+    }
+
+    public class func setup(tasksFactory: PendingTasksFactory) {
+        PendingTasks.sharedInstance.pendingTasksFactory = tasksFactory
     }
     
 //    fileprivate func assertListenersCreated(complete: PendingTasksOnCompleteListener?, onError: PendingTasksOnErrorListener?) -> Listeners {
@@ -100,10 +99,9 @@ public class PendingTasks {
 
         return persistedPendingTaskId
     }
-    
-    fileprivate struct Listeners {
-        var onComplete: PendingTasksOnCompleteListener
-        var onError: PendingTasksOnErrorListener
+
+    public func getAllTasks() -> [PendingTask] {
+        return PendingTasksManager.sharedInstance.getAllTasks()
     }
     
 }

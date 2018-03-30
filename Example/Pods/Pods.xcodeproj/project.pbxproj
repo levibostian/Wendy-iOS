@@ -176,7 +176,6 @@
 		CCAD0C64196D5D790A693737755C7557 /* NMBExceptionCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE2385A9A6117FC4521DD55C7022116 /* NMBExceptionCapture.m */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CE4B499EE61F68BFC98326B7B0B8CAE4 /* HaveCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A31DB6B3FAEDE2CB6F80DA15893FC5 /* HaveCount.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CE8187A341E91D653FD83A1E951ABD49 /* AsyncMatcherWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9889816B1B93B3629D313A97E5B218 /* AsyncMatcherWrapper.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CE83B78BD41A4A439F35DC2F8C744DEE /* PendingTasksError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C87BFD0EB451E9E626C95DB5E155A4 /* PendingTasksError.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CF3888ACE2100DCA8032F7EB7A182A14 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266F3338B63486977413CAC1F692DA3F /* Configuration.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CF3F3C87BEBE19B639EB9DF6C301A40E /* Closures.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9AA5EFCAF0033903417525E3AD8EC1 /* Closures.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D05DC57A4E28678BAFA9B7F150380CD1 /* ThrowError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797AD4E28349F599A7637850C7BBA714 /* ThrowError.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -207,6 +206,7 @@
 		F2AFFD20C09ECF9DFA84BE7E6027A99D /* Quick-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 50EBD69E65575EB0D2CA0D9B6C7E7670 /* Quick-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F33986F4969B4F178AF9EB568FE8B1AA /* FBSnapshotTestCase-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E15F182AE1321EEB4F75BB18489036 /* FBSnapshotTestCase-dummy.m */; };
 		F39781CAE8B2024FA7D6509B9C9429F9 /* MatcherFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDCB805BD57878AF02F5E4C052F7A0B /* MatcherFunc.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F73E96E6206EE05E00E7306F /* _PendingTask+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E96E5206EE05E00E7306F /* _PendingTask+Extensions.swift */; };
 		F7682AF4DCFC1FB4D4522249F971B7DD /* World+DSL.h in Headers */ = {isa = PBXBuildFile; fileRef = 08D12E7771336812750D2C58D5870A9E /* World+DSL.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F7ED4267206EBA3400BD38D2 /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4868049E63C8AE6B4963A4C80138B1E1 /* Wendy.xcdatamodeld */; };
 		F7ED4290206EC42F00BD38D2 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */; };
@@ -323,7 +323,6 @@
 		244095B243B3CF1DE9FA45A986FBD663 /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutSupportDSL.swift; path = Source/ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
 		248E1477991A0F4608B14EB8289E4C99 /* FBSnapshotTestCase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FBSnapshotTestCase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24FDA4A661F6D3FA6AB94D194ACF4789 /* Wendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Wendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		25C87BFD0EB451E9E626C95DB5E155A4 /* PendingTasksError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PendingTasksError.swift; path = "Wendy-iOS/Classes/PendingTasksError.swift"; sourceTree = "<group>"; };
 		26445FD580D7E335FAA076F2BA2D88D9 /* DynamicSizeSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DynamicSizeSnapshot.swift; path = DynamicSize/DynamicSizeSnapshot.swift; sourceTree = "<group>"; };
 		266F3338B63486977413CAC1F692DA3F /* Configuration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Configuration.swift; path = Sources/Quick/Configuration/Configuration.swift; sourceTree = "<group>"; };
 		26990038AA58BEC35BCAFA330AAD8A97 /* SuiteHooks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SuiteHooks.swift; path = Sources/Quick/Hooks/SuiteHooks.swift; sourceTree = "<group>"; };
@@ -525,6 +524,7 @@
 		F422A471F26AF860A8E5EFB4A06EF275 /* ContainElementSatisfying.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContainElementSatisfying.swift; path = Sources/Nimble/Matchers/ContainElementSatisfying.swift; sourceTree = "<group>"; };
 		F45459DC1AB5F893654714105C69C96E /* DSL.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DSL.h; path = Sources/NimbleObjectiveC/DSL.h; sourceTree = "<group>"; };
 		F59B83EDC344CDEFF45ABC69F5F410E3 /* UIImage+Compare.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Compare.h"; path = "FBSnapshotTestCase/Categories/UIImage+Compare.h"; sourceTree = "<group>"; };
+		F73E96E5206EE05E00E7306F /* _PendingTask+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "_PendingTask+Extensions.swift"; path = "Wendy-iOS/Classes/Extensions/_PendingTask+Extensions.swift"; sourceTree = "<group>"; };
 		F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BundleExtensions.swift; path = "Wendy-iOS/Classes/Extensions/BundleExtensions.swift"; sourceTree = "<group>"; };
 		F911CF5FB60FE52EB0669554778B124D /* PendingTasksManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PendingTasksManager.swift; path = "Wendy-iOS/Classes/PendingTasksManager.swift"; sourceTree = "<group>"; };
 		FB2211E529D3EB564801D219352A5C05 /* DSL+Wait.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "DSL+Wait.swift"; path = "Sources/Nimble/DSL+Wait.swift"; sourceTree = "<group>"; };
@@ -687,7 +687,6 @@
 				F7ED428E206EC41200BD38D2 /* Extensions */,
 				D10CD0C8C370DB719203FE69CDBA8417 /* PendingTask.swift */,
 				A00940DEF5DFD282FA7C5FBB59C413EE /* PendingTasks.swift */,
-				25C87BFD0EB451E9E626C95DB5E155A4 /* PendingTasksError.swift */,
 				B009689FB657E7943A4B1F0B7B4914CE /* PendingTasksFactory.swift */,
 				F911CF5FB60FE52EB0669554778B124D /* PendingTasksManager.swift */,
 				4A111FBF681AB95792ED719B3A3ABFC0 /* PendingTasksRunner.swift */,
@@ -1023,6 +1022,7 @@
 			isa = PBXGroup;
 			children = (
 				F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */,
+				F73E96E5206EE05E00E7306F /* _PendingTask+Extensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1588,13 +1588,13 @@
 				F7ED4267206EBA3400BD38D2 /* Wendy.xcdatamodeld in Sources */,
 				17F3D98140779F33F72253F1518EE1D6 /* PendingTask.swift in Sources */,
 				40B3EABA9B6FBB916C22840DF66818A1 /* PendingTasks.swift in Sources */,
-				CE83B78BD41A4A439F35DC2F8C744DEE /* PendingTasksError.swift in Sources */,
 				2943FF3B02867A4F28522E6ED9E1BDAF /* PendingTasksFactory.swift in Sources */,
 				5970C5F48FD041889FD08611499BF19C /* PendingTasksManager.swift in Sources */,
 				8609E84F9429099C47868F8E848001F7 /* PendingTasksRunner.swift in Sources */,
 				02378BC248B4A201680636085B11B350 /* PendingTasksUtil.swift in Sources */,
 				7A756F99E8FE0114C337E19D44CA1519 /* PersistedPendingTask+Extension.swift in Sources */,
 				80875156CCA69367899435AA31A19069 /* TaskRunnerListener.swift in Sources */,
+				F73E96E6206EE05E00E7306F /* _PendingTask+Extensions.swift in Sources */,
 				1BB74E74403577EBD6C60F4696E7EA9D /* Wendy-dummy.m in Sources */,
 				1C3AE8FC2D977B54FA0E118878B13290 /* WendyConfig.swift in Sources */,
 				F7ED4290206EC42F00BD38D2 /* BundleExtensions.swift in Sources */,

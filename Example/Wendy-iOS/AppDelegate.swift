@@ -18,10 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
 
+        PendingTasks.setup(tasksFactory: ExampleAppPendingTasksFactory())
+        WendyConfig.addTaskRunnerListener(self)
+
         self.window?.rootViewController = MainViewController()
         self.window?.makeKeyAndVisible()
-
-        WendyConfig.addTaskRunnerListener(self)
 
         return true
     }

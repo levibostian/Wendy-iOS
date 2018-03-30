@@ -23,6 +23,21 @@ internal class PendingTasksManager {
 
         return persistedPendingTask.id
     }
+
+    internal func getAllTasks() -> [PendingTask] {
+        let viewContext = CoreDataManager.sharedInstance.viewContext
+        let pendingTaskFactory = PendingTasks.sharedInstance.pendingTasksFactory
+        let persistedPendingTasks: [PersistedPendingTask] = try! viewContext.fetch(PersistedPendingTask.fetchRequest()) as [PersistedPendingTask]
+
+        var pendingTasks: [PendingTask] = []
+        persistedPendingTasks.forEach { (persistedPendingTask) in
+            var blankPendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+            blankPendingTask.populate(from: persistedPendingTask)
+            pendingTasks.append(blankPendingTask)
+        }
+
+        return pendingTasks
+    }
     
 //    internal func getTaskById(_ id: Double) throws -> PendingTask? {
 //        let context = CoreDataManager.sharedInstance.viewContext

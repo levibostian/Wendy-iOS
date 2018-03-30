@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol PendingTasksFactory {
-    func runTask(pendingTaskRunnerTag: String, dataId: String?, complete: @escaping (Bool) -> Void) 
+    func getTask(tag: String) -> PendingTask
 }
