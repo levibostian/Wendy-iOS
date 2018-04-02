@@ -9,6 +9,9 @@ import Foundation
 
 public protocol TaskRunnerListener: AnyObject {
     func newTaskAdded(_ task: PendingTask)
+    func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped)
+    func taskComplete(_ task: PendingTask, successful: Bool)
+    func runningTask(_ task: PendingTask)
 }
 
 internal struct WeakReferenceTaskRunnerListener {

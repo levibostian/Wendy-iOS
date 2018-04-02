@@ -100,6 +100,14 @@ public class PendingTasks {
         return persistedPendingTaskId
     }
 
+    public func runTask(_ taskId: Double) {
+        PendingTasksRunner.sharedInstance.runPendingTask(taskId: taskId)
+    }
+
+//    public func runTasks() {
+//        PendingTasksRunner.sharedInstance.runAllTasks()
+//    }
+
     public func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.sharedInstance.getAllTasks()
     }

@@ -30,6 +30,13 @@ public struct PendingTasksRunnerResult {
     }
 }
 
+/**
+ Requirements of the task runner:
+
+ 1. when you call `PendingTasks.runTask()` it returns instantly to you. It does *not* block the calling thread. It's like it schedules a job to run in the future.
+ 2. X number of threads all running the task runner's `runTask()` function can only run one at a time. (so, run runTask() in a sync way)
+ 3. The task runner's `runTask()` runs in a sync way (while the `PendingTask.runTask()` is async) where it does not return a result until the task has failed or succeeded. So, work in a blocking way.
+ */
 internal class PendingTasksRunner {
     
     internal static var sharedInstance: PendingTasksRunner = PendingTasksRunner()
@@ -37,48 +44,62 @@ internal class PendingTasksRunner {
     private init() {
     }
     
-    fileprivate var pendingTasksManager: PendingTasksManager = PendingTasksManager.sharedInstance
+    fileprivate lazy var pendingTasksManager: PendingTasksManager = {
+        return PendingTasksManager.sharedInstance
+    }()
+
+    internal var currentlyRunningTask: PendingTask?
     
     fileprivate let runPendingTasksDispatchQueue = DispatchQueue(label: "com.levibostian.wendy-ios.PendingTasksRunner.runPendingTasks")
     fileprivate let runPendingTasksDispatchGroup = DispatchGroup()
     fileprivate let runTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy-ios.PendingTasksRunner.runTask")
     fileprivate let runTaskDispatchGroup = DispatchGroup()
     
-//    internal func runPendingTask(taskId: Double, complete: @escaping PendingTasks.PendingTasksOnCompleteListener, onError: @escaping PendingTasks.PendingTasksOnErrorListener) {
-//        runTaskDispatchQueue.async {
-//            self.runTaskDispatchGroup.enter()
-//
-//            // Variables here so they do not get garbage collected.
-//            let pendingTaskById: PendingTask?
-//            do {
-//                pendingTaskById = try self.pendingTasksManager.getTaskById(taskId)
-//            } catch let error {
-//                onError(error)
-//                self.runTaskDispatchGroup.leave()
-//                return
-//            }
-//
-//            if pendingTaskById == nil {
-//                onError(PendingTasksError.taskDoesNotExist(taskId: taskId))
-//                self.runTaskDispatchGroup.leave()
-//                return
-//            }
-//
-//            PendingTasks.sharedInstance.pendingTasksFactory!.runTask(pendingTaskRunnerTag: pendingTaskById!.tag, dataId: pendingTaskById?.dataId, complete: { (successful: Bool) in
-//                if successful {
-//                    self.pendingTasksManager.deleteTask(pendingTaskById!)
-//                }
-//
-//                var result = PendingTasksRunnerResult()
-//                successful ? result.addSuccessfulTask() : result.addFailedTask()
-//                complete(result)
-//                self.runTaskDispatchGroup.leave()
-//            })
-//
-//            _ = self.runTaskDispatchGroup.wait(timeout: .distantFuture)
-//        }
-//    }
-//
+    internal func runPendingTask(taskId: Double) {
+
+        // ?????????? how do I return a pending task runner result from this function. ???
+
+//        runTaskDispatchQueue.async(group: runTaskDispatchGroup) {
+        runTaskDispatchQueue.async {
+            self.runTaskDispatchGroup.enter()
+
+            guard let persistedPendingTaskId: Double = try! self.pendingTasksManager.getTaskByTaskId(taskId)?.id else {
+                // TODO return skipped task because task does not exist.
+                self.runTaskDispatchGroup.leave()
+                return // PendingTasksRunnerJobRunResult.taskDoesNotExist
+            }
+            let taskToRun: PendingTask = try! self.pendingTasksManager.getPendingTaskTaskById(taskId)!
+
+            if !taskToRun.canRunTask() {
+                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
+                LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
+                self.runTaskDispatchGroup.leave()
+                return
+            } else {
+                self.currentlyRunningTask = taskToRun
+
+                WendyConfig.logTaskRunning(taskToRun)
+                LogUtil.d("Running task: \(taskToRun.describe())")
+                taskToRun.runTask(complete: { (successful: Bool) in
+                    if !successful {
+                        LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
+                        WendyConfig.logTaskComplete(taskToRun, successful: false)
+                        self.runTaskDispatchGroup.leave()
+                        return // successful result
+                    }
+
+                    LogUtil.d("Task: \(taskToRun.describe()) ran successful. Deleting it.")
+                    WendyConfig.logTaskComplete(taskToRun, successful: true)
+                    try! self.pendingTasksManager.deleteTask(taskId)
+                    self.runTaskDispatchGroup.leave()
+                    return // successful result.
+                })
+            }
+
+            _ = self.runTaskDispatchGroup.wait(timeout: .distantFuture)
+        }
+    }
+
 //    internal func runPendingTasks(complete: @escaping PendingTasks.PendingTasksOnCompleteListener, onError: @escaping PendingTasks.PendingTasksOnErrorListener) {
 //        runPendingTasksDispatchQueue.async {
 //            self.runPendingTasksDispatchGroup.enter()
@@ -126,5 +147,12 @@ internal class PendingTasksRunner {
 //            _ = self.runPendingTasksDispatchGroup.wait(timeout: .distantFuture)
 //        }
 //    }
+
+    fileprivate enum PendingTasksRunnerJobRunResult {
+        case successful
+        case notSuccessful
+        case taskDoesNotExist
+        case taskSkippedNotReady
+    }
 
 }
