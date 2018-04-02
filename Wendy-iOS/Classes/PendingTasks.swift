@@ -21,6 +21,8 @@ public class PendingTasks {
         return tasksFactory
     }()
 
+    fileprivate let runTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy-ios.PendingTasks.runTask")
+
     private init() {
     }
 
@@ -101,7 +103,9 @@ public class PendingTasks {
     }
 
     public func runTask(_ taskId: Double) {
-        PendingTasksRunner.sharedInstance.runPendingTask(taskId: taskId)
+        runTaskDispatchQueue.async {
+            PendingTasksRunner.sharedInstance.runPendingTask(taskId: taskId)
+        }
     }
 
 //    public func runTasks() {

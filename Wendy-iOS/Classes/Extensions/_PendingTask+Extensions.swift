@@ -16,7 +16,7 @@ extension PendingTask {
         self.groupId = from.groupId
     }
 
-    internal func describe() -> String {
+    public func describe() -> String {
         let taskIdString: String = (self.taskId != nil) ? String(describing: self.taskId!) : "none"
         let dataIdString: String = (self.dataId != nil) ? String(describing: self.dataId!) : "none"
         let groupIdString: String = (self.groupId != nil) ? String(describing: self.groupId!) : "none"
