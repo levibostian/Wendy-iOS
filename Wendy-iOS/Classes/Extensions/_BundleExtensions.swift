@@ -7,15 +7,15 @@
 
 import Foundation
 
-extension Bundle {
+internal extension Bundle {
 
-    class func bundleUrlForWendyFramework() -> Bundle {
+    internal class func bundleUrlForWendyFramework() -> Bundle {
         let frameworkBundle = Bundle(for: PendingTasks.self)
         let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("Wendy-iOS.bundle")
         return Bundle.init(url: bundleURL!)!
     }
 
-    class func frameworkUrlForWendyFramework() -> Bundle {
+    internal class func frameworkUrlForWendyFramework() -> Bundle {
         let frameworkBundle = Bundle(for: PendingTasks.self)
         let bundleURL = frameworkBundle.resourceURL
         return Bundle.init(url: bundleURL!)!
