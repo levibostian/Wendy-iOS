@@ -30,36 +30,23 @@ public class PendingTasks {
 
     /**
      Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
+
+     It will return back a `WendyUIBackgroundFetchResult`, and not call the `completionHandler` for you. You need to call that yourself. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
     */
-//    public func backgroundFetchRunTasks(completionHandler: @escaping (UIBackgroundFetchResult) -> Void, additionalProcessing: ((_ result: PendingTasksRunnerResult?, _ error: Swift.Error?, _ done: () -> Void) -> Void)? = nil) {
-//        func getUIBackgroundFetchResultFrom(_ result: PendingTasksRunnerResult?, error: Swift.Error?) -> UIBackgroundFetchResult {
-//            if error != nil {
-//                return UIBackgroundFetchResult.failed
-//            }
-//
-//            if result == nil || result!.numberTasksRun == 0 {
-//                return UIBackgroundFetchResult.noData
-//            } else {
-//                return result!.numberSuccessfulTasks > 0 ? UIBackgroundFetchResult.newData : UIBackgroundFetchResult.failed
-//            }
-//        }
-//
-//        func doneRunningTasks(result: PendingTasksRunnerResult?, error: Swift.Error?) {
-//            if let additionalProcessing = additionalProcessing {
-//                additionalProcessing(result, error, {
-//                    completionHandler(getUIBackgroundFetchResultFrom(result, error: error))
-//                })
-//            } else {
-//                completionHandler(getUIBackgroundFetchResultFrom(result, error: error))
-//            }
-//        }
-//
-//        runTasks(complete: { (result) in
-//            doneRunningTasks(result: result, error: nil)
-//        }, onError: { (error) in
-//            doneRunningTasks(result: nil, error: error)
-//        })
-//    }
+    public func backgroundFetchRunTasks(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> WendyUIBackgroundFetchResult {
+        let runAllTasksResult = PendingTasksRunner.Scheduler.sharedInstance.scheduleRunAllTasksWait()
+
+        var backgroundFetchResult: UIBackgroundFetchResult!
+        if runAllTasksResult.numberTasksRun == 0 {
+            backgroundFetchResult = .noData
+        } else if runAllTasksResult.numberSuccessfulTasks >= runAllTasksResult.numberFailedTasks {
+            backgroundFetchResult = .newData
+        } else {
+            backgroundFetchResult = .failed
+        }
+
+        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: backgroundFetchResult)
+    }
 
     public func addTask(_ pendingTask: PendingTask) throws -> Double {
         // TODO do the task factory testing here.
@@ -84,6 +71,11 @@ public class PendingTasks {
 
     public func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.sharedInstance.getAllTasks()
+    }
+
+    public struct WendyUIBackgroundFetchResult {
+        let taskRunnerResult: PendingTasksRunnerResult
+        let backgroundFetchResult: UIBackgroundFetchResult
     }
     
 }

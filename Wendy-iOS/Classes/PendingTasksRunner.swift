@@ -8,6 +8,32 @@
 
 import Foundation
 
+public struct PendingTasksRunnerResult {
+    let numberTasksRun: Int
+    let numberSuccessfulTasks: Int
+    let numberFailedTasks: Int
+
+    init() {
+        numberTasksRun = 0
+        numberSuccessfulTasks = 0
+        numberFailedTasks = 0
+    }
+
+    init(numberSuccessfulTasks: Int, numberFailedTasks: Int) {
+        self.numberTasksRun = numberSuccessfulTasks + numberFailedTasks
+        self.numberSuccessfulTasks = numberSuccessfulTasks
+        self.numberFailedTasks = numberFailedTasks
+    }
+
+    func addSuccessfulTask() -> PendingTasksRunnerResult {
+        return PendingTasksRunnerResult(numberSuccessfulTasks: numberSuccessfulTasks + 1, numberFailedTasks: numberFailedTasks)
+    }
+
+    func addFailedTask() -> PendingTasksRunnerResult {
+        return PendingTasksRunnerResult(numberSuccessfulTasks: numberSuccessfulTasks, numberFailedTasks: numberFailedTasks + 1)
+    }
+}
+
 /**
  Requirements of the task runner:
 
@@ -105,7 +131,7 @@ internal class PendingTasksRunner {
 
      Example: Check out PendingTasksRunner.Scheduler.scheduleRunAllTasks()
      */
-    internal func runAllTasks() {
+    internal func runAllTasks(_ result: PendingTasksRunnerResult = PendingTasksRunnerResult()) -> PendingTasksRunnerResult {
         LogUtil.d("Getting next task to run.")
 
         guard let nextTaskToRun = try! PendingTasksManager.sharedInstance.getNextTaskToRun(lastSuccessfulOrFailedTaskId) else {
@@ -113,38 +139,33 @@ internal class PendingTasksRunner {
             WendyConfig.logAllTasksComplete()
 
             self.resetRunner()
-            return
+            return result
         }
 
         lastSuccessfulOrFailedTaskId = nextTaskToRun.taskId!
         if (nextTaskToRun.groupId != nil && failedTasksGroups.contains(nextTaskToRun.groupId!)) {
             WendyConfig.logTaskSkipped(nextTaskToRun, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
             LogUtil.d("Task: \(nextTaskToRun.describe()) belongs to a failing group of tasks. Skipping it.")
-            self.runAllTasks()
-            return
+            return self.runAllTasks(result)
         }
 
         let jobRunResult = Scheduler.sharedInstance.runPendingTaskWait(nextTaskToRun.taskId!)
         switch jobRunResult {
         case .successful:
-            self.runAllTasks()
-            break
+            return self.runAllTasks(result.addSuccessfulTask())
         case .notSuccessful:
             if let taskGroupId = nextTaskToRun.groupId {
                 failedTasksGroups.append(taskGroupId)
             }
-            self.runAllTasks()
-            break
+            return self.runAllTasks(result.addFailedTask())
         case .taskDoesNotExist:
             // Ignore this. If it doesn't exist, it doesn't exist.
-            self.runAllTasks()
-            break
+            return self.runAllTasks(result)
         case .taskSkippedNotReady:
             if let taskGroupId = nextTaskToRun.groupId {
                 failedTasksGroups.append(taskGroupId)
             }
-            self.runAllTasks()
-            break
+            return self.runAllTasks(result)
         }
     }
 
@@ -174,6 +195,12 @@ internal class PendingTasksRunner {
         internal func scheduleRunAllTasks() {
             runPendingTasksDispatchQueue.async {
                 PendingTasksRunner.sharedInstance.runAllTasks()
+            }
+        }
+
+        internal func scheduleRunAllTasksWait() -> PendingTasksRunnerResult {
+            return runPendingTasksDispatchQueue.sync { () -> PendingTasksRunnerResult in
+                return PendingTasksRunner.sharedInstance.runAllTasks()
             }
         }
 
