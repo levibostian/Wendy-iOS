@@ -16,5 +16,5 @@ public protocol TaskRunnerListener: AnyObject {
 }
 
 internal struct WeakReferenceTaskRunnerListener {
-    weak var taskRunner: TaskRunnerListener!
+    weak var listener: TaskRunnerListener!
 }
