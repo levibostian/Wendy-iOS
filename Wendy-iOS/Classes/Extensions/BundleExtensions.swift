@@ -15,4 +15,10 @@ extension Bundle {
         return Bundle.init(url: bundleURL!)!
     }
 
+    class func frameworkUrlForWendyFramework() -> Bundle {
+        let frameworkBundle = Bundle(for: PendingTasks.self)
+        let bundleURL = frameworkBundle.resourceURL
+        return Bundle.init(url: bundleURL!)!
+    }
+
 }

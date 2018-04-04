@@ -52,4 +52,12 @@ internal extension WendyConfig {
         }
     }
 
+    internal class func logAllTasksComplete() {
+        DispatchQueue.main.async {
+            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+                weakRefListener.taskRunner.allTasksComplete()
+            })
+        }
+    }
+
 }

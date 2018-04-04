@@ -53,6 +53,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: TaskRunnerListener {
 
+    func allTasksComplete() {
+    }
+
     func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
 
     }

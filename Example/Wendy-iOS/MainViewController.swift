@@ -98,19 +98,26 @@ class MainViewController: UIViewController {
     }
 
     @objc func runAllTasksButtonPressed(_ sender: Any) {
+//        let taskId1 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task1"))
+//        let taskId2 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task2"))
+//        let taskId3 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task3"))
+//
+//        NSLog("running task from VC: \(taskId1)")
+//        PendingTasks.sharedInstance.runTask(taskId1)
+//        NSLog("running task from VC: \(taskId2)")
+//        PendingTasks.sharedInstance.runTask(taskId2)
+//        NSLog("running ALL tasks")
 //        PendingTasks.sharedInstance.runTasks()
-        let taskId1 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task1"))
-        let taskId2 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task2"))
-        let taskId3 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task3"))
+//        NSLog("running task from VC: \(taskId3)")
+//        DispatchQueue.global(qos: .background).async {
+//            PendingTasks.sharedInstance.runTask(taskId3)
+//        }
 
-        print("running task from VC: \(taskId1)")
-        PendingTasks.sharedInstance.runTask(taskId1)
-        print("running task from VC: \(taskId2)")
-        PendingTasks.sharedInstance.runTask(taskId2)
-        print("running task from VC: \(taskId3)")
-        DispatchQueue.global(qos: .background).async {
-            PendingTasks.sharedInstance.runTask(taskId3)
-        }
+                NSLog("running ALL tasks")
+                PendingTasks.sharedInstance.runTasks()
+
+        NSLog("running ALL tasks....again")
+        PendingTasks.sharedInstance.runTasks()
     }
 
     @objc func addTaskButtonPressed(_ sender: Any) {
@@ -182,6 +189,10 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension MainViewController: TaskRunnerListener {
+
+    func allTasksComplete() {
+        self.populateWendyPendingTasks()
+    }
 
     func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
         self.populateWendyPendingTasks()

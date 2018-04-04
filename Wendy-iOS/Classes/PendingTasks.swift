@@ -21,34 +21,12 @@ public class PendingTasks {
         return tasksFactory
     }()
 
-    fileprivate let runTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy-ios.PendingTasks.runTask")
-
     private init() {
     }
 
     public class func setup(tasksFactory: PendingTasksFactory) {
         PendingTasks.sharedInstance.pendingTasksFactory = tasksFactory
     }
-    
-//    fileprivate func assertListenersCreated(complete: PendingTasksOnCompleteListener?, onError: PendingTasksOnErrorListener?) -> Listeners {
-//        guard let onCompleteListener = complete ?? globalCompleteListener else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//        guard let onErrorListener = onError ?? globalOnErrorListener else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//        guard pendingTasksFactory != nil else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//
-//        return Listeners(onComplete: onCompleteListener, onError: onErrorListener)
-//    }
-//
-//    public func runTasks(complete: PendingTasksOnCompleteListener? = nil, onError: PendingTasksOnErrorListener? = nil) {
-//        let listeners = assertListenersCreated(complete: complete, onError: onError)
-//
-//        PendingTasksRunner.sharedInstance.runPendingTasks(complete: listeners.onComplete, onError: listeners.onError)
-//    }
 
     /**
      Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
@@ -82,17 +60,11 @@ public class PendingTasks {
 //            doneRunningTasks(result: nil, error: error)
 //        })
 //    }
-//
-//    public func runTask(id: Double, complete: PendingTasksOnCompleteListener? = nil, onError: PendingTasksOnErrorListener? = nil) {
-//        let listeners = assertListenersCreated(complete: complete, onError: onError)
-//
-//        PendingTasksRunner.sharedInstance.runPendingTask(taskId: id, complete: listeners.onComplete, onError: listeners.onError)
-//    }
 
     public func addTask(_ pendingTask: PendingTask) throws -> Double {
         // TODO do the task factory testing here.
 
-        let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask) // swiftlint:disable:this force_try
+        let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask)
 
         WendyConfig.logNewTaskAdded(pendingTask)
         // TODO run the task in the task runner.
@@ -103,14 +75,12 @@ public class PendingTasks {
     }
 
     public func runTask(_ taskId: Double) {
-        runTaskDispatchQueue.async {
-            PendingTasksRunner.sharedInstance.runPendingTask(taskId: taskId)
-        }
+        PendingTasksRunner.Scheduler.sharedInstance.scheduleRunPendingTask(taskId)
     }
 
-//    public func runTasks() {
-//        PendingTasksRunner.sharedInstance.runAllTasks()
-//    }
+    public func runTasks() {
+        PendingTasksRunner.Scheduler.sharedInstance.scheduleRunAllTasks()
+    }
 
     public func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.sharedInstance.getAllTasks()

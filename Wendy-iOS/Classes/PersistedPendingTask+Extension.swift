@@ -9,13 +9,6 @@
 import Foundation
 import CoreData
 
-public protocol PendingTasksTaskRunner {
-    static func runTask(dataId: String?, complete: @escaping (_ successful: Bool) -> Void)
-    var dataId: String? { get set }
-    var pendingTaskRunnerTag: String { get set }
-    var groupId: String? { get set }
-}
-
 internal extension PersistedPendingTask {
 
     convenience init() {

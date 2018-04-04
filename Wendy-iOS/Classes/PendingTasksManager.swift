@@ -67,27 +67,23 @@ internal class PendingTasksManager {
             CoreDataManager.sharedInstance.saveContext()
         }
     }
-//
-//    internal func getNextTask(_ lastSuccessfulOrFailedTaskId: Double = 0, failedTasksGroups: [String] = []) throws -> PendingTask? {
-//        let context = CoreDataManager.sharedInstance.viewContext
-//
-//        let pendingTaskFetchRequest: NSFetchRequest<PendingTask> = PendingTask.fetchRequest()
-//        if failedTasksGroups.isEmpty {
-//            pendingTaskFetchRequest.predicate = NSPredicate(format: "id > %f", lastSuccessfulOrFailedTaskId)
-//        } else {
-//            pendingTaskFetchRequest.predicate = NSPredicate(format: "(id > %f) AND ((groupId == nil) OR NOT (groupId in \(failedTasksGroups))", lastSuccessfulOrFailedTaskId)
-//        }
-//        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PendingTask.createdAt), ascending: true)]
-//
-//        let pendingTasks: [PendingTask] = try context.fetch(pendingTaskFetchRequest)
-//        return pendingTasks.isEmpty ? nil : pendingTasks[0]
-//    }
-//
-//    internal func deleteTask(_ task: PendingTask) {
-//        let context = CoreDataManager.sharedInstance.viewContext
-//
-//        context.delete(task)
-//        CoreDataManager.sharedInstance.saveContext()
-//    }
+
+    internal func getNextTaskToRun(_ lastSuccessfulOrFailedTaskId: Double) throws -> PendingTask? {
+        let context = CoreDataManager.sharedInstance.viewContext
+
+        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
+        pendingTaskFetchRequest.predicate = NSPredicate(format: "id > %f AND manuallyRun = false", lastSuccessfulOrFailedTaskId)
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.id), ascending: true)]
+
+        let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
+        if pendingTasks.isEmpty { return nil }
+        let persistedPendingTask: PersistedPendingTask = pendingTasks[0]
+
+        let pendingTaskFactory: PendingTasksFactory = PendingTasks.sharedInstance.pendingTasksFactory
+        var pendingTask: PendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+        pendingTask.populate(from: persistedPendingTask)
+
+        return pendingTask
+    }
 
 }
