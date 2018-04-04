@@ -49,9 +49,7 @@ public class PendingTasks {
     }
 
     public func addTask(_ pendingTask: PendingTask) throws -> Double {
-        guard let _ = try self.pendingTasksFactory.getTask(tag: pendingTask.tag) else {
-            fatalError("You forgot to add \(pendingTask.tag) to your \(String(describing: PendingTasksFactory.self))")
-        }
+        _ = self.pendingTasksFactory.getTaskAssertPopulated(tag: pendingTask.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late! 
 
         let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask)
 

@@ -212,6 +212,7 @@
 		F7682AF4DCFC1FB4D4522249F971B7DD /* World+DSL.h in Headers */ = {isa = PBXBuildFile; fileRef = 08D12E7771336812750D2C58D5870A9E /* World+DSL.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F7ED4267206EBA3400BD38D2 /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4868049E63C8AE6B4963A4C80138B1E1 /* Wendy.xcdatamodeld */; };
 		F7ED4290206EC42F00BD38D2 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */; };
+		F7FC79C120754E0200946A18 /* _PendingTasksFactory+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FC79C020754E0200946A18 /* _PendingTasksFactory+Extensions.swift */; };
 		F85786806B0048EAC5984FAFD7E473C2 /* ConstraintDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA8D1685DBAF17F53C9CC58D24B6DD0 /* ConstraintDescription.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FAAD171A8213AF6FF83809CC945B6A8D /* BeAnInstanceOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C935C66668E203F7EC8D0BE42AB3E7B /* BeAnInstanceOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FB433A84B0A557CD5E5948A8B6705024 /* DSL.h in Headers */ = {isa = PBXBuildFile; fileRef = F45459DC1AB5F893654714105C69C96E /* DSL.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -530,6 +531,7 @@
 		F73E96EB2072A8B700E7306F /* ReasonPendingTaskSkipped.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReasonPendingTaskSkipped.swift; path = "Wendy-iOS/Classes/Type/ReasonPendingTaskSkipped.swift"; sourceTree = "<group>"; };
 		F73E96EE2072A99300E7306F /* LogUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LogUtil.swift; path = "Wendy-iOS/Classes/Util/LogUtil.swift"; sourceTree = "<group>"; };
 		F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BundleExtensions.swift; path = "Wendy-iOS/Classes/Extensions/BundleExtensions.swift"; sourceTree = "<group>"; };
+		F7FC79C020754E0200946A18 /* _PendingTasksFactory+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "_PendingTasksFactory+Extensions.swift"; path = "Wendy-iOS/Classes/Extensions/_PendingTasksFactory+Extensions.swift"; sourceTree = "<group>"; };
 		F911CF5FB60FE52EB0669554778B124D /* PendingTasksManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PendingTasksManager.swift; path = "Wendy-iOS/Classes/PendingTasksManager.swift"; sourceTree = "<group>"; };
 		FB2211E529D3EB564801D219352A5C05 /* DSL+Wait.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "DSL+Wait.swift"; path = "Sources/Nimble/DSL+Wait.swift"; sourceTree = "<group>"; };
 		FB23FCC62DA8E55F2D22EB66BA000D1B /* ConstraintInsets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintInsets.swift; path = Source/ConstraintInsets.swift; sourceTree = "<group>"; };
@@ -1045,6 +1047,7 @@
 			children = (
 				F7ED428F206EC42F00BD38D2 /* BundleExtensions.swift */,
 				F73E96E5206EE05E00E7306F /* _PendingTask+Extensions.swift */,
+				F7FC79C020754E0200946A18 /* _PendingTasksFactory+Extensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1615,6 +1618,7 @@
 				5970C5F48FD041889FD08611499BF19C /* PendingTasksManager.swift in Sources */,
 				8609E84F9429099C47868F8E848001F7 /* PendingTasksRunner.swift in Sources */,
 				F73E96EF2072A99300E7306F /* LogUtil.swift in Sources */,
+				F7FC79C120754E0200946A18 /* _PendingTasksFactory+Extensions.swift in Sources */,
 				02378BC248B4A201680636085B11B350 /* PendingTasksUtil.swift in Sources */,
 				7A756F99E8FE0114C337E19D44CA1519 /* PersistedPendingTask+Extension.swift in Sources */,
 				80875156CCA69367899435AA31A19069 /* TaskRunnerListener.swift in Sources */,

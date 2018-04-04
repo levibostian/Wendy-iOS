@@ -31,7 +31,7 @@ internal class PendingTasksManager {
 
         var pendingTasks: [PendingTask] = []
         persistedPendingTasks.forEach { (persistedPendingTask) in
-            var blankPendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+            var blankPendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
             blankPendingTask.populate(from: persistedPendingTask)
             pendingTasks.append(blankPendingTask)
         }
@@ -55,7 +55,7 @@ internal class PendingTasksManager {
         }
         let pendingTaskFactory: PendingTasksFactory = PendingTasks.sharedInstance.pendingTasksFactory
 
-        var pendingTask: PendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+        var pendingTask: PendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
         pendingTask.populate(from: persistedPendingTask)
         return pendingTask
     }
@@ -80,7 +80,7 @@ internal class PendingTasksManager {
         let persistedPendingTask: PersistedPendingTask = pendingTasks[0]
 
         let pendingTaskFactory: PendingTasksFactory = PendingTasks.sharedInstance.pendingTasksFactory
-        var pendingTask: PendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+        var pendingTask: PendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
         pendingTask.populate(from: persistedPendingTask)
 
         return pendingTask
