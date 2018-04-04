@@ -34,6 +34,12 @@ public class PendingTasks {
      It will return back a `WendyUIBackgroundFetchResult`, and not call the `completionHandler` for you. You need to call that yourself. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
     */
     public func backgroundFetchRunTasks(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> WendyUIBackgroundFetchResult {
+        if !WendyConfig.automaticallyRunTasks {
+            LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
+            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult(), backgroundFetchResult: .noData)
+        }
+
+        LogUtil.d("Wendy configured to automatically run tasks. Running the background fetch job.")
         let runAllTasksResult = PendingTasksRunner.Scheduler.sharedInstance.scheduleRunAllTasksWait()
 
         var backgroundFetchResult: UIBackgroundFetchResult!
@@ -55,7 +61,7 @@ public class PendingTasks {
 
         WendyConfig.logNewTaskAdded(pendingTask)
 
-        if !pendingTask.manuallyRun { // TODO check for WendyConfig.automaticallyRunTasks here when running.
+        if WendyConfig.automaticallyRunTasks && !pendingTask.manuallyRun {
             LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(pendingTask.describe())")
             runTask(persistedPendingTaskId)
         } else {

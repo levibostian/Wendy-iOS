@@ -9,6 +9,8 @@ import Foundation
 
 public class WendyConfig {
 
+    public static var automaticallyRunTasks: Bool = true
+
     fileprivate static var taskRunnerListeners: [WeakReferenceTaskRunnerListener] = []
     public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
         taskRunnerListeners.append(WeakReferenceTaskRunnerListener(listener: listener))
