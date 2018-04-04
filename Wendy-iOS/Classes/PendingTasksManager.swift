@@ -31,45 +31,59 @@ internal class PendingTasksManager {
 
         var pendingTasks: [PendingTask] = []
         persistedPendingTasks.forEach { (persistedPendingTask) in
-            var blankPendingTask = pendingTaskFactory.getTask(tag: persistedPendingTask.tag!)
+            var blankPendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
             blankPendingTask.populate(from: persistedPendingTask)
-            blankPendingTask.taskId = persistedPendingTask.id
             pendingTasks.append(blankPendingTask)
         }
 
         return pendingTasks
     }
     
-//    internal func getTaskById(_ id: Double) throws -> PendingTask? {
-//        let context = CoreDataManager.sharedInstance.viewContext
-//
-//        let pendingTaskFetchRequest: NSFetchRequest<PendingTask> = PendingTask.fetchRequest()
-//        pendingTaskFetchRequest.predicate = NSPredicate(format: "id == %f", id)
-//
-//        let pendingTasks: [PendingTask] = try context.fetch(pendingTaskFetchRequest)
-//        return pendingTasks.isEmpty ? nil : pendingTasks[0]
-//    }
-//
-//    internal func getNextTask(_ lastSuccessfulOrFailedTaskId: Double = 0, failedTasksGroups: [String] = []) throws -> PendingTask? {
-//        let context = CoreDataManager.sharedInstance.viewContext
-//
-//        let pendingTaskFetchRequest: NSFetchRequest<PendingTask> = PendingTask.fetchRequest()
-//        if failedTasksGroups.isEmpty {
-//            pendingTaskFetchRequest.predicate = NSPredicate(format: "id > %f", lastSuccessfulOrFailedTaskId)
-//        } else {
-//            pendingTaskFetchRequest.predicate = NSPredicate(format: "(id > %f) AND ((groupId == nil) OR NOT (groupId in \(failedTasksGroups))", lastSuccessfulOrFailedTaskId)
-//        }
-//        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PendingTask.createdAt), ascending: true)]
-//
-//        let pendingTasks: [PendingTask] = try context.fetch(pendingTaskFetchRequest)
-//        return pendingTasks.isEmpty ? nil : pendingTasks[0]
-//    }
-//
-//    internal func deleteTask(_ task: PendingTask) {
-//        let context = CoreDataManager.sharedInstance.viewContext
-//
-//        context.delete(task)
-//        CoreDataManager.sharedInstance.saveContext()
-//    }
+    internal func getTaskByTaskId(_ taskId: Double) throws -> PersistedPendingTask? {
+        let context = CoreDataManager.sharedInstance.viewContext
+
+        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
+        pendingTaskFetchRequest.predicate = NSPredicate(format: "id == %f", taskId)
+
+        let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
+        return pendingTasks.isEmpty ? nil : pendingTasks[0]
+    }
+
+    internal func getPendingTaskTaskById(_ taskId: Double) throws -> PendingTask? {
+        guard let persistedPendingTask = try getTaskByTaskId(taskId) else {
+            return nil
+        }
+        let pendingTaskFactory: PendingTasksFactory = PendingTasks.sharedInstance.pendingTasksFactory
+
+        var pendingTask: PendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
+        pendingTask.populate(from: persistedPendingTask)
+        return pendingTask
+    }
+
+    internal func deleteTask(_ taskId: Double) throws {
+        let context = CoreDataManager.sharedInstance.viewContext
+        if let persistedPendingTask = try getTaskByTaskId(taskId) {
+            context.delete(persistedPendingTask)
+            CoreDataManager.sharedInstance.saveContext()
+        }
+    }
+
+    internal func getNextTaskToRun(_ lastSuccessfulOrFailedTaskId: Double) throws -> PendingTask? {
+        let context = CoreDataManager.sharedInstance.viewContext
+
+        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
+        pendingTaskFetchRequest.predicate = NSPredicate(format: "id > %f AND manuallyRun = false", lastSuccessfulOrFailedTaskId)
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.id), ascending: true)]
+
+        let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
+        if pendingTasks.isEmpty { return nil }
+        let persistedPendingTask: PersistedPendingTask = pendingTasks[0]
+
+        let pendingTaskFactory: PendingTasksFactory = PendingTasks.sharedInstance.pendingTasksFactory
+        var pendingTask: PendingTask = pendingTaskFactory.getTaskAssertPopulated(tag: persistedPendingTask.tag!)
+        pendingTask.populate(from: persistedPendingTask)
+
+        return pendingTask
+    }
 
 }

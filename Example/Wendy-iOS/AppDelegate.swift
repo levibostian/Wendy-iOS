@@ -53,6 +53,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: TaskRunnerListener {
 
+    func allTasksComplete() {
+    }
+
+    func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
+
+    }
+
+    func taskComplete(_ task: PendingTask, successful: Bool) {
+
+    }
+
+    func runningTask(_ task: PendingTask) {
+    }
+
     func newTaskAdded(_ task: PendingTask) {
         print("Task added: \(task.dataId)")
     }

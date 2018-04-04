@@ -28,6 +28,21 @@ class MainViewController: UIViewController {
         return view
     }()
 
+    fileprivate let runAllTasksButton: UIButton = {
+        let view = UIButton()
+        view.setTitle("Run all tasks", for: UIControlState.normal)
+        view.setTitleColor(UIColor.blue, for: .normal)
+        return view
+    }()
+
+    fileprivate let buttonsStackView: UIStackView = {
+        let view = UIStackView()
+        view.alignment = .leading
+        view.distribution = .fill
+        view.axis = .horizontal
+        return view
+    }()
+
     fileprivate let textFieldStackView: UIStackView = {
         let view = UIStackView()
         view.alignment = .leading
@@ -58,7 +73,10 @@ class MainViewController: UIViewController {
         WendyConfig.addTaskRunnerListener(self)
 
         self.textFieldStackView.addArrangedSubview(dataTextField)
-        self.textFieldStackView.addArrangedSubview(addTaskButton)
+
+        self.buttonsStackView.addArrangedSubview(addTaskButton)
+        self.buttonsStackView.addArrangedSubview(runAllTasksButton)
+        self.textFieldStackView.addArrangedSubview(buttonsStackView)
 
         self.view.addSubview(textFieldStackView)
         self.view.addSubview(pendingTaskTableView)
@@ -70,12 +88,36 @@ class MainViewController: UIViewController {
     }
 
     fileprivate func setupview() {
-        self.addTaskButton.addTarget(self, action: #selector(MainViewController.addTaskButtonPressed(_:)), for: UIControlEvents.touchUpInside)
+        self.addTaskButton.addTarget(self, action: #selector(MainViewController.addTaskButtonPressed(_:)), for: .touchUpInside)
+        self.runAllTasksButton.addTarget(self, action: #selector(MainViewController.runAllTasksButtonPressed(_:)), for: .touchUpInside)
 
         self.pendingTaskTableView.delegate = self
         self.pendingTaskTableView.dataSource = self
         self.pendingTaskTableView.register(PendingTaskTableViewCell.self, forCellReuseIdentifier: String(describing: PendingTaskTableViewCell.self))
         self.populateWendyPendingTasks()
+    }
+
+    @objc func runAllTasksButtonPressed(_ sender: Any) {
+//        let taskId1 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task1"))
+//        let taskId2 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task2"))
+//        let taskId3 = try! PendingTasks.sharedInstance.addTask(AddGroceryListItemPendingTask(groceryListItemName: "task3"))
+//
+//        NSLog("running task from VC: \(taskId1)")
+//        PendingTasks.sharedInstance.runTask(taskId1)
+//        NSLog("running task from VC: \(taskId2)")
+//        PendingTasks.sharedInstance.runTask(taskId2)
+//        NSLog("running ALL tasks")
+//        PendingTasks.sharedInstance.runTasks()
+//        NSLog("running task from VC: \(taskId3)")
+//        DispatchQueue.global(qos: .background).async {
+//            PendingTasks.sharedInstance.runTask(taskId3)
+//        }
+
+                NSLog("running ALL tasks")
+                PendingTasks.sharedInstance.runTasks()
+
+        NSLog("running ALL tasks....again")
+        PendingTasks.sharedInstance.runTasks()
     }
 
     @objc func addTaskButtonPressed(_ sender: Any) {
@@ -93,6 +135,10 @@ class MainViewController: UIViewController {
         if !didSetupConstraints {
             didSetupConstraints = true
 
+            self.buttonsStackView.snp.makeConstraints({ (make) in
+                make.top.equalTo(self.dataTextField.snp.bottom)
+                make.width.equalToSuperview()
+            })
             self.textFieldStackView.snp.makeConstraints({ (make) in
                 make.width.equalToSuperview().offset(-40)
                 make.centerX.equalToSuperview()
@@ -143,6 +189,22 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension MainViewController: TaskRunnerListener {
+
+    func allTasksComplete() {
+        self.populateWendyPendingTasks()
+    }
+
+    func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
+        self.populateWendyPendingTasks()
+    }
+
+    func taskComplete(_ task: PendingTask, successful: Bool) {
+        self.populateWendyPendingTasks()
+    }
+
+    func runningTask(_ task: PendingTask) {
+        self.populateWendyPendingTasks()
+    }
 
     func newTaskAdded(_ task: PendingTask) {
         self.populateWendyPendingTasks()

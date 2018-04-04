@@ -11,7 +11,7 @@ import Wendy
 
 class ExampleAppPendingTasksFactory: PendingTasksFactory {
 
-    func getTask(tag: String) -> PendingTask {
+    func getTask(tag: String) -> PendingTask? {
         switch tag {
         case AddGroceryListItemPendingTask.pendingTaskRunnerTag:
             return AddGroceryListItemPendingTask()

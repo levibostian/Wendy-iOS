@@ -20,6 +20,20 @@ it, simply add the following line to your Podfile:
 pod 'Wendy-iOS'
 ```
 
+## Intall template files
+
+Wendy comes with some XCode template files to create `PendingTask`s and `PendingTaskFactory`s very quickly within XCode from the File > New File menu. 
+
+All you need to do is run this bash script to install the scripts on your machine in the XCode templates directory:
+
+```
+./Templates/install_templates.sh
+```
+
+Restart XCode if it is currently open on your machine. 
+
+Then, the next time you open XCode and go to "New file", you will see a section called "Wendy" with file templates inside! 
+
 ## Author
 
 Levi Bostian, levi.bostian@gmail.com

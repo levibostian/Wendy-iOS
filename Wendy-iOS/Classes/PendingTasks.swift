@@ -27,81 +27,65 @@ public class PendingTasks {
     public class func setup(tasksFactory: PendingTasksFactory) {
         PendingTasks.sharedInstance.pendingTasksFactory = tasksFactory
     }
-    
-//    fileprivate func assertListenersCreated(complete: PendingTasksOnCompleteListener?, onError: PendingTasksOnErrorListener?) -> Listeners {
-//        guard let onCompleteListener = complete ?? globalCompleteListener else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//        guard let onErrorListener = onError ?? globalOnErrorListener else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//        guard pendingTasksFactory != nil else {
-//            fatalError("You did not initialize PendingTasks with config()")
-//        }
-//
-//        return Listeners(onComplete: onCompleteListener, onError: onErrorListener)
-//    }
-//
-//    public func runTasks(complete: PendingTasksOnCompleteListener? = nil, onError: PendingTasksOnErrorListener? = nil) {
-//        let listeners = assertListenersCreated(complete: complete, onError: onError)
-//
-//        PendingTasksRunner.sharedInstance.runPendingTasks(complete: listeners.onComplete, onError: listeners.onError)
-//    }
 
     /**
      Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
+
+     It will return back a `WendyUIBackgroundFetchResult`, and not call the `completionHandler` for you. You need to call that yourself. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
     */
-//    public func backgroundFetchRunTasks(completionHandler: @escaping (UIBackgroundFetchResult) -> Void, additionalProcessing: ((_ result: PendingTasksRunnerResult?, _ error: Swift.Error?, _ done: () -> Void) -> Void)? = nil) {
-//        func getUIBackgroundFetchResultFrom(_ result: PendingTasksRunnerResult?, error: Swift.Error?) -> UIBackgroundFetchResult {
-//            if error != nil {
-//                return UIBackgroundFetchResult.failed
-//            }
-//
-//            if result == nil || result!.numberTasksRun == 0 {
-//                return UIBackgroundFetchResult.noData
-//            } else {
-//                return result!.numberSuccessfulTasks > 0 ? UIBackgroundFetchResult.newData : UIBackgroundFetchResult.failed
-//            }
-//        }
-//
-//        func doneRunningTasks(result: PendingTasksRunnerResult?, error: Swift.Error?) {
-//            if let additionalProcessing = additionalProcessing {
-//                additionalProcessing(result, error, {
-//                    completionHandler(getUIBackgroundFetchResultFrom(result, error: error))
-//                })
-//            } else {
-//                completionHandler(getUIBackgroundFetchResultFrom(result, error: error))
-//            }
-//        }
-//
-//        runTasks(complete: { (result) in
-//            doneRunningTasks(result: result, error: nil)
-//        }, onError: { (error) in
-//            doneRunningTasks(result: nil, error: error)
-//        })
-//    }
-//
-//    public func runTask(id: Double, complete: PendingTasksOnCompleteListener? = nil, onError: PendingTasksOnErrorListener? = nil) {
-//        let listeners = assertListenersCreated(complete: complete, onError: onError)
-//
-//        PendingTasksRunner.sharedInstance.runPendingTask(taskId: id, complete: listeners.onComplete, onError: listeners.onError)
-//    }
+    public func backgroundFetchRunTasks(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> WendyUIBackgroundFetchResult {
+        if !WendyConfig.automaticallyRunTasks {
+            LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
+            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult(), backgroundFetchResult: .noData)
+        }
+
+        LogUtil.d("Wendy configured to automatically run tasks. Running the background fetch job.")
+        let runAllTasksResult = PendingTasksRunner.Scheduler.sharedInstance.scheduleRunAllTasksWait()
+
+        var backgroundFetchResult: UIBackgroundFetchResult!
+        if runAllTasksResult.numberTasksRun == 0 {
+            backgroundFetchResult = .noData
+        } else if runAllTasksResult.numberSuccessfulTasks >= runAllTasksResult.numberFailedTasks {
+            backgroundFetchResult = .newData
+        } else {
+            backgroundFetchResult = .failed
+        }
+
+        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: backgroundFetchResult)
+    }
 
     public func addTask(_ pendingTask: PendingTask) throws -> Double {
-        // TODO do the task factory testing here.
+        _ = self.pendingTasksFactory.getTaskAssertPopulated(tag: pendingTask.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late! 
 
-        let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask) // swiftlint:disable:this force_try
+        let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask)
 
         WendyConfig.logNewTaskAdded(pendingTask)
-        // TODO run the task in the task runner.
-//        self.runTask(id: newPendingTaskForRunner.id, complete: complete, onError: onError)
-        // TODO alert listener.
+
+        if WendyConfig.automaticallyRunTasks && !pendingTask.manuallyRun {
+            LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(pendingTask.describe())")
+            runTask(persistedPendingTaskId)
+        } else {
+            LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(pendingTask.describe())")
+        }
 
         return persistedPendingTaskId
     }
 
+    public func runTask(_ taskId: Double) {
+        PendingTasksRunner.Scheduler.sharedInstance.scheduleRunPendingTask(taskId)
+    }
+
+    public func runTasks() {
+        PendingTasksRunner.Scheduler.sharedInstance.scheduleRunAllTasks()
+    }
+
     public func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.sharedInstance.getAllTasks()
+    }
+
+    public struct WendyUIBackgroundFetchResult {
+        let taskRunnerResult: PendingTasksRunnerResult
+        let backgroundFetchResult: UIBackgroundFetchResult
     }
     
 }

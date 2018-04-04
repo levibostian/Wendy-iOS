@@ -25,11 +25,15 @@ class AddGroceryListItemPendingTask: PendingTask {
     }
 
     func canRunTask() -> Bool {
-        return true
+        let canRunTask = drand48() > 0.5
+        return canRunTask
     }
 
     func runTask(complete: @escaping (Bool) -> Void) {
-        complete(false)
+        sleep(2)
+
+        let successful = drand48() > 0.5
+        complete(successful)
     }
 
 }
