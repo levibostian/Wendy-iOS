@@ -49,14 +49,20 @@ public class PendingTasks {
     }
 
     public func addTask(_ pendingTask: PendingTask) throws -> Double {
-        // TODO do the task factory testing here.
+        guard let _ = try self.pendingTasksFactory.getTask(tag: pendingTask.tag) else {
+            fatalError("You forgot to add \(pendingTask.tag) to your \(String(describing: PendingTasksFactory.self))")
+        }
 
         let persistedPendingTaskId: Double = try PendingTasksManager.sharedInstance.addTask(pendingTask)
 
         WendyConfig.logNewTaskAdded(pendingTask)
-        // TODO run the task in the task runner.
-//        self.runTask(id: newPendingTaskForRunner.id, complete: complete, onError: onError)
-        // TODO alert listener.
+
+        if !pendingTask.manuallyRun { // TODO check for WendyConfig.automaticallyRunTasks here when running.
+            LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(pendingTask.describe())")
+            runTask(persistedPendingTaskId)
+        } else {
+            LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(pendingTask.describe())")
+        }
 
         return persistedPendingTaskId
     }
