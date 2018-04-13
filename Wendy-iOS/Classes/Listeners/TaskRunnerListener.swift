@@ -13,6 +13,8 @@ public protocol TaskRunnerListener: AnyObject {
     func taskComplete(_ task: PendingTask, successful: Bool)
     func runningTask(_ task: PendingTask)
     func allTasksComplete()
+    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?)
+    func errorResolved(_ task: PendingTask)
 }
 
 internal struct WeakReferenceTaskRunnerListener {

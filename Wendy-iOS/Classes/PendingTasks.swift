@@ -82,6 +82,33 @@ public class PendingTasks {
     public func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.sharedInstance.getAllTasks()
     }
+    
+    public func recordError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) throws {
+        guard let pendingTask: PendingTask = try PendingTasksManager.sharedInstance.getPendingTaskTaskById(taskId) else {
+            return
+        }
+        
+        try PendingTasksManager.sharedInstance.insertPendingTaskError(taskId: taskId, humanReadableErrorMessage: humanReadableErrorMessage, errorId: errorId)
+        
+        WendyConfig.logErrorRecorded(pendingTask, errorMessage: humanReadableErrorMessage, errorId: errorId)
+    }
+    
+    public func getLatestError(taskId: Double) throws -> PendingTaskError? {
+        return try PendingTasksManager.sharedInstance.getLatestError(pendingTaskId: taskId)
+    }
+    
+    public func resolveError(taskId: Double) throws {
+        guard let pendingTask = try PendingTasksManager.sharedInstance.getPendingTaskTaskById(taskId) else {
+            return
+        }
+        
+        try PendingTasksManager.sharedInstance.deletePendingTaskError(taskId)
+        WendyConfig.logErrorResolved(pendingTask)
+    }
+    
+    public func getAllErrors() -> [PendingTaskError] {
+        return PendingTasksManager.sharedInstance.getAllErrors()
+    }
 
     public struct WendyUIBackgroundFetchResult {
         let taskRunnerResult: PendingTasksRunnerResult

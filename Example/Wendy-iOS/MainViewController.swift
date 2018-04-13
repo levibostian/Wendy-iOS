@@ -189,7 +189,15 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension MainViewController: TaskRunnerListener {
-
+    
+    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
+        self.populateWendyPendingTasks()
+    }
+    
+    func errorResolved(_ task: PendingTask) {
+        self.populateWendyPendingTasks()
+    }
+    
     func allTasksComplete() {
         self.populateWendyPendingTasks()
     }

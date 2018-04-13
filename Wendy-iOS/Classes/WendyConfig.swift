@@ -85,6 +85,28 @@ internal extension WendyConfig {
             })
         }
     }
+    
+    internal class func logErrorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
+        DispatchQueue.main.async {
+            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+                weakRefListener.listener.errorRecorded(task, errorMessage: errorMessage, errorId: errorId)
+            })
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+                weakRefListener.listener.errorRecorded(taskId: task.taskId!, errorMessage: errorMessage, errorId: errorId)
+            })
+        }
+    }
+    
+    internal class func logErrorResolved(_ task: PendingTask) {
+        DispatchQueue.main.async {
+            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+                weakRefListener.listener.errorResolved(task)
+            })
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+                weakRefListener.listener.errorResolved(taskId: task.taskId!)
+            })
+        }
+    }
 
     internal class func logAllTasksComplete() {
         DispatchQueue.main.async {

@@ -52,6 +52,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension AppDelegate: TaskRunnerListener {
+    
+    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {        
+    }
+    
+    func errorResolved(_ task: PendingTask) {
+    }
 
     func allTasksComplete() {
     }
