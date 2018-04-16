@@ -13,13 +13,13 @@ internal extension PersistedPendingTask {
 
     internal convenience init() {
         // This exists so when children of PendingTask initialize pending tasks with self.init(), we are automatically setting the CoreData context. We don't want the developer to even realize we are using CoreData here so we are hiding this.
-        let managedContext = CoreDataManager.sharedInstance.viewContext
+        let managedContext = CoreDataManager.shared.viewContext
         self.init(entity: NSEntityDescription.entity(forEntityName: "PersistedPendingTask", in: managedContext)!, insertInto: managedContext)
     }
     
     internal var pendingTask: PendingTask {
         get {
-            var blankPendingTask = PendingTasks.sharedInstance.pendingTasksFactory.getTaskAssertPopulated(tag: self.tag!)
+            var blankPendingTask = Wendy.shared.pendingTasksFactory.getTaskAssertPopulated(tag: self.tag!)
             blankPendingTask.populate(from: self)
             return blankPendingTask
         }

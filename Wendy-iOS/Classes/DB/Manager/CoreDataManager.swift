@@ -10,7 +10,7 @@
 
  internal class CoreDataManager {
 
-    internal static let sharedInstance = CoreDataManager()
+    internal static let shared = CoreDataManager()
 
     private init() {
     }

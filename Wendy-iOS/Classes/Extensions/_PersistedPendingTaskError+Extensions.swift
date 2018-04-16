@@ -11,7 +11,7 @@ import CoreData
 internal extension PersistedPendingTaskError {
     
     internal convenience init() {
-        let managedContext = CoreDataManager.sharedInstance.viewContext
+        let managedContext = CoreDataManager.shared.viewContext
         self.init(entity: NSEntityDescription.entity(forEntityName: "PersistedPendingTaskError", in: managedContext)!, insertInto: managedContext)
     }
     

@@ -9,7 +9,10 @@ import Foundation
 
 public class WendyConfig {
 
+    public static var logTag: String = "WENDY"
     public static var automaticallyRunTasks: Bool = true
+    public static var strict: Bool = true
+    public static var debug: Bool = false
 
     fileprivate static var taskRunnerListeners: [WeakReferenceTaskRunnerListener] = []
     public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
@@ -21,7 +24,7 @@ public class WendyConfig {
         taskStatusListeners.append(TaskStatusListener(taskId: taskId, weakRefListener: WeakReferencePendingTaskStatusListener(listener: listener)))
 
         // The task runner could be running this task right now and because it takes a while potentially to run a task, I need to notify the listener here. This should be the only use case to handle here, running of a task.
-        let taskRunner: PendingTasksRunner = PendingTasksRunner.sharedInstance
+        let taskRunner: PendingTasksRunner = PendingTasksRunner.shared
         if taskRunner.currentlyRunningTask?.taskId == taskId {
             listener.running(taskId: taskId)
         }
@@ -38,8 +41,6 @@ public class WendyConfig {
         let taskId: Double
         let weakRefListener: WeakReferencePendingTaskStatusListener
     }
-
-    public static var debug: Bool = true
 
 }
 

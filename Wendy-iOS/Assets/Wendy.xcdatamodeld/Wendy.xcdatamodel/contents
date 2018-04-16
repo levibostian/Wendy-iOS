@@ -16,7 +16,7 @@
         <relationship name="pendingTask" maxCount="1" deletionRule="Nullify" destinationEntity="PersistedPendingTask" inverseName="error" inverseEntity="PersistedPendingTask" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PersistedPendingTask" positionX="-63" positionY="-18" width="128" height="148"/>
+        <element name="PersistedPendingTask" positionX="-63" positionY="-18" width="128" height="28"/>
         <element name="PersistedPendingTaskError" positionX="214" positionY="21" width="128" height="103"/>
     </elements>
 </model>

@@ -16,6 +16,6 @@ public protocol PendingTask {
     var tag: String { get }
 
     func runTask(complete: @escaping (Bool) -> Void)
-    func canRunTask() -> Bool
+    func isReadyToRun() -> Bool
 
 }
