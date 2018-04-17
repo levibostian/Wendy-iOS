@@ -216,7 +216,7 @@
 		F53EA811FB78BE695B1E81D6D07CAD67 /* Quick.h in Headers */ = {isa = PBXBuildFile; fileRef = BB033AA60DC86602E9F6048A98FFD6DC /* Quick.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6578F8564F2E1FC8B97B63F9AEC0893 /* QuickSpecBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9205A105DC9E30506AA5795C4F462BEB /* QuickSpecBase.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F69B8C60FD55D72500EC5D5BD5F42659 /* Quick-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 50EBD69E65575EB0D2CA0D9B6C7E7670 /* Quick-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F76AFB65208672C4001A427B /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E607254ABAD3CAE1A58DD2ABB30DDED /* Wendy.xcdatamodeld */; };
+		F741E1E320867BDA00E4059D /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E607254ABAD3CAE1A58DD2ABB30DDED /* Wendy.xcdatamodeld */; };
 		F81332D1B5741120BC5DC7858123C551 /* _PendingTasksFactory+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD043D39D65CBA6ED1076967A4368F5 /* _PendingTasksFactory+Extensions.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FAAD171A8213AF6FF83809CC945B6A8D /* BeAnInstanceOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C935C66668E203F7EC8D0BE42AB3E7B /* BeAnInstanceOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FB433A84B0A557CD5E5948A8B6705024 /* DSL.h in Headers */ = {isa = PBXBuildFile; fileRef = F45459DC1AB5F893654714105C69C96E /* DSL.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1584,7 +1584,7 @@
 				05E9458A7C4D7C1C6D166846D53DC556 /* CoreDataManager.swift in Sources */,
 				7FF09FBE25DB19165D09E01A99351CC7 /* LogUtil.swift in Sources */,
 				9E77F04AF4425E58EB6A88F974A7F8CD /* PendingTask+Extensions.swift in Sources */,
-				F76AFB65208672C4001A427B /* Wendy.xcdatamodeld in Sources */,
+				F741E1E320867BDA00E4059D /* Wendy.xcdatamodeld in Sources */,
 				AD902F9B1714DFC4B66359C3682662DF /* PendingTask.swift in Sources */,
 				BC02C487FE917E442F2240F6DD4F3FBB /* PendingTaskError+Extensions.swift in Sources */,
 				A72E67C6498072BF2FF3F2D8AD582886 /* PendingTaskError.swift in Sources */,
@@ -2025,7 +2025,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Wendy/Wendy.modulemap";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levibostian.Wendy;
 				PRODUCT_MODULE_NAME = Wendy;
 				PRODUCT_NAME = Wendy;
 				SDKROOT = iphoneos;
@@ -2139,7 +2138,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Wendy/Wendy.modulemap";
-				PRODUCT_BUNDLE_IDENTIFIER = com.levibostian.Wendy;
 				PRODUCT_MODULE_NAME = Wendy;
 				PRODUCT_NAME = Wendy;
 				SDKROOT = iphoneos;
@@ -2213,6 +2211,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
@@ -2341,6 +2340,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_VERSION = 4.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;

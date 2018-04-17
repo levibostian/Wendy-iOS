@@ -34,6 +34,19 @@ Restart XCode if it is currently open on your machine.
 
 Then, the next time you open XCode and go to "New file", you will see a section called "Wendy" with file templates inside! 
 
+## Building
+
+Follow the steps below to compile the Wendy project on your machine for contributing!
+
+* Open up the `Example/Wendy.xcworkspace` in XCode. 
+* Navigate to: `Pods > Development Pods > Wendy > Resources > Wendy.xcdatamodeld` in the project navigator, select `Wendy.xcdatamodeld`. In XCode, select `View > Utilities > Show file inspector` from the menu. In the sidebar on the right that shows up, make sure that the target membership for this `Wendy.xcdatamodeld` file is correct:
+
+![](assets/core_data_model_compile_target.png)
+
+* In the project explorer, select the `Pods` target. Then, select the `Pods` project. Lastly, select `Build settings`. Type in the search bar, `SWIFT_V`. You will see the `Swift Language Version` is set to `Unspecified`. Select the dropdown and select `Swift 4.1`. 
+* Select the `Wendy_Example` scheme that is shared in the project. 
+* Compile the project in XCode. 
+
 ## Author
 
 Levi Bostian, levi.bostian@gmail.com
