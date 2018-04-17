@@ -1,4 +1,4 @@
-# Wendy-iOS
+# Wendy
 
 [![CI Status](http://img.shields.io/travis/Levi Bostian/Wendy-iOS.svg?style=flat)](https://travis-ci.org/Levi Bostian/Wendy-iOS)
 [![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
@@ -17,7 +17,7 @@ Wendy-iOS is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Wendy-iOS'
+pod 'Wendy'
 ```
 
 ## Intall template files

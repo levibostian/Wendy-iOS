@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Wendy'
-  s.version          = '0.1.0'
+  s.version          = '0.1.0-alpha'
   s.summary          = 'Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.'
 
 # This description is used to generate tags and improve search results.
@@ -32,16 +32,16 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'Wendy-iOS/Classes/**/*'
+  s.source_files = 'Wendy/Classes/**/*'
   
   s.resource_bundles = {
-    'Wendy-iOS' => ['Wendy-iOS/Assets/**/*.{xcdatamodeld,xcdatamodel}']
+    'Wendy' => ['Wendy/Assets/**/*.{xcdatamodeld,xcdatamodel}']
   }
 
-// I may run some bash scripts here in the future for running after the cocoapod is installed, but for now I will give the user the option of running it manually for privacy.
-//  def s.post_install(target)
-//    // TODO run bash script to install templates.
-//  end
+# I may run some bash scripts here in the future for running after the cocoapod is installed, but for now I will give the user the option of running it manually for privacy.
+#  def s.post_install(target)
+#    // TODO run bash script to install templates.
+#  end
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'CoreData'

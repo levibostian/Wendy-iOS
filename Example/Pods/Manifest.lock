@@ -12,7 +12,7 @@ PODS:
     - Nimble (~> 7.0)
   - Quick (1.2.0)
   - SnapKit (4.0.0)
-  - Wendy (0.1.0)
+  - Wendy (0.1.0-alpha)
 
 DEPENDENCIES:
   - FBSnapshotTestCase (~> 2.1.4)
@@ -22,9 +22,17 @@ DEPENDENCIES:
   - SnapKit (~> 4.0.0)
   - Wendy (from `../`)
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - FBSnapshotTestCase
+    - Nimble
+    - Nimble-Snapshots
+    - Quick
+    - SnapKit
+
 EXTERNAL SOURCES:
   Wendy:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
@@ -32,8 +40,8 @@ SPEC CHECKSUMS:
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
-  Wendy: 9c663edc0edcb1ac34babd2a6c526491e2c2272d
+  Wendy: 36e56113adb2381d79218a79b193283d320681c9
 
-PODFILE CHECKSUM: be6a90a90a1f4de41be86d7b6d891864f13b5b6b
+PODFILE CHECKSUM: 25066fb62f517191757cac6d58361e5e20276882
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.0

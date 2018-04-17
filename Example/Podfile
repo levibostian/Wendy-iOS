@@ -5,11 +5,11 @@ inhibit_all_warnings!
 
 platform :ios, '9.3'
 
-target 'Wendy-iOS_Example' do
+target 'Wendy_Example' do
   pod 'Wendy', :path => '../'
   pod 'SnapKit', '~> 4.0.0'
 
-  target 'Wendy-iOS_Tests' do
+  target 'Wendy_Tests' do
     inherit! :search_paths
 
     pod 'Quick', '~> 1.2.0'

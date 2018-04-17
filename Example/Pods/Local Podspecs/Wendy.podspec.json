@@ -1,6 +1,6 @@
 {
   "name": "Wendy",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "summary": "Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.",
   "description": "Wendy is an iOS library designed to help you make your app offline-first. Use Wendy to define sync tasks, then Wendy will run those tasks periodically to keep your app's device offline data in sync with it's online remote storage.\n\nWendy is a FIFO task runner. You give it tasks, one by one, it persists those tasks to storage, then when Wendy has determined it's a good time for your task to run, it will call your task's sync function to perform a sync. If your user's device is online and has a good amount of battery, Wendy goes through all of the tasks available one by one running them to succeed or fail and try again.",
   "homepage": "https://github.com/levibostian/Wendy-iOS",
@@ -13,15 +13,15 @@
   },
   "source": {
     "git": "https://github.com/levibostian/Wendy-iOS.git",
-    "tag": "0.1.0"
+    "tag": "0.1.0-alpha"
   },
   "platforms": {
     "ios": "8.0"
   },
-  "source_files": "Wendy-iOS/Classes/**/*",
+  "source_files": "Wendy/Classes/**/*",
   "resource_bundles": {
-    "Wendy-iOS": [
-      "Wendy-iOS/Assets/**/*.{xcdatamodeld,xcdatamodel}"
+    "Wendy": [
+      "Wendy/Assets/**/*.{xcdatamodeld,xcdatamodel}"
     ]
   },
   "frameworks": "CoreData"
