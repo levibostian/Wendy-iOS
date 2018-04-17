@@ -58,6 +58,16 @@ internal class PendingTasksManager {
         return pendingTasks.first!.id == taskId
     }
     
+    internal func getRandomTaskForTag(_ tag: String) throws -> PendingTask? {
+        let context = CoreDataManager.shared.viewContext
+        
+        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
+        pendingTaskFetchRequest.predicate = NSPredicate(format: "(tag == %@)", tag)
+        
+        let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
+        return pendingTasks.first?.pendingTask
+    }
+    
     internal func getAllTasks() -> [PendingTask] {
         let viewContext = CoreDataManager.shared.viewContext
         let pendingTaskFactory = Wendy.shared.pendingTasksFactory

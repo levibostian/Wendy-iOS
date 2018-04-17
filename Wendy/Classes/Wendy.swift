@@ -58,6 +58,14 @@ public class Wendy {
     public final func addTask(_ pendingTask: PendingTask, resolveErrorIfTaskExists: Bool = true) throws -> Double {
         _ = self.pendingTasksFactory.getTaskAssertPopulated(tag: pendingTask.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late!
         
+        // We enforce a best practice here.
+        if let similarTask = try PendingTasksManager.shared.getRandomTaskForTag(pendingTask.tag) {
+            if similarTask.groupId == nil && pendingTask.groupId != nil ||
+                similarTask.groupId != nil && pendingTask.groupId == nil {
+                fatalError("All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. ")
+            }
+        }
+        
         if let existingPendingTask = try PendingTasksManager.shared.getExistingTask(pendingTask) {
             if try doesErrorExist(taskId: existingPendingTask.id) && resolveErrorIfTaskExists {
                 try resolveError(taskId: existingPendingTask.id)
