@@ -18,6 +18,7 @@ class AddGroceryListItemPendingTask: PendingTask {
     var groupId: String?
     var tag: String = AddGroceryListItemPendingTask.pendingTaskRunnerTag
     var manuallyRun: Bool = false
+    var createdAt: Date?
 
     convenience init(groceryListItemName: String) {
         self.init()

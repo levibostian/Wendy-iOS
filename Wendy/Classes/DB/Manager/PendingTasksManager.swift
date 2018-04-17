@@ -52,6 +52,7 @@ internal class PendingTasksManager {
         
         let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
         pendingTaskFetchRequest.predicate = NSPredicate(format: "groupId == %@", persistedPendingTask.groupId!)
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.createdAt), ascending: true)]
         
         let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
         return pendingTasks.first!.id == taskId
@@ -156,6 +157,16 @@ internal class PendingTasksManager {
         }
     }
     
+    internal func sendPendingTaskToEndOfTheLine(_ taskId: Double) throws {
+        guard let persistedPendingTask = try getTaskByTaskId(taskId) else {
+            return
+        }
+        
+        let context = CoreDataManager.shared.viewContext
+        persistedPendingTask.setValue(Date(), forKey: "createdAt")
+        try context.save()
+    }
+    
     internal func deletePendingTaskError(_ taskId: Double) throws -> Bool {
         let context = CoreDataManager.shared.viewContext
         if let persistedPendingTaskError = try getTaskByTaskId(taskId)?.error {
@@ -178,7 +189,6 @@ internal class PendingTasksManager {
         
         let predicates = keyValues.map { NSPredicate(format: $0.key, $0.value) }
         pendingTaskFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.id), ascending: true)]
         
         let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
         return pendingTasks.count
@@ -196,7 +206,7 @@ internal class PendingTasksManager {
         
         let predicates = keyValues.map { NSPredicate(format: $0.key, $0.value) }
         pendingTaskFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.id), ascending: true)]
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.createdAt), ascending: true)]
 
         let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
         if pendingTasks.isEmpty { return nil }

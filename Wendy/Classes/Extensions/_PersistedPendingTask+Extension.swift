@@ -31,7 +31,7 @@ internal extension PersistedPendingTask {
         self.groupId = pendingTask.groupId
         self.tag = pendingTask.tag
         self.manuallyRun = pendingTask.manuallyRun
-        self.createdAt = Date()
+        self.createdAt = Date() // Very important. This determines the sort order of when tasks run by the task runner. createdAt needs to be set by Wendy internally and only modified by Wendy under certain circumstances.
 
         self.id = PendingTasksUtil.getNextPendingTaskId()
     }

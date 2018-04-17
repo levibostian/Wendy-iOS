@@ -14,6 +14,13 @@ internal extension PendingTask {
         self.dataId = from.dataId
         self.manuallyRun = from.manuallyRun
         self.groupId = from.groupId
+        self.createdAt = from.createdAt!
+    }
+    
+    // Using instead of Equatable protocol because Swift does not allow a protocol inherit another protocol *and* I don't want the subclass to inherit Equatable, I just want to internally.
+    internal func equals(_ other: PendingTask) -> Bool {
+        return self.tag == other.tag &&
+            self.dataId == other.dataId
     }
 
 }

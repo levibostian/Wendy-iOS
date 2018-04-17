@@ -61,9 +61,12 @@ public class Wendy {
         if let existingPendingTask = try PendingTasksManager.shared.getExistingTask(pendingTask) {
             if try doesErrorExist(taskId: existingPendingTask.id) && resolveErrorIfTaskExists {
                 try resolveError(taskId: existingPendingTask.id)
+                return existingPendingTask.id
             }
-            
-            return existingPendingTask.id
+            if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(pendingTask) {
+                PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
+                return existingPendingTask.id
+            }
         }
 
         let addedPendingTask: PendingTask = try PendingTasksManager.shared.insertPendingTask(pendingTask)
