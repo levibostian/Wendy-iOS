@@ -50,7 +50,7 @@ internal class PendingTasksRunner {
     
     fileprivate var lastSuccessfulOrFailedTaskId: Double = 0
     fileprivate var failedTasksGroups: [String] = []
-    internal var currentlyRunningTask: PendingTask?
+    internal var currentlyRunningTask: PersistedPendingTask?
     
     // I created a separate class for running a single pending task simply as a wrapper to the function runPendingTask(taskId).
     // this function is very important to have it run in a synchronized way and to enforce that, I need to make sure it uses a DispatchQueue to run all of it's callers requests. So, I created this class to make sure I don't make the mistake of accidently calling this `runPendingTask(taskId)` function inside of the `PendingTasksRunner` without following my rule of *this function must run in a synchonized way!* (I already made this mistake....)
@@ -83,7 +83,7 @@ internal class PendingTasksRunner {
             self.runTaskDispatchGroup.enter()
             var runTaskResult: PendingTasksRunnerJobRunResult!
             
-            guard let persistedPendingTaskId: Double = try! PendingTasksManager.shared.getTaskByTaskId(taskId)?.id else {
+            guard let persistedPendingTask: PersistedPendingTask = try! PendingTasksManager.shared.getTaskByTaskId(taskId) else {
                 runTaskResult = PendingTasksRunnerJobRunResult.taskDoesNotExist
                 
                 self.runTaskDispatchGroup.leave()
@@ -109,7 +109,7 @@ internal class PendingTasksRunner {
             }
             
             PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
-            PendingTasksRunner.shared.currentlyRunningTask = taskToRun
+            PendingTasksRunner.shared.currentlyRunningTask = persistedPendingTask
             
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")

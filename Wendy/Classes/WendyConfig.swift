@@ -25,7 +25,7 @@ public class WendyConfig {
 
         // The task runner could be running this task right now and because it takes a while potentially to run a task, I need to notify the listener here. This should be the only use case to handle here, running of a task.
         let taskRunner: PendingTasksRunner = PendingTasksRunner.shared
-        if taskRunner.currentlyRunningTask?.taskId == taskId {
+        if taskRunner.currentlyRunningTask?.id == taskId {
             listener.running(taskId: taskId)
         }
     }

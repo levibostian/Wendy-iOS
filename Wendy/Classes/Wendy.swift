@@ -60,21 +60,22 @@ public class Wendy {
         
         // We enforce a best practice here.
         if let similarTask = try PendingTasksManager.shared.getRandomTaskForTag(pendingTask.tag) {
-            if similarTask.groupId == nil && pendingTask.groupId != nil ||
-                similarTask.groupId != nil && pendingTask.groupId == nil {
-                fatalError("All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. ")
+            if similarTask.groupId == nil && pendingTask.groupId != nil {
+                fatalError("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
+            }
+            if similarTask.groupId != nil && pendingTask.groupId == nil {
+                fatalError("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
             }
         }
         
         if let existingPendingTask = try PendingTasksManager.shared.getExistingTask(pendingTask) {
             if try doesErrorExist(taskId: existingPendingTask.id) && resolveErrorIfTaskExists {
                 try resolveError(taskId: existingPendingTask.id)
-                return existingPendingTask.id
             }
-            if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(pendingTask) {
+            if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(existingPendingTask) {
                 PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
-                return existingPendingTask.id
             }
+            return existingPendingTask.id
         }
 
         let addedPendingTask: PendingTask = try PendingTasksManager.shared.insertPendingTask(pendingTask)
