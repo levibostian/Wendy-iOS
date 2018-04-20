@@ -135,8 +135,6 @@ internal class PendingTasksRunner {
                 }
                 
                 LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
-                WendyConfig.logTaskComplete(taskToRun, successful: successful)
-                
                 if PendingTasksUtil.rerunCurrentlyRunningPendingTask {
                     LogUtil.d("Task: \(taskToRun.describe()) is set to re-run. Not deleting it.")
                     try! PendingTasksManager.shared.sendPendingTaskToEndOfTheLine(taskToRun.taskId!)
@@ -145,6 +143,8 @@ internal class PendingTasksRunner {
                     try! PendingTasksManager.shared.deleteTask(taskId)
                 }
                 PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
+                
+                WendyConfig.logTaskComplete(taskToRun, successful: successful)
                 
                 runTaskResult = PendingTasksRunnerJobRunResult.successful
                 
@@ -228,12 +228,14 @@ internal class PendingTasksRunner {
         
         internal func scheduleRunAllTasks(filter: RunAllTasksFilter?) {
             runPendingTasksDispatchQueue.async {
+                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(try! PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
                 PendingTasksRunner.shared.runAllTasks(filter: filter)
             }
         }
         
         internal func scheduleRunAllTasksWait(filter: RunAllTasksFilter?) -> PendingTasksRunnerResult {
             return runPendingTasksDispatchQueue.sync { () -> PendingTasksRunnerResult in
+                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(try! PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
                 return PendingTasksRunner.shared.runAllTasks(filter: filter)
             }
         }

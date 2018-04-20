@@ -219,7 +219,7 @@
 		F53EA811FB78BE695B1E81D6D07CAD67 /* Quick.h in Headers */ = {isa = PBXBuildFile; fileRef = E2E2F1F1428F11A6495D3ED78194FA3A /* Quick.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F6578F8564F2E1FC8B97B63F9AEC0893 /* QuickSpecBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AF896337607C77C0EC96C9B6F89D5F /* QuickSpecBase.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F69B8C60FD55D72500EC5D5BD5F42659 /* Quick-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DE5FBF677A8FDB63E90D678E2363D55E /* Quick-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F7994BCB208A6273000F9194 /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 53825EB8E884B5E79A77B8F7AD9D9A23 /* Wendy.xcdatamodeld */; };
+		F7584178208A7074009A88DC /* Wendy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 53825EB8E884B5E79A77B8F7AD9D9A23 /* Wendy.xcdatamodeld */; };
 		F7E13F8F5A9F0245EBD77674C01F4B33 /* WendyConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20BADC1B34D0F73B3A40D61DE6EB7A1 /* WendyConfig.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FA9ED19B30447D64D40C03EFB2EC4DD4 /* _PersistedPendingTask+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43163E562EFEBA4A19447A2DD138F0B /* _PersistedPendingTask+Extension.swift */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FAAD171A8213AF6FF83809CC945B6A8D /* BeAnInstanceOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE5E6469EF8C9CB60FAE05599A9914B /* BeAnInstanceOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1800,7 +1800,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1BDC98269578733BCF5A19E6A5AF9B45 /* _BundleExtensions.swift in Sources */,
-				F7994BCB208A6273000F9194 /* Wendy.xcdatamodeld in Sources */,
+				F7584178208A7074009A88DC /* Wendy.xcdatamodeld in Sources */,
 				DA44C0FB5096C20848142B886865AEFA /* _PendingTask+Extensions.swift in Sources */,
 				1B6FD65744EF57CDEF3C4182F699D645 /* _PendingTaskError+Extensions.swift in Sources */,
 				180AF03B066307C8A5D57E9A704866D1 /* _PendingTasksFactory+Extensions.swift in Sources */,

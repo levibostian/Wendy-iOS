@@ -17,7 +17,6 @@ class PendingTaskStatusUILabel: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.text = "Not running"
         self.numberOfLines = 0
         
         self.setNeedsUpdateConstraints()
@@ -37,6 +36,8 @@ class PendingTaskStatusUILabel: UILabel {
     }
     
     func setPendingTask(_ task: PendingTask) {
+        self.text = "Not running"
+        
         WendyConfig.addTaskStatusListenerForTask(task.taskId!, listener: self)
     }
     

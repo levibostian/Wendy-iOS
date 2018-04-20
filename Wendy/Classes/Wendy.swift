@@ -144,7 +144,11 @@ public class Wendy {
      * You do not need to use this function. But you should use it if there is a scenario when a [PendingTask] could be deleted and your code tries to perform an action on it. Race conditions are real and we do keep them in mind. But if your code *should* be following best practices, then we should throw exceptions instead to get you to fix your code.
      */
     internal func assertPendingTaskExists(_ taskId: Double) throws -> PendingTask {
-        return try PendingTasksManager.shared.getPendingTaskTaskById(taskId).require(hint: "Task with id: \(taskId) does not exist.")
+        let pendingTask: PendingTask? = try PendingTasksManager.shared.getPendingTaskTaskById(taskId)
+        if pendingTask == nil {
+            Fatal.preconditionFailure("Task with id: \(taskId) does not exist.")
+        }
+        return pendingTask!
     }
 
     public final func runTasks(filter: RunAllTasksFilter?) {
@@ -196,8 +200,8 @@ public class Wendy {
     }
 
     public struct WendyUIBackgroundFetchResult {
-        let taskRunnerResult: PendingTasksRunnerResult
-        let backgroundFetchResult: UIBackgroundFetchResult
+        public let taskRunnerResult: PendingTasksRunnerResult
+        public let backgroundFetchResult: UIBackgroundFetchResult
     }
     
 }

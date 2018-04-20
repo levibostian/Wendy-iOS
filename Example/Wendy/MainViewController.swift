@@ -255,7 +255,13 @@ extension MainViewController: TaskRunnerListener {
     }
 
     func taskComplete(_ task: PendingTask, successful: Bool) {
-        self.populateWendyPendingTasks()
+        if successful {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.populateWendyPendingTasks()
+            }
+        } else {
+            self.populateWendyPendingTasks()
+        }
     }
 
     func runningTask(_ task: PendingTask) {

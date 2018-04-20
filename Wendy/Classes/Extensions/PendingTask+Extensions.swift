@@ -13,8 +13,11 @@ public extension PendingTask {
         let taskIdString: String = (self.taskId != nil) ? String(describing: self.taskId!) : "none"
         let dataIdString: String = (self.dataId != nil) ? String(describing: self.dataId!) : "none"
         let groupIdString: String = (self.groupId != nil) ? String(describing: self.groupId!) : "none"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM-dd-yyyy HH:mm:ss Z"
+        let createdAtString: String = (self.createdAt != nil) ? dateFormatter.string(from: self.createdAt!) : "none"
         
-        return "taskId: \(taskIdString) dataId: \(dataIdString) manuallyRun: \(self.manuallyRun) groupId: \(groupIdString)"
+        return "taskId: \(taskIdString) dataId: \(dataIdString) manuallyRun: \(self.manuallyRun) groupId: \(groupIdString) createdAt: \(createdAtString)"
     }
 
     public func addTaskStatusListenerForTask(listener: PendingTaskStatusListener) {

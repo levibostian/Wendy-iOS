@@ -28,7 +28,7 @@ class AddGroceryListItemPendingTask: PendingTask {
     }
 
     func isReadyToRun() -> Bool {
-        let canRunTask = drand48() > 0.5
+        let canRunTask = drand48() > 0.2
         return canRunTask
     }
 
