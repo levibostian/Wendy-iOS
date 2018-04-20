@@ -27,7 +27,6 @@
     import AppKit
 #endif
 
-
 #if os(iOS) || os(tvOS)
     @available(iOS 9.0, *)
     public typealias ConstraintLayoutGuide = UILayoutGuide

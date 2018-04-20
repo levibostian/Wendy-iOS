@@ -6,14 +6,12 @@
 //
 
 import Foundation
+import Require
 
 internal extension PendingTasksFactory {
 
     internal func getTaskAssertPopulated(tag: String) -> PendingTask {
-        guard let pendingTask = try self.getTask(tag: tag) else {
-            fatalError("You forgot to add \(tag) to your \(String(describing: PendingTasksFactory.self))")
-        }
-        return pendingTask
+        return self.getTask(tag: tag).require(hint: "You forgot to add \(tag) to your \(String(describing: PendingTasksFactory.self))")
     }
 
 }

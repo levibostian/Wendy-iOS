@@ -21,6 +21,55 @@ class MainViewController: UIViewController {
         return view
     }()
 
+    fileprivate let groupTextField: UITextField = {
+        let view = UITextField()
+        view.placeholder = "group id"
+        view.borderStyle = UITextBorderStyle.line
+        return view
+    }()
+
+    fileprivate let manuallyRunSwitch: UISwitch = {
+        let view = UISwitch()
+        view.setOn(false, animated: false)
+        return view
+    }()
+
+    fileprivate let manuallyRunSwitchLabel: UILabel = {
+        let view = UILabel()
+        view.text = "Manually run task"
+        return view
+    }()
+
+    fileprivate lazy var manuallyRunViewsStackView: UIStackView = { [unowned self] in
+        let view = UIStackView(arrangedSubviews: [self.manuallyRunSwitch, self.manuallyRunSwitchLabel])
+        view.alignment = .leading
+        view.distribution = .fill
+        view.spacing = 8.0
+        view.axis = .horizontal
+        return view
+    }()
+
+    fileprivate let automaticallyRunWendySwitch: UISwitch = {
+        let view = UISwitch()
+        view.setOn(false, animated: false)
+        return view
+    }()
+
+    fileprivate let automaticallyRunWendySwitchLabel: UILabel = {
+        let view = UILabel()
+        view.text = "Wendy automatically run tasks"
+        return view
+    }()
+
+    fileprivate lazy var automaticallyRunWendyViewsStackView: UIStackView = { [unowned self] in
+        let view = UIStackView(arrangedSubviews: [self.automaticallyRunWendySwitch, self.automaticallyRunWendySwitchLabel])
+        view.alignment = .leading
+        view.distribution = .fill
+        view.spacing = 8.0
+        view.axis = .horizontal
+        return view
+    }()
+
     fileprivate let addTaskButton: UIButton = {
         let view = UIButton()
         view.setTitle("Add task", for: UIControlState.normal)
@@ -35,24 +84,28 @@ class MainViewController: UIViewController {
         return view
     }()
 
-    fileprivate let buttonsStackView: UIStackView = {
-        let view = UIStackView()
+    fileprivate lazy var buttonsStackView: UIStackView = { [unowned self] in
+        let view = UIStackView(arrangedSubviews: [self.addTaskButton, self.runAllTasksButton])
         view.alignment = .leading
         view.distribution = .fill
         view.axis = .horizontal
         return view
     }()
 
-    fileprivate let textFieldStackView: UIStackView = {
-        let view = UIStackView()
+    fileprivate lazy var textFieldStackView: UIStackView = { [unowned self] in
+        let view = UIStackView(arrangedSubviews: [self.dataTextField, self.groupTextField, self.manuallyRunViewsStackView, self.automaticallyRunWendyViewsStackView, self.buttonsStackView])
         view.alignment = .leading
         view.distribution = .fillEqually
+        view.spacing = 8.0
         view.axis = .vertical
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
     fileprivate let pendingTaskTableView: UITableView = {
         let view = UITableView()
+        view.estimatedRowHeight = 360.0
+        view.rowHeight = UITableViewAutomaticDimension
         return view
     }()
 
@@ -68,15 +121,8 @@ class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
 
         WendyConfig.addTaskRunnerListener(self)
-
-        self.textFieldStackView.addArrangedSubview(dataTextField)
-
-        self.buttonsStackView.addArrangedSubview(addTaskButton)
-        self.buttonsStackView.addArrangedSubview(runAllTasksButton)
-        self.textFieldStackView.addArrangedSubview(buttonsStackView)
 
         self.view.addSubview(textFieldStackView)
         self.view.addSubview(pendingTaskTableView)
@@ -91,6 +137,9 @@ class MainViewController: UIViewController {
         self.addTaskButton.addTarget(self, action: #selector(MainViewController.addTaskButtonPressed(_:)), for: .touchUpInside)
         self.runAllTasksButton.addTarget(self, action: #selector(MainViewController.runAllTasksButtonPressed(_:)), for: .touchUpInside)
 
+        self.automaticallyRunWendySwitch.addTarget(self, action: #selector(automaticallyRunWendySwitchPressed(_:)), for: .touchUpInside)
+        self.automaticallyRunWendySwitch.setOn(WendyConfig.automaticallyRunTasks, animated: false)
+
         self.pendingTaskTableView.delegate = self
         self.pendingTaskTableView.dataSource = self
         self.pendingTaskTableView.register(PendingTaskTableViewCell.self, forCellReuseIdentifier: String(describing: PendingTaskTableViewCell.self))
@@ -101,15 +150,20 @@ class MainViewController: UIViewController {
         Wendy.shared.runTasks(filter: nil)
     }
 
+    @objc func automaticallyRunWendySwitchPressed(_ sender: Any) {
+        WendyConfig.automaticallyRunTasks = self.automaticallyRunWendySwitch.isOn
+    }
+
     @objc func addTaskButtonPressed(_ sender: Any) {
         guard let dataTextEntered = self.dataTextField.text, dataTextEntered.count > 0 else {
             let alert = UIAlertController(title: "Enter text for data id", message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Ok", style: .cancel) { action in })
+            alert.addAction(UIAlertAction(title: "Ok", style: .cancel) { _ in })
             self.present(alert, animated: true, completion: nil)
             return
         }
+        let groupId: String? = (self.groupTextField.text!.isEmpty) ? nil : self.groupTextField.text
 
-        try! _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered))
+        try! _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, manuallyRun: self.manuallyRunSwitch.isOn, groupId: groupId)) // swiftlint:disable:this force_try
     }
 
     override func updateViewConstraints() {
@@ -117,7 +171,6 @@ class MainViewController: UIViewController {
             didSetupConstraints = true
 
             self.buttonsStackView.snp.makeConstraints({ (make) in
-                make.top.equalTo(self.dataTextField.snp.bottom)
                 make.width.equalToSuperview()
             })
             self.textFieldStackView.snp.makeConstraints({ (make) in
@@ -129,11 +182,12 @@ class MainViewController: UIViewController {
                     make.top.equalToSuperview()
                 }
             })
-            self.dataTextField.snp.makeConstraints({ (make) in
-                make.leading.equalToSuperview()
-                make.trailing.equalToSuperview()
-                make.top.equalToSuperview()
-            })
+            for textField in [self.dataTextField, self.groupTextField] {
+                textField.snp.makeConstraints({ (make) in
+                    make.leading.equalToSuperview()
+                    make.trailing.equalToSuperview()
+                })
+            }
             self.pendingTaskTableView.snp.makeConstraints({ (make) in
                 make.top.equalTo(self.textFieldStackView.snp.bottom)
                 make.leading.equalToSuperview()
@@ -161,24 +215,37 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PendingTaskTableViewCell.self), for: indexPath) as! PendingTaskTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PendingTaskTableViewCell.self), for: indexPath) as! PendingTaskTableViewCell // swiftlint:disable:this force_cast
         let item = self.wendyPendingTasks[indexPath.row]
         cell.populateCell(item, position: indexPath.row)
+        cell.delegate = self
         return cell
     }
 
 }
 
-extension MainViewController: TaskRunnerListener {
+extension MainViewController: PendingTaskTableViewCellDelegate {
     
+    func resolveErrorButtonPressed(_ task: PendingTask) {
+        _ = try! Wendy.shared.resolveError(taskId: task.taskId!)
+    }
+    
+    func runTaskButtonPressed(_ task: PendingTask) {
+        try! Wendy.shared.runTask(task.taskId!)
+    }
+    
+}
+
+extension MainViewController: TaskRunnerListener {
+
     func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
         self.populateWendyPendingTasks()
     }
-    
+
     func errorResolved(_ task: PendingTask) {
         self.populateWendyPendingTasks()
     }
-    
+
     func allTasksComplete() {
         self.populateWendyPendingTasks()
     }
@@ -200,4 +267,3 @@ extension MainViewController: TaskRunnerListener {
     }
 
 }
-

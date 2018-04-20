@@ -16,7 +16,7 @@ class ExampleAppPendingTasksFactory: PendingTasksFactory {
         case AddGroceryListItemPendingTask.pendingTaskRunnerTag:
             return AddGroceryListItemPendingTask()
         default:
-            fatalError("Cannot find task for tag: \(tag)")
+            preconditionFailure("Cannot find task for tag: \(tag)")
         }
     }
 

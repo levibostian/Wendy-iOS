@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
 
         Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory())
-        WendyConfig.addTaskRunnerListener(self)
+        WendyConfig.debug = true
 
         self.window?.rootViewController = MainViewController()
         self.window?.makeKeyAndVisible()
@@ -47,34 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-}
-
-extension AppDelegate: TaskRunnerListener {
-    
-    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {        
-    }
-    
-    func errorResolved(_ task: PendingTask) {
-    }
-
-    func allTasksComplete() {
-    }
-
-    func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
-
-    }
-
-    func taskComplete(_ task: PendingTask, successful: Bool) {
-
-    }
-
-    func runningTask(_ task: PendingTask) {
-    }
-
-    func newTaskAdded(_ task: PendingTask) {
-        print("Task added: \(task.dataId)")
     }
 
 }

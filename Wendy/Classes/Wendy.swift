@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Require
 
 public class Wendy {
 
@@ -15,10 +16,7 @@ public class Wendy {
     // Setup this way to (1) be a less buggy way of making sure that the developer remembers to call setup() to populate pendingTasksFactory.
     fileprivate var initPendingTasksFactory: PendingTasksFactory?
     internal lazy var pendingTasksFactory: PendingTasksFactory = {
-        guard let tasksFactory = initPendingTasksFactory else {
-            fatalError("You forgot to setup Wendy via Wendy.setup()")
-        }
-        return tasksFactory
+        return initPendingTasksFactory.require(hint: "You forgot to setup Wendy via Wendy.setup()")
     }()
 
     private init() {
@@ -61,10 +59,10 @@ public class Wendy {
         // We enforce a best practice here.
         if let similarTask = try PendingTasksManager.shared.getRandomTaskForTag(pendingTask.tag) {
             if similarTask.groupId == nil && pendingTask.groupId != nil {
-                fatalError("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
+                try! Fatal.preconditionFailure("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
             }
             if similarTask.groupId != nil && pendingTask.groupId == nil {
-                fatalError("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
+                try! Fatal.preconditionFailure("Cannot add task: \(pendingTask.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTask.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
             }
         }
         
@@ -120,13 +118,13 @@ public class Wendy {
         let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
         
         if try !self.isTaskAbleToManuallyRun(taskId) {
-            fatalError("Task is not able to manually run. Task: \(pendingTask.describe())")
+            try! Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
         }
         
         PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId)
     }
     
-    func isTaskAbleToManuallyRun(_ taskId: Double) throws -> Bool {
+    public final func isTaskAbleToManuallyRun(_ taskId: Double) throws -> Bool {
         let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
     
         if pendingTask.groupId == nil {
@@ -146,10 +144,7 @@ public class Wendy {
      * You do not need to use this function. But you should use it if there is a scenario when a [PendingTask] could be deleted and your code tries to perform an action on it. Race conditions are real and we do keep them in mind. But if your code *should* be following best practices, then we should throw exceptions instead to get you to fix your code.
      */
     internal func assertPendingTaskExists(_ taskId: Double) throws -> PendingTask {
-        guard let existingTask = try PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
-            fatalError("Task with id: \(taskId) does not exist.")
-        }
-        return existingTask
+        return try PendingTasksManager.shared.getPendingTaskTaskById(taskId).require(hint: "Task with id: \(taskId) does not exist.")
     }
 
     public final func runTasks(filter: RunAllTasksFilter?) {

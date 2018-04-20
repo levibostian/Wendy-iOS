@@ -53,8 +53,8 @@ public extension PendingTask {
     }
     
     internal func assertHasBeenAddedToWendy() throws -> Double {
-        if (!hasBeenAddedToWendy()) {
-            fatalError("Cannot record error for your task because it has not been added to Wendy (aka: the task id has not been set yet)")
+        if !hasBeenAddedToWendy() {
+            Fatal.preconditionFailure("Cannot record error for your task because it has not been added to Wendy (aka: the task id has not been set yet)")
         }
     
         return self.taskId!

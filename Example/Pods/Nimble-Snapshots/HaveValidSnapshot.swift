@@ -8,7 +8,7 @@ import UIKit
     var snapshotObject: UIView? { get }
 }
 
-extension UIViewController : Snapshotable {
+extension UIViewController: Snapshotable {
     public var snapshotObject: UIView? {
         self.beginAppearanceTransition(true, animated: false)
         self.endAppearanceTransition()
@@ -16,7 +16,7 @@ extension UIViewController : Snapshotable {
     }
 }
 
-extension UIView : Snapshotable {
+extension UIView: Snapshotable {
     public var snapshotObject: UIView? {
         return self
     }

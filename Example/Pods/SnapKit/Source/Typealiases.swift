@@ -34,4 +34,3 @@ import Foundation
     typealias LayoutAttribute = NSLayoutConstraint.Attribute
     typealias LayoutPriority = NSLayoutConstraint.Priority
 #endif
-

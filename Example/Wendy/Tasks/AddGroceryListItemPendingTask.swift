@@ -20,9 +20,11 @@ class AddGroceryListItemPendingTask: PendingTask {
     var manuallyRun: Bool = false
     var createdAt: Date?
 
-    convenience init(groceryListItemName: String) {
+    convenience init(groceryListItemName: String, manuallyRun: Bool, groupId: String?) {
         self.init()
         self.dataId = groceryListItemName
+        self.manuallyRun = manuallyRun
+        self.groupId = groupId
     }
 
     func isReadyToRun() -> Bool {
@@ -38,4 +40,3 @@ class AddGroceryListItemPendingTask: PendingTask {
     }
 
 }
-

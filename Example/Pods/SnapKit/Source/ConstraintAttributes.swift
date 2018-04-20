@@ -27,9 +27,8 @@
     import AppKit
 #endif
 
+internal struct ConstraintAttributes: OptionSet {
 
-internal struct ConstraintAttributes : OptionSet {
-    
     internal init(rawValue: UInt) {
         self.rawValue = rawValue
     }
@@ -39,18 +38,18 @@ internal struct ConstraintAttributes : OptionSet {
     internal init(nilLiteral: ()) {
         self.rawValue = 0
     }
-    
+
     internal private(set) var rawValue: UInt
     internal static var allZeros: ConstraintAttributes { return self.init(0) }
     internal static func convertFromNilLiteral() -> ConstraintAttributes { return self.init(0) }
     internal var boolValue: Bool { return self.rawValue != 0 }
-    
+
     internal func toRaw() -> UInt { return self.rawValue }
     internal static func fromRaw(_ raw: UInt) -> ConstraintAttributes? { return self.init(raw) }
     internal static func fromMask(_ raw: UInt) -> ConstraintAttributes { return self.init(raw) }
-    
+
     // normal
-    
+
     internal static var none: ConstraintAttributes { return self.init(0) }
     internal static var left: ConstraintAttributes { return self.init(1) }
     internal static var top: ConstraintAttributes {  return self.init(2) }
@@ -63,47 +62,47 @@ internal struct ConstraintAttributes : OptionSet {
     internal static var centerX: ConstraintAttributes { return self.init(256) }
     internal static var centerY: ConstraintAttributes { return self.init(512) }
     internal static var lastBaseline: ConstraintAttributes { return self.init(1024) }
-    
+
     @available(iOS 8.0, OSX 10.11, *)
     internal static var firstBaseline: ConstraintAttributes { return self.init(2048) }
-    
+
     @available(iOS 8.0, *)
     internal static var leftMargin: ConstraintAttributes { return self.init(4096) }
-    
+
     @available(iOS 8.0, *)
     internal static var rightMargin: ConstraintAttributes { return self.init(8192) }
-    
+
     @available(iOS 8.0, *)
     internal static var topMargin: ConstraintAttributes { return self.init(16384) }
-    
+
     @available(iOS 8.0, *)
     internal static var bottomMargin: ConstraintAttributes { return self.init(32768) }
-    
+
     @available(iOS 8.0, *)
     internal static var leadingMargin: ConstraintAttributes { return self.init(65536) }
-    
+
     @available(iOS 8.0, *)
     internal static var trailingMargin: ConstraintAttributes { return self.init(131072) }
-    
+
     @available(iOS 8.0, *)
     internal static var centerXWithinMargins: ConstraintAttributes { return self.init(262144) }
-    
+
     @available(iOS 8.0, *)
     internal static var centerYWithinMargins: ConstraintAttributes { return self.init(524288) }
-    
+
     // aggregates
-    
+
     internal static var edges: ConstraintAttributes { return self.init(15) }
     internal static var size: ConstraintAttributes { return self.init(192) }
     internal static var center: ConstraintAttributes { return self.init(768) }
-    
+
     @available(iOS 8.0, *)
     internal static var margins: ConstraintAttributes { return self.init(61440) }
-    
+
     @available(iOS 8.0, *)
     internal static var centerWithinMargins: ConstraintAttributes { return self.init(786432) }
-    
-    internal var layoutAttributes:[LayoutAttribute] {
+
+    internal var layoutAttributes: [LayoutAttribute] {
         var attrs = [LayoutAttribute]()
         if (self.contains(ConstraintAttributes.left)) {
             attrs.append(.left)
@@ -138,7 +137,7 @@ internal struct ConstraintAttributes : OptionSet {
         if (self.contains(ConstraintAttributes.lastBaseline)) {
             attrs.append(.lastBaseline)
         }
-        
+
         #if os(iOS) || os(tvOS)
             if (self.contains(ConstraintAttributes.firstBaseline)) {
                 attrs.append(.firstBaseline)
@@ -168,7 +167,7 @@ internal struct ConstraintAttributes : OptionSet {
                 attrs.append(.centerYWithinMargins)
             }
         #endif
-        
+
         return attrs
     }
 }

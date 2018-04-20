@@ -1,0 +1,6 @@
+framework module Require {
+  umbrella header "Require-umbrella.h"
+
+  export *
+  module * { export * }
+}

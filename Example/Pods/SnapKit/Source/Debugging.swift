@@ -28,34 +28,34 @@
 #endif
 
 public extension LayoutConstraint {
-    
+
     override public var description: String {
         var description = "<"
-        
+
         description += descriptionForObject(self)
-        
+
         if let firstItem = conditionalOptional(from: self.firstItem) {
             description += " \(descriptionForObject(firstItem))"
         }
-        
+
         if self.firstAttribute != .notAnAttribute {
             description += ".\(descriptionForAttribute(self.firstAttribute))"
         }
-        
+
         description += " \(descriptionForRelation(self.relation))"
-        
+
         if let secondItem = self.secondItem {
             description += " \(descriptionForObject(secondItem))"
         }
-        
+
         if self.secondAttribute != .notAnAttribute {
             description += ".\(descriptionForAttribute(self.secondAttribute))"
         }
-        
+
         if self.multiplier != 1.0 {
             description += " * \(self.multiplier)"
         }
-        
+
         if self.secondAttribute == .notAnAttribute {
             description += " \(self.constant)"
         } else {
@@ -65,16 +65,16 @@ public extension LayoutConstraint {
                 description += " - \(abs(self.constant))"
             }
         }
-        
+
         if self.priority.rawValue != 1000.0 {
             description += " ^\(self.priority)"
         }
-        
+
         description += ">"
-        
+
         return description
     }
-    
+
 }
 
 private func descriptionForRelation(_ relation: LayoutRelation) -> String {
@@ -140,9 +140,9 @@ private func conditionalOptional<T>(from object: T) -> Optional<T> {
 private func descriptionForObject(_ object: AnyObject) -> String {
     let pointerDescription = String(format: "%p", UInt(bitPattern: ObjectIdentifier(object)))
     var desc = ""
-    
+
     desc += type(of: object).description()
-    
+
     if let object = object as? ConstraintView {
         desc += ":\(object.snp.label() ?? pointerDescription)"
     } else if let object = object as? LayoutConstraint {
@@ -150,11 +150,11 @@ private func descriptionForObject(_ object: AnyObject) -> String {
     } else {
         desc += ":\(pointerDescription)"
     }
-    
+
     if let object = object as? LayoutConstraint, let file = object.constraint?.sourceLocation.0, let line = object.constraint?.sourceLocation.1 {
         desc += "@\((file as NSString).lastPathComponent)#\(line)"
     }
-    
+
     desc += ""
     return desc
 }

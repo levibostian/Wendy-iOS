@@ -99,7 +99,7 @@ internal class PendingTasksRunner {
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            if let _ = try! PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) {
+            if try! PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) != nil {
                 WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.unresolvedRecordedError)
                 LogUtil.d("Task: \(taskToRun.describe()) has a unresolved error recorded. Skipping it.")
                 runTaskResult = PendingTasksRunnerJobRunResult.skippedUnresolvedRecordedError
@@ -128,7 +128,7 @@ internal class PendingTasksRunner {
                 if try! Wendy.shared.doesErrorExist(taskId: taskToRun.taskId!) {
                     let errorMessage = "Task: \(taskToRun.describe()) successfully ran, but you have unresolved errors. You should resolve the previously recorded error to Wendy, or return false for running your task."
                     if WendyConfig.strict {
-                        fatalError(errorMessage)
+                        Fatal.preconditionFailure(errorMessage)
                     } else {
                         LogUtil.w(errorMessage)
                     }
@@ -177,7 +177,7 @@ internal class PendingTasksRunner {
         }
         
         lastSuccessfulOrFailedTaskId = nextTaskToRun.taskId!
-        if (nextTaskToRun.groupId != nil && failedTasksGroups.contains(nextTaskToRun.groupId!)) {
+        if nextTaskToRun.groupId != nil && failedTasksGroups.contains(nextTaskToRun.groupId!) {
             WendyConfig.logTaskSkipped(nextTaskToRun, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
             LogUtil.d("Task: \(nextTaskToRun.describe()) belongs to a failing group of tasks. Skipping it.")
             return self.runAllTasks(filter: filter, result: result)

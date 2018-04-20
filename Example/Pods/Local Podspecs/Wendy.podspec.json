@@ -24,5 +24,10 @@
       "Wendy/Assets/**/*.{xcdatamodeld,xcdatamodel}"
     ]
   },
-  "frameworks": "CoreData"
+  "frameworks": "CoreData",
+  "dependencies": {
+    "Require": [
+      "~> 2.0.0"
+    ]
+  }
 }

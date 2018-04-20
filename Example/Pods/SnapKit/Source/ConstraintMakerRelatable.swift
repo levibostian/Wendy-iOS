@@ -27,28 +27,27 @@
     import AppKit
 #endif
 
-
 public class ConstraintMakerRelatable {
-    
+
     internal let description: ConstraintDescription
-    
+
     internal init(_ description: ConstraintDescription) {
         self.description = description
     }
-    
+
     internal func relatedTo(_ other: ConstraintRelatableTarget, relation: ConstraintRelation, file: String, line: UInt) -> ConstraintMakerEditable {
         let related: ConstraintItem
         let constant: ConstraintConstantTarget
-        
+
         if let other = other as? ConstraintItem {
             guard other.attributes == ConstraintAttributes.none ||
                   other.attributes.layoutAttributes.count <= 1 ||
                   other.attributes.layoutAttributes == self.description.attributes.layoutAttributes ||
                   other.attributes == .edges && self.description.attributes == .margins ||
                   other.attributes == .margins && self.description.attributes == .edges else {
-                fatalError("Cannot constraint to multiple non identical attributes. (\(file), \(line))");
+                fatalError("Cannot constraint to multiple non identical attributes. (\(file), \(line))")
             }
-            
+
             related = other
             constant = 0.0
         } else if let other = other as? ConstraintView {
@@ -63,7 +62,7 @@ public class ConstraintMakerRelatable {
         } else {
             fatalError("Invalid constraint. (\(file), \(line))")
         }
-        
+
         let editable = ConstraintMakerEditable(self.description)
         editable.description.sourceLocation = (file, line)
         editable.description.relation = relation
@@ -71,12 +70,12 @@ public class ConstraintMakerRelatable {
         editable.description.constant = constant
         return editable
     }
-    
+
     @discardableResult
     public func equalTo(_ other: ConstraintRelatableTarget, _ file: String = #file, _ line: UInt = #line) -> ConstraintMakerEditable {
         return self.relatedTo(other, relation: .equal, file: file, line: line)
     }
-    
+
     @discardableResult
     public func equalToSuperview(_ file: String = #file, _ line: UInt = #line) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {
@@ -84,12 +83,12 @@ public class ConstraintMakerRelatable {
         }
         return self.relatedTo(other, relation: .equal, file: file, line: line)
     }
-    
+
     @discardableResult
     public func lessThanOrEqualTo(_ other: ConstraintRelatableTarget, _ file: String = #file, _ line: UInt = #line) -> ConstraintMakerEditable {
         return self.relatedTo(other, relation: .lessThanOrEqual, file: file, line: line)
     }
-    
+
     @discardableResult
     public func lessThanOrEqualToSuperview(_ file: String = #file, _ line: UInt = #line) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {
@@ -97,12 +96,12 @@ public class ConstraintMakerRelatable {
         }
         return self.relatedTo(other, relation: .lessThanOrEqual, file: file, line: line)
     }
-    
+
     @discardableResult
     public func greaterThanOrEqualTo(_ other: ConstraintRelatableTarget, _ file: String = #file, line: UInt = #line) -> ConstraintMakerEditable {
         return self.relatedTo(other, relation: .greaterThanOrEqual, file: file, line: line)
     }
-    
+
     @discardableResult
     public func greaterThanOrEqualToSuperview(_ file: String = #file, line: UInt = #line) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {

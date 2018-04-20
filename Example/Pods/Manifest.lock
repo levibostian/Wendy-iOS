@@ -11,8 +11,11 @@ PODS:
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
   - Quick (1.2.0)
+  - Require (2.0.0)
   - SnapKit (4.0.0)
-  - Wendy (0.1.0-alpha)
+  - SwiftLint (0.25.1)
+  - Wendy (0.1.0-alpha):
+    - Require (~> 2.0.0)
 
 DEPENDENCIES:
   - FBSnapshotTestCase (~> 2.1.4)
@@ -20,6 +23,7 @@ DEPENDENCIES:
   - Nimble-Snapshots (~> 6.3.0)
   - Quick (~> 1.2.0)
   - SnapKit (~> 4.0.0)
+  - SwiftLint
   - Wendy (from `../`)
 
 SPEC REPOS:
@@ -28,7 +32,9 @@ SPEC REPOS:
     - Nimble
     - Nimble-Snapshots
     - Quick
+    - Require
     - SnapKit
+    - SwiftLint
 
 EXTERNAL SOURCES:
   Wendy:
@@ -39,9 +45,11 @@ SPEC CHECKSUMS:
   Nimble: 7f5a9c447a33002645a071bddafbfb24ea70e0ac
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+  Require: f93abc18dda985f665465cf027cea7166455fb28
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
-  Wendy: 36e56113adb2381d79218a79b193283d320681c9
+  SwiftLint: ce933681be10c3266e82576dad676fa815a602e9
+  Wendy: 34dc2ad7e9ad71ba8ced9ee1513203ed6f574999
 
-PODFILE CHECKSUM: 25066fb62f517191757cac6d58361e5e20276882
+PODFILE CHECKSUM: b972613b818038d7e0a7516a42d0aec87457f14f
 
 COCOAPODS: 1.5.0

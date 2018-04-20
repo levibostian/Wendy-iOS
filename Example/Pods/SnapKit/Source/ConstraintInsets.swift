@@ -27,7 +27,6 @@
     import AppKit
 #endif
 
-
 #if os(iOS) || os(tvOS)
     public typealias ConstraintInsets = UIEdgeInsets
 #else

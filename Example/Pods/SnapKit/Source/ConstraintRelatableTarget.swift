@@ -27,7 +27,6 @@
     import AppKit
 #endif
 
-
 public protocol ConstraintRelatableTarget {
 }
 

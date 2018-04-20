@@ -9,6 +9,7 @@
 import Foundation
 import CoreData
 import UIKit
+import Require
 
 internal class PendingTasksManager {
     
@@ -21,7 +22,7 @@ internal class PendingTasksManager {
      * Note: If you attempt to add a [PendingTask] instance of a [PendingTask] that already exists, your request will be ignored and not written to the database.
      */
     internal func insertPendingTask( _ task: PendingTask) throws -> PendingTask {
-        if task.tag.isEmpty { fatalError("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }
+        if task.tag.isEmpty { Fatal.preconditionFailure("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }
         
         if let existingPendingTask = try self.getExistingTask(task) {
             return existingPendingTask.pendingTask
@@ -41,11 +42,9 @@ internal class PendingTasksManager {
      * fatal error if task by taskId does not belong to any groups.
      */
     internal func isTaskFirstTaskOfGroup(_ taskId: Double) throws -> Bool {
-        guard let persistedPendingTask: PersistedPendingTask = try self.getTaskByTaskId(taskId) else {
-            fatalError("Task with id: \(taskId) does not exist.")
-        }
+        let persistedPendingTask: PersistedPendingTask = try self.getTaskByTaskId(taskId).require(hint: "Task with id: \(taskId) does not exist.")
         if persistedPendingTask.groupId == nil {
-            fatalError("Task: \(persistedPendingTask.pendingTask.describe()) does not belong to a group.")
+            try! Fatal.preconditionFailure("Task: \(persistedPendingTask.pendingTask.describe()) does not belong to a group.")
         }
         
         let context = CoreDataManager.shared.viewContext
@@ -209,7 +208,7 @@ internal class PendingTasksManager {
         
         let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
         
-        var keyValues = ["id > %f": lastSuccessfulOrFailedTaskId as NSObject, "manuallyRun = %@": NSNumber(booleanLiteral: false) as NSObject]
+        var keyValues = ["id > %@": lastSuccessfulOrFailedTaskId as NSObject, "manuallyRun = %@": NSNumber(booleanLiteral: false) as NSObject]
         if let filterByGroupId = filter?.groupId {
             keyValues["groupId = %@"] = filterByGroupId as NSObject
         }

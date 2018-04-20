@@ -17,6 +17,8 @@
 		F73E96E4206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E96E3206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift */; };
 		F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */; };
 		F76AFB662086738A001A427B /* Pods_Wendy_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66F6204D5DD1D3F56DFF7D6D /* Pods_Wendy_Example.framework */; };
+		F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */; };
+		F79F54B9208A568F007DC508 /* PendingTaskResolveErrorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */; };
 		F7B45F1C206E983F00BC547D /* Wendy.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F7B45F1B206E983F00BC547D /* Wendy.podspec */; };
 		F7E45BA82086697B00CEC32B /* Wendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E45BA72086697B00CEC32B /* Wendy.framework */; };
 		F7EED056206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EED055206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift */; };
@@ -60,6 +62,8 @@
 		F70927A5206E970700FC7C04 /* Wendy_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Wendy_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F73E96E3206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleAppPendingTasksFactory.swift; sourceTree = "<group>"; };
 		F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskTableViewCell.swift; sourceTree = "<group>"; };
+		F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskStatusUILabel.swift; sourceTree = "<group>"; };
+		F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskResolveErrorButton.swift; sourceTree = "<group>"; };
 		F7B45F1B206E983F00BC547D /* Wendy.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Wendy.podspec; path = ../Wendy.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F7B45F1E206E985000BC547D /* Wendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Wendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7B45F20206E985400BC547D /* Pods_Wendy_iOS_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Wendy_iOS_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +137,7 @@
 		607FACD21AFB9204008FA782 /* Example for Wendy-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				F79F54B5208A5413007DC508 /* UIView */,
 				F73E96E7206EE79700E7306F /* UITableViewCell */,
 				F7EED054206967A600F2B7AF /* Tasks */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
@@ -207,6 +212,15 @@
 			path = UITableViewCell;
 			sourceTree = "<group>";
 		};
+		F79F54B5208A5413007DC508 /* UIView */ = {
+			isa = PBXGroup;
+			children = (
+				F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */,
+				F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */,
+			);
+			path = UIView;
+			sourceTree = "<group>";
+		};
 		F7EED054206967A600F2B7AF /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +242,7 @@
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				1613A2D496492D5E9251D734 /* [CP] Embed Pods Frameworks */,
+				F79F54B4208A355F007DC508 /* Swiftlint */,
 			);
 			buildRules = (
 			);
@@ -328,11 +343,13 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Wendy_Example/Pods-Wendy_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Require/Require.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Wendy/Wendy.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Require.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Wendy.framework",
 			);
@@ -401,6 +418,20 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		F79F54B4208A355F007DC508 /* Swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Swiftlint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -408,9 +439,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F79F54B9208A568F007DC508 /* PendingTaskResolveErrorButton.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */,
 				F73E96E4206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift in Sources */,
 				F7EED056206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift in Sources */,
 			);

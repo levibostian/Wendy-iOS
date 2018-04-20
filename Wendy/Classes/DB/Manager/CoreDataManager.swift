@@ -5,6 +5,7 @@
  //  Created by Levi Bostian on 11/13/17.
  //  Copyright © 2017 Curiosity IO. All rights reserved.
  //
+ 
  import Foundation
  import CoreData
 
