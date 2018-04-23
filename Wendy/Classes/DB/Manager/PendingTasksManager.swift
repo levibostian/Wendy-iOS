@@ -18,15 +18,8 @@ internal class PendingTasksManager {
     private init() {
     }
     
-    /**
-     * Note: If you attempt to add a [PendingTask] instance of a [PendingTask] that already exists, your request will be ignored and not written to the database.
-     */
     internal func insertPendingTask( _ task: PendingTask) throws -> PendingTask {
         if task.tag.isEmpty { Fatal.preconditionFailure("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }
-        
-        if let existingPendingTask = try self.getExistingTask(task) {
-            return existingPendingTask.pendingTask
-        }
         
         let persistedPendingTask: PersistedPendingTask = PersistedPendingTask(pendingTask: task)
         CoreDataManager.shared.saveContext()
@@ -80,7 +73,10 @@ internal class PendingTasksManager {
         return pendingTasks
     }
     
+    // Note: Make sure to only call this for PendingTasks that do not have a group. Groups are handled differently and there *can* be 1+ of the same pendingtask so this function is bug prone.
     internal func getExistingTask(_ task: PendingTask) throws -> PersistedPendingTask? {
+        if task.groupId != nil { Fatal.preconditionFailure("You cannot try and get an existing task for tasks in a group.") }
+        
         let context = CoreDataManager.shared.viewContext
         
         let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
@@ -201,6 +197,17 @@ internal class PendingTasksManager {
         
         let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
         return pendingTasks.count
+    }
+    
+    internal func getLastPendingTaskInGroup(_ groupId: String) throws -> PersistedPendingTask? {
+        let context = CoreDataManager.shared.viewContext
+        
+        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
+        pendingTaskFetchRequest.predicate = NSPredicate(format: "groupId == %@", groupId)
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.createdAt), ascending: false)]
+        
+        let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
+        return pendingTasks.first
     }
 
     internal func getNextTaskToRun(_ lastSuccessfulOrFailedTaskId: Double, filter: RunAllTasksFilter?) throws -> PendingTask? {
