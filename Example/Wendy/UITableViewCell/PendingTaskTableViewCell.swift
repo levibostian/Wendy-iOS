@@ -127,7 +127,6 @@ class PendingTaskTableViewCell: UITableViewCell {
                 make.bottom.equalToSuperview()
             })
             buttonsStackView.snp.makeConstraints({ (make) in
-                make.width.equalToSuperview().multipliedBy(0.4)
                 make.leading.equalTo(labelsStackView.snp.trailing)
                 make.trailing.equalToSuperview()
                 make.top.equalToSuperview()

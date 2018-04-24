@@ -11,7 +11,7 @@ public extension PendingTaskError {
     
     public func describe() -> String {
         let errorIdString: String = (self.errorId != nil) ? String(describing: self.errorId!) : "none"
-        let errorMessageString: String = (self.errorMessaage != nil) ? String(describing: self.errorMessaage!) : "none"
+        let errorMessageString: String = (self.errorMessage != nil) ? String(describing: self.errorMessage!) : "none"
         
         return "errorId: \(errorIdString) errorMessage: \(errorMessageString) pendingTask: \(self.pendingTask.describe())"
     }

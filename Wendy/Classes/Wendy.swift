@@ -71,12 +71,15 @@ public class Wendy {
             
             if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(sampleExistingPendingTask) {
                 PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
+                return sampleExistingPendingTask.id
             }
             if try doesErrorExist(taskId: sampleExistingPendingTask.id) && resolveErrorIfTaskExists {
                 for pendingTask in existingPendingTasks {
                     try resolveError(taskId: pendingTask.id)
                 }
+                return sampleExistingPendingTask.id
             }
+            // If a PendingTask belongs to a group, but is *not* the last item in the group, we want to insert it into CoreData. Let is pass through below to add itself.
             if let groupId = pendingTaskToAdd.groupId {
                 if let lastPendingTaskInGroup = try PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
                     return lastPendingTaskInGroup.id
@@ -190,18 +193,25 @@ public class Wendy {
     public final func resolveError(taskId: Double) throws -> Bool {
         let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
         
-        if try PendingTasksManager.shared.deletePendingTaskError(taskId) {
-            WendyConfig.logErrorResolved(pendingTask)
-            LogUtil.d("Task: \(pendingTask.describe()) successfully resolved previously recorded error.")
-            
-            if let pendingTaskGroupId = pendingTask.groupId {
-                self.runTasks(filter: RunAllTasksFilter(groupId: pendingTaskGroupId))
-            } else {
-                try self.runTaskAutomaticallyIfAbleTo(pendingTask)
+        if let existingPendingTasks = try PendingTasksManager.shared.getExistingTasks(pendingTask), !existingPendingTasks.isEmpty {
+            for existingTask in existingPendingTasks {
+                let existingTaskPendingTask = existingTask.pendingTask
+                
+                if try PendingTasksManager.shared.deletePendingTaskError(existingTask.id) {
+                    WendyConfig.logErrorResolved(existingTaskPendingTask)
+                    LogUtil.d("Task: \(existingTaskPendingTask.describe()) successfully resolved previously recorded error.")
+                    
+                    if let pendingTaskGroupId = existingTaskPendingTask.groupId {
+                        self.runTasks(filter: RunAllTasksFilter(groupId: pendingTaskGroupId))
+                    } else {
+                        try self.runTaskAutomaticallyIfAbleTo(existingTaskPendingTask)
+                    }
+                    
+                    return true
+                }
             }
-            
-            return true
         }
+        
         return false
     }
     

@@ -12,12 +12,12 @@ public class PendingTaskError {
     let pendingTask: PendingTask!
     let createdAt: Date?
     let errorId: String?
-    let errorMessaage: String?
+    let errorMessage: String?
     
     internal init(pendingTask: PendingTask, errorId: String?, errorMessage: String?, createdAt: Date) {
         self.pendingTask = pendingTask
         self.errorId = errorId
-        self.errorMessaage = errorMessage
+        self.errorMessage = errorMessage
         self.createdAt = nil
     }
     

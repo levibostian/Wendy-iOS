@@ -28,6 +28,9 @@ public class WendyConfig {
         if taskRunner.currentlyRunningTask?.id == taskId {
             listener.running(taskId: taskId)
         }
+        if let latestError = try! Wendy.shared.getLatestError(taskId: taskId) {
+            listener.errorRecorded(taskId: taskId, errorMessage: latestError.errorMessage, errorId: latestError.errorId)
+        }
     }
     internal class func getTaskStatusListenerForTask(_ taskId: Double) -> [WeakReferencePendingTaskStatusListener] {
         return taskStatusListeners.filter({ (listener) -> Bool in
