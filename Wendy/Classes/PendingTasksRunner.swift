@@ -89,7 +89,7 @@ internal class PendingTasksRunner {
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            let taskToRun: PendingTask = try! PendingTasksManager.shared.getPendingTaskTaskById(taskId)!
+            let taskToRun: PendingTask = persistedPendingTask.pendingTask
             
             if !taskToRun.isReadyToRun() {
                 WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
@@ -137,7 +137,7 @@ internal class PendingTasksRunner {
                 LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
                 if PendingTasksUtil.rerunCurrentlyRunningPendingTask {
                     LogUtil.d("Task: \(taskToRun.describe()) is set to re-run. Not deleting it.")
-                    try! PendingTasksManager.shared.sendPendingTaskToEndOfTheLine(taskToRun.taskId!)
+                    try! PendingTasksManager.shared.updatePlaceInLine(taskToRun.taskId!, createdAt: PendingTasksUtil.getRerunCurrentlyRunningPendingTaskTime()!)
                 } else {
                     LogUtil.d("Deleting task: \(taskToRun.describe()).")
                     try! PendingTasksManager.shared.deleteTask(taskId)

@@ -73,21 +73,25 @@ internal class PendingTasksManager {
         return pendingTasks
     }
     
-    // Note: Make sure to only call this for PendingTasks that do not have a group. Groups are handled differently and there *can* be 1+ of the same pendingtask so this function is bug prone.
-    internal func getExistingTask(_ task: PendingTask) throws -> PersistedPendingTask? {
-        if task.groupId != nil { Fatal.preconditionFailure("You cannot try and get an existing task for tasks in a group.") }
-        
+    internal func getExistingTasks(_ task: PendingTask) throws -> [PersistedPendingTask]? {
         let context = CoreDataManager.shared.viewContext
         
         let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
-        if let taskDataId = task.dataId {
-            pendingTaskFetchRequest.predicate = NSPredicate(format: "(dataId == %@) AND (tag == %@)", taskDataId, task.tag)
-        } else {
-            pendingTaskFetchRequest.predicate = NSPredicate(format: "(tag == %@)", task.tag)
+        
+        var keyValues = ["tag = %@": task.tag as NSObject]
+        if let groupId = task.groupId {
+            keyValues["groupId = %@"] = groupId as NSObject
+        }
+        if let dataId = task.dataId {
+            keyValues["dataId = %@"] = dataId as NSObject
         }
         
+        let predicates = keyValues.map { NSPredicate(format: $0.key, $0.value) }
+        pendingTaskFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.createdAt), ascending: true)]
+        
         let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
-        return pendingTasks.first
+        return (pendingTasks.isEmpty) ? nil : pendingTasks
     }
     
     internal func insertPendingTaskError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) throws -> PendingTaskError? {
@@ -162,13 +166,13 @@ internal class PendingTasksManager {
         }
     }
     
-    internal func sendPendingTaskToEndOfTheLine(_ taskId: Double) throws {
+    internal func updatePlaceInLine(_ taskId: Double, createdAt: Date) throws {
         guard let persistedPendingTask = try getTaskByTaskId(taskId) else {
             return
         }
         
         let context = CoreDataManager.shared.viewContext
-        persistedPendingTask.setValue(Date(), forKey: "createdAt")
+        persistedPendingTask.setValue(createdAt, forKey: "createdAt")
         try context.save()
     }
     

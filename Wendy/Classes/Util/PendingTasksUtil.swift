@@ -22,15 +22,27 @@ internal class PendingTasksUtil {
     
     internal static var rerunCurrentlyRunningPendingTask: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: rerunCurrentlyRunningPendingTaskKey)
+            return UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey) > 0
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: rerunCurrentlyRunningPendingTaskKey)
+            if newValue {
+                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: rerunCurrentlyRunningPendingTaskKey)
+            } else {
+                UserDefaults.standard.set(0, forKey: rerunCurrentlyRunningPendingTaskKey)
+            }
         }
     }
     
+    internal class func getRerunCurrentlyRunningPendingTaskTime() -> Date? {
+        guard let timeInternal: Double = UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey), timeInternal > 0 else {
+            return nil
+        }
+        
+        return Date(timeIntervalSince1970: timeInternal)
+    }
+    
     internal class func resetRerunCurrentlyRunningPendingTask() {
-        self.rerunCurrentlyRunningPendingTask = false 
+        self.rerunCurrentlyRunningPendingTask = false
     }
     
 }

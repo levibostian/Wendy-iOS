@@ -66,19 +66,23 @@ public class Wendy {
             }
         }
         
-        if let groupId = pendingTaskToAdd.groupId {
-            if let lastPendingTaskInGroup = try PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
-                return lastPendingTaskInGroup.id
+        if let existingPendingTasks = try PendingTasksManager.shared.getExistingTasks(pendingTaskToAdd), !existingPendingTasks.isEmpty {
+            let sampleExistingPendingTask = existingPendingTasks.last!
+            
+            if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(sampleExistingPendingTask) {
+                PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
             }
-        } else {
-            if let existingPendingTask = try PendingTasksManager.shared.getExistingTask(pendingTaskToAdd) {
-                if try doesErrorExist(taskId: existingPendingTask.id) && resolveErrorIfTaskExists {
-                    try resolveError(taskId: existingPendingTask.id)
+            if try doesErrorExist(taskId: sampleExistingPendingTask.id) && resolveErrorIfTaskExists {
+                for pendingTask in existingPendingTasks {
+                    try resolveError(taskId: pendingTask.id)
                 }
-                if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(existingPendingTask) {
-                    PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
+            }
+            if let groupId = pendingTaskToAdd.groupId {
+                if let lastPendingTaskInGroup = try PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
+                    return lastPendingTaskInGroup.id
                 }
-                return existingPendingTask.id
+            } else {
+                return sampleExistingPendingTask.id
             }
         }
 
