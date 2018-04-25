@@ -9,10 +9,10 @@ osx_image: xcode9.3
 language: swift
 before_install:
 #- gem install cocoapods --pre # update cocoapods to newest version.
-#- pod repo update
+- pod repo update
 install:
   - bundle install
-  - cd Example/ && pod install
+  - (cd Example/ && pod install)
 cache:
   directories:
     - $HOME/.rvm/gems

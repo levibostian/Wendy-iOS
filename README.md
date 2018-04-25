@@ -1,4 +1,3 @@
-[![CI Status](http://img.shields.io/travis/levibostian/Wendy-iOS.svg?style=flat)](https://travis-ci.org/levibostian/Wendy-iOS)
 [![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
 [![License](https://img.shields.io/cocoapods/l/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
 [![Platform](https://img.shields.io/cocoapods/p/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
