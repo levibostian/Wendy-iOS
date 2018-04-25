@@ -1,0 +1,6 @@
+framework module Wendy {
+  umbrella header "Wendy-umbrella.h"
+
+  export *
+  module * { export * }
+}

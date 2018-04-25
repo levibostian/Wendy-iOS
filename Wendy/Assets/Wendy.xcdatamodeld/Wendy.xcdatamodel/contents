@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14133" systemVersion="17E199" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="PersistedPendingTask" representedClassName="PersistedPendingTask" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dataId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="groupId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="manuallyRun" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="tag" attributeType="String" syncable="YES"/>
+        <relationship name="error" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PersistedPendingTaskError" inverseName="pendingTask" inverseEntity="PersistedPendingTaskError" syncable="YES"/>
+    </entity>
+    <entity name="PersistedPendingTaskError" representedClassName="PersistedPendingTaskError" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="errorId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="errorMessage" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="pendingTask" maxCount="1" deletionRule="Nullify" destinationEntity="PersistedPendingTask" inverseName="error" inverseEntity="PersistedPendingTask" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="PersistedPendingTask" positionX="-63" positionY="-18" width="128" height="28"/>
+        <element name="PersistedPendingTaskError" positionX="214" positionY="21" width="128" height="103"/>
+    </elements>
+</model>

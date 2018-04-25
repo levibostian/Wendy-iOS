@@ -1,6 +1,0 @@
-framework module Wendy_iOS {
-  umbrella header "Wendy-iOS-umbrella.h"
-
-  export *
-  module * { export * }
-}

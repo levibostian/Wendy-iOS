@@ -1,14 +1,28 @@
-# references:
-# * http://www.objc.io/issue-6/travis-ci.html
-# * https://github.com/supermarin/xcpretty#usage
+# To verify this file, call `travis lint .travis.yml` with travis-cli gem installed. To install, call `bundle install` in this directory.
+# To make life easier, I made a git commit hook to run this after each commit for reference. Create a file: `.git/hooks/pre-commit` and put inside (without the '#' before the line):
+# echo "----linting .travis.yml----"
+# travis lint .travis.yml
+# exit 0
 
-osx_image: xcode7.3
-language: objective-c
-# cache: cocoapods
-# podfile: Example/Podfile
-# before_install:
-# - gem install cocoapods # Since Travis is not always on latest version
-# - pod install --project-directory=Example
-script:
-- set -o pipefail && xcodebuild test -enableCodeCoverage YES -workspace Example/Wendy-iOS.xcworkspace -scheme Wendy-iOS-Example -sdk iphonesimulator9.3 ONLY_ACTIVE_ARCH=NO | xcpretty
-- pod lib lint
+os: osx
+osx_image: xcode9.3
+language: swift
+before_install:
+#- gem install cocoapods --pre # update cocoapods to newest version.
+- pod repo update
+install:
+  - bundle install
+  - (cd Example/ && pod install)
+cache:
+  directories:
+    - $HOME/.rvm/gems
+    - $HOME/.cocoapods
+
+jobs:
+  include:
+    - stage: danger
+      script: bundle exec danger
+
+stages:
+  - name: danger
+    if: type IN (pull_request)
