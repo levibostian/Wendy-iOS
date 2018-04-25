@@ -53,27 +53,27 @@ public class Wendy {
         return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: backgroundFetchResult)
     }
 
-    public final func addTask(_ pendingTaskToAdd: PendingTask, resolveErrorIfTaskExists: Bool = true) throws -> Double {
+    public final func addTask(_ pendingTaskToAdd: PendingTask, resolveErrorIfTaskExists: Bool = true) -> Double {
         _ = self.pendingTasksFactory.getTaskAssertPopulated(tag: pendingTaskToAdd.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late!
         
         // We enforce a best practice here.
-        if let similarTask = try PendingTasksManager.shared.getRandomTaskForTag(pendingTaskToAdd.tag) {
+        if let similarTask = PendingTasksManager.shared.getRandomTaskForTag(pendingTaskToAdd.tag) {
             if similarTask.groupId == nil && pendingTaskToAdd.groupId != nil {
-                try! Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
+                Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
             }
             if similarTask.groupId != nil && pendingTaskToAdd.groupId == nil {
-                try! Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
+                Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
             }
         }
         
-        if let existingPendingTasks = try PendingTasksManager.shared.getExistingTasks(pendingTaskToAdd), !existingPendingTasks.isEmpty {
+        if let existingPendingTasks = PendingTasksManager.shared.getExistingTasks(pendingTaskToAdd), !existingPendingTasks.isEmpty {
             let sampleExistingPendingTask = existingPendingTasks.last!
             
             if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(sampleExistingPendingTask) {
                 PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
                 return sampleExistingPendingTask.id
             }
-            if try doesErrorExist(taskId: sampleExistingPendingTask.id) && resolveErrorIfTaskExists {
+            if doesErrorExist(taskId: sampleExistingPendingTask.id) && resolveErrorIfTaskExists {
                 for pendingTask in existingPendingTasks {
                     try resolveError(taskId: pendingTask.id)
                 }
@@ -81,7 +81,7 @@ public class Wendy {
             }
             // If a PendingTask belongs to a group, but is *not* the last item in the group, we want to insert it into CoreData. Let is pass through below to add itself.
             if let groupId = pendingTaskToAdd.groupId {
-                if let lastPendingTaskInGroup = try PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
+                if let lastPendingTaskInGroup = PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
                     return lastPendingTaskInGroup.id
                 }
             } else {
@@ -89,7 +89,7 @@ public class Wendy {
             }
         }
 
-        let addedPendingTask: PendingTask = try PendingTasksManager.shared.insertPendingTask(pendingTaskToAdd)
+        let addedPendingTask: PendingTask = PendingTasksManager.shared.insertPendingTask(pendingTaskToAdd)
 
         WendyConfig.logNewTaskAdded(pendingTaskToAdd)
 
@@ -107,7 +107,7 @@ public class Wendy {
      
      Those make this function unique compared to `runTask()` because that function ignores WendyConfig.automaticallyRunTasks *and* if the task.manuallyRun property is set or not.
      */
-    internal func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) throws -> Bool {
+    internal func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) -> Bool {
         if !WendyConfig.automaticallyRunTasks {
             LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(task.describe())")
             return false
@@ -122,28 +122,28 @@ public class Wendy {
         }
         
         LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
-        try self.runTask(task.taskId!)
+        self.runTask(task.taskId!)
         
         return true
     }
 
-    public final func runTask(_ taskId: Double) throws {
-        let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
+    public final func runTask(_ taskId: Double) {
+        let pendingTask: PendingTask = self.assertPendingTaskExists(taskId)
         
-        if try !self.isTaskAbleToManuallyRun(taskId) {
-            try! Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
+        if !self.isTaskAbleToManuallyRun(taskId) {
+            Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
         }
         
         PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId)
     }
     
-    public final func isTaskAbleToManuallyRun(_ taskId: Double) throws -> Bool {
-        let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
+    public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
+        let pendingTask: PendingTask = self.assertPendingTaskExists(taskId)
     
         if pendingTask.groupId == nil {
             return true
         }
-        return try PendingTasksManager.shared.isTaskFirstTaskOfGroup(taskId)
+        return PendingTasksManager.shared.isTaskFirstTaskOfGroup(taskId)
     }
     
     /**
@@ -156,8 +156,8 @@ public class Wendy {
      *
      * You do not need to use this function. But you should use it if there is a scenario when a [PendingTask] could be deleted and your code tries to perform an action on it. Race conditions are real and we do keep them in mind. But if your code *should* be following best practices, then we should throw exceptions instead to get you to fix your code.
      */
-    internal func assertPendingTaskExists(_ taskId: Double) throws -> PendingTask {
-        let pendingTask: PendingTask? = try PendingTasksManager.shared.getPendingTaskTaskById(taskId)
+    internal func assertPendingTaskExists(_ taskId: Double) -> PendingTask {
+        let pendingTask: PendingTask? = PendingTasksManager.shared.getPendingTaskTaskById(taskId)
         if pendingTask == nil {
             Fatal.preconditionFailure("Task with id: \(taskId) does not exist.")
         }
@@ -172,28 +172,28 @@ public class Wendy {
         return PendingTasksManager.shared.getAllTasks()
     }
     
-    public final func recordError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) throws {
-        let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
+    public final func recordError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) {
+        let pendingTask: PendingTask = self.assertPendingTaskExists(taskId)
         
-        try PendingTasksManager.shared.insertPendingTaskError(taskId: taskId, humanReadableErrorMessage: humanReadableErrorMessage, errorId: errorId)
+        PendingTasksManager.shared.insertPendingTaskError(taskId: taskId, humanReadableErrorMessage: humanReadableErrorMessage, errorId: errorId)
         
         WendyConfig.logErrorRecorded(pendingTask, errorMessage: humanReadableErrorMessage, errorId: errorId)
     }
     
-    public final func getLatestError(taskId: Double) throws -> PendingTaskError? {
-        let _: PendingTask = try self.assertPendingTaskExists(taskId)
+    public final func getLatestError(taskId: Double) -> PendingTaskError? {
+        let _: PendingTask = self.assertPendingTaskExists(taskId)
         
-        return try PendingTasksManager.shared.getLatestError(pendingTaskId: taskId)
+        return PendingTasksManager.shared.getLatestError(pendingTaskId: taskId)
     }
     
-    public final func doesErrorExist(taskId: Double) throws -> Bool {
-        return try self.getLatestError(taskId: taskId) != nil
+    public final func doesErrorExist(taskId: Double) -> Bool {
+        return self.getLatestError(taskId: taskId) != nil
     }
     
-    public final func resolveError(taskId: Double) throws -> Bool {
-        let pendingTask: PendingTask = try self.assertPendingTaskExists(taskId)
+    public final func resolveError(taskId: Double) -> Bool {
+        let pendingTask: PendingTask = self.assertPendingTaskExists(taskId)
         
-        if let existingPendingTasks = try PendingTasksManager.shared.getExistingTasks(pendingTask), !existingPendingTasks.isEmpty {
+        if let existingPendingTasks = PendingTasksManager.shared.getExistingTasks(pendingTask), !existingPendingTasks.isEmpty {
             for existingTask in existingPendingTasks {
                 let existingTaskPendingTask = existingTask.pendingTask
                 

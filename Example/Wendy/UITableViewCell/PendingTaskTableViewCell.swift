@@ -107,7 +107,7 @@ class PendingTaskTableViewCell: UITableViewCell {
         self.contentView.addSubview(self.buttonsStackView)
         
         self.runTaskButton.addTarget(self, action: #selector(runTaskButtonPressed(_:)), for: .touchUpInside)
-        self.runTaskButton.isHidden = try! !item.isAbleToManuallyRun()
+        self.runTaskButton.isHidden = !item.isAbleToManuallyRun()
         self.resolveErrorButton.delegate = self
         self.resolveErrorButton.setPendingTask(item)
 

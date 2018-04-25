@@ -28,7 +28,7 @@ public class WendyConfig {
         if taskRunner.currentlyRunningTask?.id == taskId {
             listener.running(taskId: taskId)
         }
-        if let latestError = try! Wendy.shared.getLatestError(taskId: taskId) {
+        if let latestError = Wendy.shared.getLatestError(taskId: taskId) {
             listener.errorRecorded(taskId: taskId, errorMessage: latestError.errorMessage, errorId: latestError.errorId)
         }
     }

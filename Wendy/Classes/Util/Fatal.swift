@@ -15,4 +15,8 @@ internal class Fatal {
         preconditionFailure(message)
     }
     
+    internal class func error(_ message: String, error: NSError) {
+        fatalError("\(message)\nPlease create a GitHub issue for Wendy with this issue (https://github.com/levibostian/Wendy-iOS/issues/new)\n\n Error: \(error), \(error.userInfo)")
+    }
+    
 }

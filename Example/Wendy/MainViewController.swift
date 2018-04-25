@@ -163,7 +163,7 @@ class MainViewController: UIViewController {
         }
         let groupId: String? = (self.groupTextField.text!.isEmpty) ? nil : self.groupTextField.text
 
-        try! _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, manuallyRun: self.manuallyRunSwitch.isOn, groupId: groupId)) // swiftlint:disable:this force_try
+        _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, manuallyRun: self.manuallyRunSwitch.isOn, groupId: groupId))
     }
 
     override func updateViewConstraints() {
@@ -227,11 +227,11 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 extension MainViewController: PendingTaskTableViewCellDelegate {
     
     func resolveErrorButtonPressed(_ task: PendingTask) {
-        _ = try! Wendy.shared.resolveError(taskId: task.taskId!)
+        _ = Wendy.shared.resolveError(taskId: task.taskId!)
     }
     
     func runTaskButtonPressed(_ task: PendingTask) {
-        try! Wendy.shared.runTask(task.taskId!)
+        Wendy.shared.runTask(task.taskId!)
     }
     
 }
