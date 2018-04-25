@@ -15,23 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "Wendy-iOS_Example.app"
-               BlueprintName = "Wendy-iOS_Example"
-               ReferencedContainer = "container:Wendy-iOS.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "Wendy-iOS_Tests.xctest"
-               BlueprintName = "Wendy-iOS_Tests"
-               ReferencedContainer = "container:Wendy-iOS.xcodeproj">
+               BuildableName = "Wendy_Example.app"
+               BlueprintName = "Wendy_Example"
+               ReferencedContainer = "container:Wendy.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "Wendy-iOS_Tests.xctest"
-               BlueprintName = "Wendy-iOS_Tests"
-               ReferencedContainer = "container:Wendy-iOS.xcodeproj">
+               BuildableName = "Wendy_Tests.xctest"
+               BlueprintName = "Wendy_Tests"
+               ReferencedContainer = "container:Wendy.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +43,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "Wendy-iOS_Example.app"
-            BlueprintName = "Wendy-iOS_Example"
-            ReferencedContainer = "container:Wendy-iOS.xcodeproj">
+            BuildableName = "Wendy_Example.app"
+            BlueprintName = "Wendy_Example"
+            ReferencedContainer = "container:Wendy.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "Wendy-iOS_Example.app"
-            BlueprintName = "Wendy-iOS_Example"
-            ReferencedContainer = "container:Wendy-iOS.xcodeproj">
+            BuildableName = "Wendy_Example.app"
+            BlueprintName = "Wendy_Example"
+            ReferencedContainer = "container:Wendy.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -99,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "Wendy-iOS_Example.app"
-            BlueprintName = "Wendy-iOS_Example"
-            ReferencedContainer = "container:Wendy-iOS.xcodeproj">
+            BuildableName = "Wendy_Example.app"
+            BlueprintName = "Wendy_Example"
+            ReferencedContainer = "container:Wendy.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -297,11 +297,6 @@ Wendy is open for pull requests. Check out the [list of issues](https://github.c
 Follow the steps below to compile the Wendy project on your machine for contributing!
 
 * Open up the `Example/Wendy.xcworkspace` in XCode.
-* Navigate to: `Pods > Development Pods > Wendy > Resources > Wendy.xcdatamodeld` in the project navigator, select `Wendy.xcdatamodeld`. In XCode, select `View > Utilities > Show file inspector` from the menu. In the sidebar on the right that shows up, make sure that the target membership for this `Wendy.xcdatamodeld` file is correct:
-
-![](misc/core_data_model_compile_target.png)
-
-* Select the `Wendy_Example` scheme that is shared in the project.
 * Compile the project in XCode.
 
 # Credits
