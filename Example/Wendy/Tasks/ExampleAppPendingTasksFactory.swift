@@ -15,8 +15,7 @@ class ExampleAppPendingTasksFactory: PendingTasksFactory {
         switch tag {
         case AddGroceryListItemPendingTask.pendingTaskRunnerTag:
             return AddGroceryListItemPendingTask()
-        default:
-            preconditionFailure("Cannot find task for tag: \(tag)")
+        default: return nil
         }
     }
 

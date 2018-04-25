@@ -19,7 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
 
         Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory())
+        #if DEBUG
         WendyConfig.debug = true
+        #endif
 
         self.window?.rootViewController = MainViewController()
         self.window?.makeKeyAndVisible()
