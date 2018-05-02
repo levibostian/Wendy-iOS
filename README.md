@@ -1,6 +1,6 @@
-[![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
-[![License](https://img.shields.io/cocoapods/l/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
-[![Platform](https://img.shields.io/cocoapods/p/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
+[![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+[![License](https://img.shields.io/cocoapods/l/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+[![Platform](https://img.shields.io/cocoapods/p/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
 
 # Wendy
 
@@ -8,7 +8,9 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 ![project logo. A picture of a person with long red hair.](misc/wendy_logo.jpg)
 
-[Android version of Wendy here](https://github.com/levibostian/wendy-android)
+[Read the official announcement of Wendy](https://levibostian.com/blog/no-more-excuses-build-offline-apps/) to learn more about what it does and why to use it.
+
+Android developer? [I created an Android version of Wendy too!](https://github.com/levibostian/wendy-android)
 
 ## What is Wendy?
 
@@ -39,10 +41,12 @@ Wendy currently has the following functionality:
 Wendy-iOS is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Wendy', '~> 0.1.0-alpha'
+pod 'Wendy', '~> version-here'
 ```
 
-*Note:* It is recommended to specify the version code in your Podfile (as done above) for Wendy as Wendy is in `alpha` stage of development. The API will more then likely change and have broken changes on releases until beta and stable releases come out. The latest version at this time is: [![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
+(replace `version-here` with [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy))
+
+*Note:* It is recommended to specify the version code in your Podfile (as done above) for Wendy as Wendy is in `alpha` stage of development. The API will more then likely change and have broken changes on releases until beta and stable releases come out. The latest version at this time is: [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
 
 # Getting started
 
