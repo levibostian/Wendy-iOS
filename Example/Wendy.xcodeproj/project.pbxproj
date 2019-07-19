@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F79F7AD75ED795D9AC8BAD8 /* Pods_Wendy_iOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B2B579910304C9F80F1AC42 /* Pods_Wendy_iOS_Tests.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* MainViewController.swift */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -38,7 +37,6 @@
 
 /* Begin PBXFileReference section */
 		05ED0B59CFF4BBB262DA8D69 /* Pods-Wendy_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wendy_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wendy_Tests/Pods-Wendy_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		0B2B579910304C9F80F1AC42 /* Pods_Wendy_iOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wendy_iOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4170B334870A7FBF55FD22C3 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		456152DCDEEC939D384208AE /* Pods-Wendy-iOS_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wendy-iOS_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wendy-iOS_Tests/Pods-Wendy-iOS_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* Wendy_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wendy_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,7 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F79F7AD75ED795D9AC8BAD8 /* Pods_Wendy_iOS_Tests.framework in Frameworks */,
 				A7165EDC5F922A4114BA5EAD /* Pods_Wendy_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -199,7 +196,6 @@
 				F7BA00D9206DA67E00FDB609 /* Wendy_iOS.framework */,
 				F7F01445206AF59F00896E9B /* SnapKit.framework */,
 				EB071B0A3710D27E7EC9CC35 /* Pods_Wendy_iOS_Example.framework */,
-				0B2B579910304C9F80F1AC42 /* Pods_Wendy_iOS_Tests.framework */,
 				66F6204D5DD1D3F56DFF7D6D /* Pods_Wendy_Example.framework */,
 				F8E5425B4B841F6DAC94C636 /* Pods_Wendy_Tests.framework */,
 			);
@@ -350,7 +346,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Wendy_Example/Pods-Wendy_Example-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Wendy_Example/Pods-Wendy_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Require/Require.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Wendy/Wendy.framework",
@@ -363,7 +359,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Wendy_Example/Pods-Wendy_Example-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Wendy_Example/Pods-Wendy_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		4280664A829DBF4EE08A638F /* [CP] Embed Pods Frameworks */ = {
@@ -372,7 +368,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Wendy_Tests/Pods-Wendy_Tests-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Wendy_Tests/Pods-Wendy_Tests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/FBSnapshotTestCase/FBSnapshotTestCase.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble-Snapshots/Nimble_Snapshots.framework",
@@ -387,7 +383,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Wendy_Tests/Pods-Wendy_Tests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Wendy_Tests/Pods-Wendy_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		74E3276D54943B7FBCAA31E1 /* [CP] Check Pods Manifest.lock */ = {

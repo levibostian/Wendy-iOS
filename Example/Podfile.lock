@@ -27,7 +27,7 @@ DEPENDENCIES:
   - Wendy (from `../`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - FBSnapshotTestCase
     - Nimble
     - Nimble-Snapshots
@@ -48,8 +48,8 @@ SPEC CHECKSUMS:
   Require: f93abc18dda985f665465cf027cea7166455fb28
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
   SwiftLint: ce933681be10c3266e82576dad676fa815a602e9
-  Wendy: 1ee69475710b1bf67c3ecc91c79092e5e9e4b2a2
+  Wendy: 24c58f14ddcc96538a2fa1a96abe480280425adb
 
 PODFILE CHECKSUM: b972613b818038d7e0a7516a42d0aec87457f14f
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.7.4
