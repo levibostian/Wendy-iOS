@@ -1,3 +1,7 @@
+## [0.2.0-alpha] - 2019-07-24
+
+Swift5, XCode 10.2 support
+
 ## [0.1.0-alpha] - 2018-04-25
 First public release of Wendy for iOS! 
 
