@@ -1,6 +1,7 @@
-[![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
-[![License](https://img.shields.io/cocoapods/l/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
-[![Platform](https://img.shields.io/cocoapods/p/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
+[![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+[![License](https://img.shields.io/cocoapods/l/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+[![Platform](https://img.shields.io/cocoapods/p/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+![Swift 5.0.x](https://img.shields.io/badge/Swift-5.0.x-orange.svg)
 
 # Wendy
 
@@ -8,7 +9,9 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 ![project logo. A picture of a person with long red hair.](misc/wendy_logo.jpg)
 
-[Android version of Wendy here](https://github.com/levibostian/wendy-android)
+[Read the official announcement of Wendy](https://levibostian.com/blog/no-more-excuses-build-offline-apps/) to learn more about what it does and why to use it.
+
+Android developer? [I created an Android version of Wendy too!](https://github.com/levibostian/wendy-android)
 
 ## What is Wendy?
 
@@ -39,10 +42,12 @@ Wendy currently has the following functionality:
 Wendy-iOS is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'Wendy', '~> 0.1.0-alpha'
+pod 'Wendy', '~> version-here'
 ```
 
-*Note:* It is recommended to specify the version code in your Podfile (as done above) for Wendy as Wendy is in `alpha` stage of development. The API will more then likely change and have broken changes on releases until beta and stable releases come out. The latest version at this time is: [![Version](https://img.shields.io/cocoapods/v/Wendy-iOS.svg?style=flat)](http://cocoapods.org/pods/Wendy-iOS)
+(replace `version-here` with [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy))
+
+*Note:* It is recommended to specify the version code in your Podfile (as done above) for Wendy as Wendy is in `alpha` stage of development. The API will more then likely change and have broken changes on releases until beta and stable releases come out. The latest version at this time is: [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
 
 # Getting started
 
@@ -50,7 +55,7 @@ For this getting started guide, lets work through an example for you to follow a
 
 First, create a `PendingTasksFactory` subclass that stores all of your app's Wendy `PendingTask`s. It's pretty blank to start but we will add more to it later. ([I plan to remove this requirement in the future](https://github.com/levibostian/Wendy-Android/issues/17). PRs welcome 😄)
 
-```
+```swift
 import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
@@ -66,7 +71,7 @@ class GroceryListPendingTasksFactory: PendingTasksFactory {
 
 Add the following code to your `AppDelegate`'s `application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool` function:
 
-```
+```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {  
     Wendy.setup(tasksFactory: GroceryListPendingTasksFactory())
     #if DEBUG
@@ -87,7 +92,7 @@ In our Grocery List app, we want to allow users to create new grocery items. Eve
 
 Let's create our first `PendingTask` subclass for creating new grocery items.
 
-```
+```swift
 import Wendy
 
 class CreateGroceryListItemPendingTask: PendingTask {
@@ -138,7 +143,7 @@ class CreateGroceryListItemPendingTask: PendingTask {
 
 Each time that you create a new subclass of `PendingTask`, you need to add that to the `PendingTasksFactory` you created. Your `GroceryListPendingTasksFactory` should look like this now:
 
-```
+```swift
 import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
@@ -157,7 +162,7 @@ Just about done.
 
 Let's check out the code you wrote in your Grocery List app when your users want to create a new grocery store item in the app.
 
-```
+```swift
 func createNewGroceryStoreItem(itemName: String) {
     // First thing you need to do to make a mobile app offline-first is to save it to the device's storage.
     // Below, we are saving to a `localDatabase`. Whatever that is. It could be whatever you wish. Core Data, Sqlite, Realm, Keychain, NSUserDefaults, whatever you decide to use works. After we save to the database, we probably get an ID back to reference that piece of data in the database. This ID could be the key in NSUserDefaults, the database row ID, it doesn't matter. Simply some way to identify that piece of data *to query later* in your PendingTask.
@@ -207,7 +212,7 @@ In XCode, follow these steps below to enable the background fetch capability for
 
 In your `AppDelegate`, you will now need to run Wendy from the background fetch function. Below is an example of that:
 
-```
+```swift
 func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     let backgroundFetchResult = Wendy.shared.backgroundFetchRunTasks(application, performFetchWithCompletionHandler: completionHandler)
     completionHandler(backgroundFetchResult.backgroundFetchResult)
@@ -230,7 +235,7 @@ Wendy comes with some XCode template files to create `PendingTask`s and `Pending
 
 All you need to do is run this bash script to install the scripts on your machine in the XCode templates directory:
 
-```
+```bash
 ./Pods/Wendy/Templates/install_templates.sh
 ```
 
@@ -254,25 +259,25 @@ Use the class `WendyConfig` to configure the behavior of Wendy.
 
 * Register listeners to Wendy task runner.
 
-```
+```swift
 WendyConfig.addTaskRunnerListener(listener: listener)
 ```
 
 * Register listeners to a specific Wendy `PendingTask`.
 
-```
+```swift
 WendyConfig.addTaskStatusListenerForTask(taskId: pendingTaskId, listener: listener)
 ```
 
 * Have Wendy log debug statements as it's running during development.
 
-```
+```swift
 WendyConfig.debug = true # default is false.
 ```
 
 I recommend doing the following:
 
-```
+```swift
 #if DEBUG
 WendyConfig.debug = true
 #endif

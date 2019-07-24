@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Wendy'
-  s.version          = '0.1.0-alpha'
-  s.swift_version    = '4.1'
+  s.version          = '0.2.0-alpha'
+  s.swift_version    = '5.0'
   s.summary          = 'Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.'
 
 # This description is used to generate tags and improve search results.
@@ -29,8 +29,8 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Levi Bostian' => 'levi.bostian@gmail.com' }
   s.source           = { :git => 'https://github.com/levibostian/Wendy-iOS.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
-  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.1' }
+  s.social_media_url = 'https://twitter.com/levibostian'
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
 
   s.ios.deployment_target = '8.0'
 
