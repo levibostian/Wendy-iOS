@@ -17,14 +17,14 @@ class MainViewController: UIViewController {
     fileprivate let dataTextField: UITextField = {
         let view = UITextField()
         view.placeholder = "data id"
-        view.borderStyle = UITextBorderStyle.line
+        view.borderStyle = UITextField.BorderStyle.line
         return view
     }()
 
     fileprivate let groupTextField: UITextField = {
         let view = UITextField()
         view.placeholder = "group id"
-        view.borderStyle = UITextBorderStyle.line
+        view.borderStyle = UITextField.BorderStyle.line
         return view
     }()
 
@@ -72,14 +72,14 @@ class MainViewController: UIViewController {
 
     fileprivate let addTaskButton: UIButton = {
         let view = UIButton()
-        view.setTitle("Add task", for: UIControlState.normal)
+        view.setTitle("Add task", for: UIControl.State.normal)
         view.setTitleColor(UIColor.blue, for: .normal)
         return view
     }()
 
     fileprivate let runAllTasksButton: UIButton = {
         let view = UIButton()
-        view.setTitle("Run all tasks", for: UIControlState.normal)
+        view.setTitle("Run all tasks", for: UIControl.State.normal)
         view.setTitleColor(UIColor.blue, for: .normal)
         return view
     }()
@@ -105,7 +105,7 @@ class MainViewController: UIViewController {
     fileprivate let pendingTaskTableView: UITableView = {
         let view = UITableView()
         view.estimatedRowHeight = 360.0
-        view.rowHeight = UITableViewAutomaticDimension
+        view.rowHeight = UITableView.automaticDimension
         return view
     }()
 

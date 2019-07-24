@@ -1,6 +1,7 @@
 [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
 [![License](https://img.shields.io/cocoapods/l/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
 [![Platform](https://img.shields.io/cocoapods/p/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+![Swift 5.0.x](https://img.shields.io/badge/Swift-5.0.x-orange.svg)
 
 # Wendy
 
