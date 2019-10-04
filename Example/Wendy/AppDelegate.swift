@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        let backgroundFetchResult = Wendy.shared.backgroundFetchRunTasks(application, performFetchWithCompletionHandler: completionHandler)
+        let backgroundFetchResult = Wendy.shared.performBackgroundFetch()
         completionHandler(backgroundFetchResult.backgroundFetchResult)
     }
 
