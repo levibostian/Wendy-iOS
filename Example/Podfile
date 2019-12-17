@@ -7,7 +7,7 @@ platform :ios, '10.0'
 
 target 'Wendy_Example' do
   pod 'Wendy', :path => '../'
-  pod 'SnapKit', '~> 5.0.0'
+  pod 'SnapKit', '~> 5.0.1'
   pod 'SwiftLint'
 
   target 'Wendy_Tests' do

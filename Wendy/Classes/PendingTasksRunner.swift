@@ -91,10 +91,19 @@ internal class PendingTasksRunner {
             }
             let taskToRun: PendingTask = persistedPendingTask.pendingTask
             
+            if !PendingTasksUtil.isTaskValid(taskId: taskId) {
+                LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
+                PendingTasksManager.shared.deleteTask(taskId)
+                runTaskResult = PendingTasksRunnerJobRunResult.taskCancelled
+                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.cancelled)
+                
+                self.runTaskDispatchGroup.leave()
+                return runTaskResult // This code should *not* be executed because of .leave() above.
+            }
             if !taskToRun.isReadyToRun() {
-                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
                 LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
                 runTaskResult = PendingTasksRunnerJobRunResult.taskSkippedNotReady
+                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
                 
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
@@ -192,7 +201,7 @@ internal class PendingTasksRunner {
                 failedTasksGroups.append(taskGroupId)
             }
             return self.runAllTasks(filter: filter, result: result.addFailedTask())
-        case .taskDoesNotExist:
+        case .taskDoesNotExist, .taskCancelled:
             // Ignore this. If it doesn't exist, it doesn't exist.
             return self.runAllTasks(filter: filter, result: result)
         case .taskSkippedNotReady, .skippedUnresolvedRecordedError:
@@ -247,6 +256,7 @@ internal class PendingTasksRunner {
         case notSuccessful
         case taskDoesNotExist
         case taskSkippedNotReady
+        case taskCancelled
         case skippedUnresolvedRecordedError
     }
     

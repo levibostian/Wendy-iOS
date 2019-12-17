@@ -16,5 +16,5 @@ public protocol PendingTaskStatusListener: AnyObject {
 }
 
 internal struct WeakReferencePendingTaskStatusListener {
-    weak var listener: PendingTaskStatusListener!
+    weak var listener: PendingTaskStatusListener?
 }

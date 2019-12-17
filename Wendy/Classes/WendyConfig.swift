@@ -63,7 +63,7 @@ internal extension WendyConfig {
                 weakRefListener.listener.taskSkipped(task, reason: reason)
             })
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener.skipped(taskId: task.taskId!, reason: reason)
+                weakRefListener.listener?.skipped(taskId: task.taskId!, reason: reason)
             })
         }
     }
@@ -74,7 +74,7 @@ internal extension WendyConfig {
                 weakRefListener.listener.taskComplete(task, successful: successful)
             })
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener.complete(taskId: task.taskId!, successful: successful)
+                weakRefListener.listener?.complete(taskId: task.taskId!, successful: successful)
             })
         }
     }
@@ -85,7 +85,7 @@ internal extension WendyConfig {
                 weakRefListener.listener.runningTask(task)
             })
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener.running(taskId: task.taskId!)
+                weakRefListener.listener?.running(taskId: task.taskId!)
             })
         }
     }
@@ -96,7 +96,7 @@ internal extension WendyConfig {
                 weakRefListener.listener.errorRecorded(task, errorMessage: errorMessage, errorId: errorId)
             })
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener.errorRecorded(taskId: task.taskId!, errorMessage: errorMessage, errorId: errorId)
+                weakRefListener.listener?.errorRecorded(taskId: task.taskId!, errorMessage: errorMessage, errorId: errorId)
             })
         }
     }
@@ -107,7 +107,7 @@ internal extension WendyConfig {
                 weakRefListener.listener.errorResolved(task)
             })
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener.errorResolved(taskId: task.taskId!)
+                weakRefListener.listener?.errorResolved(taskId: task.taskId!)
             })
         }
     }
