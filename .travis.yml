@@ -20,9 +20,10 @@ env:
 
 jobs:
   include:
-  # - stage: tests
-  #   script:
-  #     - bundle exec fastlane scan
+  - stage: tests
+    script:
+      - pod lib lint --allow-warnings Wendy.podspec
+      # - bundle exec fastlane scan
   - stage: pull-request
     script: 
       # - bundle exec fastlane scan 
@@ -31,8 +32,8 @@ jobs:
     script: pod trunk push
 
 stages:
-  # - name: tests
-  #   if: type IN (pull_request, push) AND tag IS blank
+  - name: tests
+    if: type IN (pull_request, push) AND tag IS blank
   - name: pull-request
     if: type IN (pull_request)
   - name: deploy
