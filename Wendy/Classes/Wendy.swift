@@ -30,9 +30,9 @@ public class Wendy {
     /**
      Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
 
-     It will return back a `WendyUIBackgroundFetchResult`, and not call the `completionHandler` for you. You need to call that yourself. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
+     It will return back a `WendyUIBackgroundFetchResult`. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
     */
-    public final func backgroundFetchRunTasks(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> WendyUIBackgroundFetchResult {
+    public final func performBackgroundFetch() -> WendyUIBackgroundFetchResult {
         if !WendyConfig.automaticallyRunTasks {
             LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
             return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult(), backgroundFetchResult: .noData)

@@ -214,12 +214,12 @@ In your `AppDelegate`, you will now need to run Wendy from the background fetch 
 
 ```swift
 func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    let backgroundFetchResult = Wendy.shared.backgroundFetchRunTasks(application, performFetchWithCompletionHandler: completionHandler)
+    let backgroundFetchResult = Wendy.shared.performBackgroundFetch()
     completionHandler(backgroundFetchResult.backgroundFetchResult)
 }
 ```
 
-The only requirement is to call `Wendy.shared.backgroundFetchRunTasks(application, performFetchWithCompletionHandler: completionHandler)`. You may decide to ignore Wendy's result from this function is you wish and you need to run more in this function. If you decide to, Wendy does parse the background fetch result for you: `backgroundFetchResult.backgroundFetchResult`.
+The only requirement is to call `Wendy.shared.performBackgroundFetch()`. You may decide to ignore Wendy's result from this function is you wish and you need to run more in this function. If you decide to, Wendy does parse the background fetch result for you: `backgroundFetchResult.backgroundFetchResult`.
 
 Done! Wendy takes care of all the rest. Wendy will try to run your task right away but if you're offline or in a spotty Internet connection, Wendy will wait and try again later.
 
