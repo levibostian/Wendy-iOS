@@ -1,3 +1,12 @@
+## [0.3.0] - 2019-12-17
+
+### Added
+- Add method to clear Wendy data. Use if the user of your app logs out, for example. 
+
+### Changed
+- **Breaking Change**: Simplified background fetch method call. 
+- Update travis and cocoapods config to be faster with modern updates. 
+
 ## [0.2.0-alpha] - 2019-07-24
 
 Swift5, XCode 10.2 support

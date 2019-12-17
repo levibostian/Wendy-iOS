@@ -225,6 +225,16 @@ Done! Wendy takes care of all the rest. Wendy will try to run your task right aw
 
 There is a document on [best practices when using Wendy](https://github.com/levibostian/Wendy-Android/blob/master/BEST_PRACTICES.md). Check that out to answer your questions you have about why Wendy works the way that it does. The document's code is Android code, but it's not about the code, it's about the best practices so you should be able to understand it until I get a better "generic" document setup 😄.
 
+## Clear data
+
+If you have the scenario ever happen where, for example, the user of your app logs out of your app. The scenario where you usually delete all of the data on the device for your app. You can clear all of Wendy's data:
+
+```swift
+Wendy.shared.clear()
+```
+
+*Note: If a `PendingTask` is currently being executed while you call `clear()`, that task will finish executing.*
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the `Example/` directory first. Then, open XCode and run the project.
