@@ -83,9 +83,16 @@ class MainViewController: UIViewController {
         view.setTitleColor(UIColor.blue, for: .normal)
         return view
     }()
+    
+    fileprivate let cancelButton: UIButton = {
+        let view = UIButton()
+        view.setTitle("Cancel", for: UIControl.State.normal)
+        view.setTitleColor(UIColor.blue, for: .normal)
+        return view
+    }()
 
     fileprivate lazy var buttonsStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.addTaskButton, self.runAllTasksButton])
+        let view = UIStackView(arrangedSubviews: [self.addTaskButton, self.runAllTasksButton, self.cancelButton])
         view.alignment = .leading
         view.distribution = .fill
         view.axis = .horizontal
@@ -136,6 +143,7 @@ class MainViewController: UIViewController {
     fileprivate func setupview() {
         self.addTaskButton.addTarget(self, action: #selector(MainViewController.addTaskButtonPressed(_:)), for: .touchUpInside)
         self.runAllTasksButton.addTarget(self, action: #selector(MainViewController.runAllTasksButtonPressed(_:)), for: .touchUpInside)
+        self.cancelButton.addTarget(self, action: #selector(MainViewController.cancelButtonPressed(_:)), for: .touchUpInside)
 
         self.automaticallyRunWendySwitch.addTarget(self, action: #selector(automaticallyRunWendySwitchPressed(_:)), for: .touchUpInside)
         self.automaticallyRunWendySwitch.setOn(WendyConfig.automaticallyRunTasks, animated: false)
@@ -148,6 +156,10 @@ class MainViewController: UIViewController {
 
     @objc func runAllTasksButtonPressed(_ sender: Any) {
         Wendy.shared.runTasks(filter: nil)
+    }
+    
+    @objc func cancelButtonPressed(_ sender: Any) {
+        Wendy.shared.clear()
     }
 
     @objc func automaticallyRunWendySwitchPressed(_ sender: Any) {

@@ -8,6 +8,7 @@
 import Foundation
 
 public enum ReasonPendingTaskSkipped {
+    case cancelled
     case notReadyToRun
     case partOfFailedGroup
     case unresolvedRecordedError

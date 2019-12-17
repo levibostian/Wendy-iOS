@@ -1,32 +1,39 @@
-# To verify this file, call `travis lint .travis.yml` with travis-cli gem installed. To install, call `bundle install` in this directory.
-# To make life easier, I made a git commit hook to run this after each commit for reference. Create a file: `.git/hooks/pre-commit` and put inside (without the '#' before the line):
-# echo "----linting .travis.yml----"
-# travis lint .travis.yml
-# exit 0
-
 os: osx
-osx_image: xcode9.3
+osx_image: xcode11.2
 language: swift
-before_install:
-#- gem install cocoapods --pre # update cocoapods to newest version.
-- pod repo update
-install:
-  - bundle install
-  - (cd Example/ && pod install)
+
 cache:
-  directories:
-    - $HOME/.rvm/gems
-    - $HOME/.cocoapods
+  bundler: true 
+  cocoapods: true
+
+before_install:
+  - gem install cocoapods
+  - pod --version
+  - pod repo update
+install:  
+  - bundle install
+  - cd Example; pod install; cd ..;
+
+env:
+  global:
+    # COCOAPODS_TRUNK_TOKEN - access token to deploy to cocoapods.
 
 jobs:
   include:
-    - stage: danger
-      script: bundle exec danger
-    - stage: pr
-      script: pod spec lint --verbose --allow-warnings;./Example/Pods/SwiftLint/swiftlint --config Example/.swiftlint.yml
+  # - stage: tests
+  #   script:
+  #     - bundle exec fastlane scan
+  - stage: pull-request
+    script: 
+      # - bundle exec fastlane scan 
+      - bundle exec danger --fail-on-errors=true
+  - stage: deploy
+    script: pod trunk push
 
 stages:
-  - name: danger
+  # - name: tests
+  #   if: type IN (pull_request, push) AND tag IS blank
+  - name: pull-request
     if: type IN (pull_request)
-  - name: pr
-    if: type IN (pull_request)
+  - name: deploy
+    if: tag IS present
