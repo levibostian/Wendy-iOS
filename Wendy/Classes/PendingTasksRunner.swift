@@ -8,32 +8,6 @@
 
 import Foundation
 
-public struct PendingTasksRunnerResult {
-    let numberTasksRun: Int
-    let numberSuccessfulTasks: Int
-    let numberFailedTasks: Int
-    
-    init() {
-        numberTasksRun = 0
-        numberSuccessfulTasks = 0
-        numberFailedTasks = 0
-    }
-    
-    init(numberSuccessfulTasks: Int, numberFailedTasks: Int) {
-        self.numberTasksRun = numberSuccessfulTasks + numberFailedTasks
-        self.numberSuccessfulTasks = numberSuccessfulTasks
-        self.numberFailedTasks = numberFailedTasks
-    }
-    
-    func addSuccessfulTask() -> PendingTasksRunnerResult {
-        return PendingTasksRunnerResult(numberSuccessfulTasks: numberSuccessfulTasks + 1, numberFailedTasks: numberFailedTasks)
-    }
-    
-    func addFailedTask() -> PendingTasksRunnerResult {
-        return PendingTasksRunnerResult(numberSuccessfulTasks: numberSuccessfulTasks, numberFailedTasks: numberFailedTasks + 1)
-    }
-}
-
 /**
  Requirements of the task runner:
  
@@ -64,14 +38,15 @@ internal class PendingTasksRunner {
         private init() {
         }
         
-        fileprivate func scheduleRunPendingTask(_ taskId: Double) {
+        fileprivate func scheduleRunPendingTask(_ taskId: Double, onComplete: @escaping (TaskRunResult) -> Void) {
             runPendingTaskDispatchQueue.async {
-                self.runPendingTask(taskId: taskId)
+                let result = self.runPendingTask(taskId: taskId)
+                onComplete(result)
             }
         }
         
-        fileprivate func runPendingTaskWait(_ taskId: Double) -> PendingTasksRunnerJobRunResult {
-            return runPendingTaskDispatchQueue.sync { () -> PendingTasksRunnerJobRunResult in
+        fileprivate func runPendingTaskWait(_ taskId: Double) -> TaskRunResult {
+            return runPendingTaskDispatchQueue.sync { () -> TaskRunResult in
                 return self.runPendingTask(taskId: taskId)
             }
         }
@@ -79,12 +54,12 @@ internal class PendingTasksRunner {
         /**
          * @throws when in [WendyConfig.strict] mode and you say that your [PendingTask] was [PendingTaskResult.SUCCESSFUL] when you have an unresolved error recorded for that [PendingTask].
          */
-        private func runPendingTask(taskId: Double) -> PendingTasksRunnerJobRunResult { // swiftlint:disable:this function_body_length
+        private func runPendingTask(taskId: Double) -> TaskRunResult { // swiftlint:disable:this function_body_length
             self.runTaskDispatchGroup.enter()
-            var runTaskResult: PendingTasksRunnerJobRunResult!
+            var runTaskResult: TaskRunResult!
             
             guard let persistedPendingTask: PersistedPendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
-                runTaskResult = PendingTasksRunnerJobRunResult.taskDoesNotExist
+                runTaskResult = TaskRunResult.skipped(reason: .cancelled)
                 
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
@@ -94,7 +69,7 @@ internal class PendingTasksRunner {
             if !PendingTasksUtil.isTaskValid(taskId: taskId) {
                 LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
                 PendingTasksManager.shared.deleteTask(taskId)
-                runTaskResult = PendingTasksRunnerJobRunResult.taskCancelled
+                runTaskResult = TaskRunResult.skipped(reason: .cancelled)
                 WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.cancelled)
                 
                 self.runTaskDispatchGroup.leave()
@@ -102,16 +77,16 @@ internal class PendingTasksRunner {
             }
             if !taskToRun.isReadyToRun() {
                 LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
-                runTaskResult = PendingTasksRunnerJobRunResult.taskSkippedNotReady
+                runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
                 WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
                 
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            if PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) != nil {
-                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.unresolvedRecordedError)
+            if let unresolvedError = PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) {
+                WendyConfig.logTaskSkipped(taskToRun, reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
                 LogUtil.d("Task: \(taskToRun.describe()) has a unresolved error recorded. Skipping it.")
-                runTaskResult = PendingTasksRunnerJobRunResult.skippedUnresolvedRecordedError
+                runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
                 
                 self.runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
@@ -122,13 +97,14 @@ internal class PendingTasksRunner {
             
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
-            taskToRun.runTask(complete: { (successful: Bool) in
+            taskToRun.runTask(complete: { (error: Error?) in
+                let successful = error == nil
                 PendingTasksRunner.shared.currentlyRunningTask = nil
                 
-                if !successful {
+                if let error = error {
                     LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
                     WendyConfig.logTaskComplete(taskToRun, successful: successful)
-                    runTaskResult = PendingTasksRunnerJobRunResult.notSuccessful
+                    runTaskResult = TaskRunResult.failure(error: error)
                     
                     self.runTaskDispatchGroup.leave()
                     return
@@ -155,7 +131,7 @@ internal class PendingTasksRunner {
                 
                 WendyConfig.logTaskComplete(taskToRun, successful: successful)
                 
-                runTaskResult = PendingTasksRunnerJobRunResult.successful
+                runTaskResult = TaskRunResult.successful
                 
                 self.runTaskDispatchGroup.leave()
                 return
@@ -174,7 +150,7 @@ internal class PendingTasksRunner {
      
      Example: Check out PendingTasksRunner.Scheduler.scheduleRunAllTasks()
      */
-    internal func runAllTasks(filter: RunAllTasksFilter?, result: PendingTasksRunnerResult = PendingTasksRunnerResult()) -> PendingTasksRunnerResult {
+    internal func runAllTasks(filter: RunAllTasksFilter?, result: PendingTasksRunnerResult = PendingTasksRunnerResult.new()) -> PendingTasksRunnerResult {
         LogUtil.d("Getting next task to run.")
         
         guard let nextTaskToRun = PendingTasksManager.shared.getNextTaskToRun(lastSuccessfulOrFailedTaskId, filter: filter) else {
@@ -195,20 +171,22 @@ internal class PendingTasksRunner {
         let jobRunResult = Scheduler.shared.runPendingTaskWait(nextTaskToRun.taskId!)
         switch jobRunResult {
         case .successful:
-            return self.runAllTasks(filter: filter, result: result.addSuccessfulTask())
-        case .notSuccessful:
+            return self.runAllTasks(filter: filter, result: result.addResult(jobRunResult))
+        case .failure:
             if let taskGroupId = nextTaskToRun.groupId {
                 failedTasksGroups.append(taskGroupId)
             }
-            return self.runAllTasks(filter: filter, result: result.addFailedTask())
-        case .taskDoesNotExist, .taskCancelled:
-            // Ignore this. If it doesn't exist, it doesn't exist.
-            return self.runAllTasks(filter: filter, result: result)
-        case .taskSkippedNotReady, .skippedUnresolvedRecordedError:
-            if let taskGroupId = nextTaskToRun.groupId {
-                failedTasksGroups.append(taskGroupId)
+            return self.runAllTasks(filter: filter, result: result.addResult(jobRunResult))
+        case .skipped(let reason):
+            switch reason {
+            case .notReadyToRun, .unresolvedRecordedError:
+                if let taskGroupId = nextTaskToRun.groupId {
+                    failedTasksGroups.append(taskGroupId)
+                }
+            default: break
             }
-            return self.runAllTasks(filter: filter, result: result)
+            
+            return self.runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         }
     }
     
@@ -227,18 +205,19 @@ internal class PendingTasksRunner {
         private init() {
         }
         
-        internal func runPendingTaskWait(_ taskId: Double) -> PendingTasksRunnerJobRunResult {
+        internal func runPendingTaskWait(_ taskId: Double) -> TaskRunResult {
             return RunSinglePendingTaskRunner.shared.runPendingTaskWait(taskId)
         }
         
-        internal func scheduleRunPendingTask(_ taskId: Double) {
-            RunSinglePendingTaskRunner.shared.scheduleRunPendingTask(taskId)
+        internal func scheduleRunPendingTask(_ taskId: Double, onComplete: @escaping (TaskRunResult) -> Void) {
+            RunSinglePendingTaskRunner.shared.scheduleRunPendingTask(taskId, onComplete: onComplete)
         }
         
-        internal func scheduleRunAllTasks(filter: RunAllTasksFilter?) {
+        internal func scheduleRunAllTasks(filter: RunAllTasksFilter?, onComplete: @escaping (PendingTasksRunnerResult) -> Void) {
             runPendingTasksDispatchQueue.async {
                 LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
-                PendingTasksRunner.shared.runAllTasks(filter: filter)
+                let result = PendingTasksRunner.shared.runAllTasks(filter: filter)
+                onComplete(result)
             }
         }
         
@@ -248,16 +227,6 @@ internal class PendingTasksRunner {
                 return PendingTasksRunner.shared.runAllTasks(filter: filter)
             }
         }
-        
-    }
-    
-    internal enum PendingTasksRunnerJobRunResult {
-        case successful
-        case notSuccessful
-        case taskDoesNotExist
-        case taskSkippedNotReady
-        case taskCancelled
-        case skippedUnresolvedRecordedError
     }
     
 }

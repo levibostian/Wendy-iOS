@@ -35,7 +35,7 @@ public class Wendy {
     public final func performBackgroundFetch() -> WendyUIBackgroundFetchResult {
         if !WendyConfig.automaticallyRunTasks {
             LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
-            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult(), backgroundFetchResult: .noData)
+            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult.new(), backgroundFetchResult: .noData)
         }
 
         LogUtil.d("backgroundFetchRunTasks() called. Wendy configured to automatically run tasks. Running the background fetch job.")
@@ -122,13 +122,14 @@ public class Wendy {
         }
         
         LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
-        self.runTask(task.taskId!)
+        self.runTask(task.taskId!, onComplete: nil)
         
         return true
     }
 
-    public final func runTask(_ taskId: Double) {
+    public final func runTask(_ taskId: Double, onComplete: ((TaskRunResult) -> Void)?) {
         guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
+            onComplete?(TaskRunResult.skipped(reason: .cancelled))
             return
         }
         
@@ -136,7 +137,9 @@ public class Wendy {
             Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
         }
         
-        PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId)
+        PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId) { result in
+            onComplete?(result)
+        }
     }
     
     public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
@@ -177,8 +180,10 @@ public class Wendy {
 //        return pendingTask!
 //    }
 
-    public final func runTasks(filter: RunAllTasksFilter?) {
-        PendingTasksRunner.Scheduler.shared.scheduleRunAllTasks(filter: filter)
+    public final func runTasks(filter: RunAllTasksFilter?, onComplete: ((PendingTasksRunnerResult) -> Void)?) {
+        PendingTasksRunner.Scheduler.shared.scheduleRunAllTasks(filter: filter) { result in
+            onComplete?(result)
+        }
     }
 
     public final func getAllTasks() -> [PendingTask] {
@@ -196,7 +201,7 @@ public class Wendy {
     }
     
     public final func getLatestError(taskId: Double) -> PendingTaskError? {
-        guard let _ = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
+        guard PendingTasksManager.shared.getPendingTaskTaskById(taskId) != nil else {
             return nil
         }
         
@@ -221,7 +226,7 @@ public class Wendy {
                     LogUtil.d("Task: \(existingTaskPendingTask.describe()) successfully resolved previously recorded error.")
                     
                     if let pendingTaskGroupId = existingTaskPendingTask.groupId {
-                        self.runTasks(filter: RunAllTasksFilter(groupId: pendingTaskGroupId))
+                        self.runTasks(filter: RunAllTasksFilter(groupId: pendingTaskGroupId), onComplete: nil)
                     } else {
                         try self.runTaskAutomaticallyIfAbleTo(existingTaskPendingTask)
                     }
@@ -250,7 +255,7 @@ public class Wendy {
         LogUtil.d("Wendy tasks set as cancelled. Currently scheduled Wendy tasks will all skip running.")
         // Run all tasks (including manually run tasks) as they are all cancelled so it allows them all to be cleared fro the queue now and listeners can get notified.
         self.getAllTasks().forEach { (task) in
-            self.runTask(task.taskId!)
+            self.runTask(task.taskId!, onComplete: nil)
         }
     }
 
