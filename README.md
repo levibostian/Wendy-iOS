@@ -60,9 +60,10 @@ import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
 
-    func getTask(tag: PendingTask.Tag) -> PendingTask? {
+    func getTask(tag: PendingTask.Tag) -> PendingTask {
         switch tag {      
-        default: return nil
+        default: 
+            fatalError("Forgot case with tag: \(tag)")
         }
     }
 
@@ -146,10 +147,12 @@ import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
 
-    func getTask(tag: PendingTask.Tag) -> PendingTask? {
+    func getTask(tag: PendingTask.Tag) -> PendingTask {
         switch tag {
         case CreateGroceryListItemPendingTask.tag: return CreateGroceryListItemPendingTask()
-        default: return nil
+        default: 
+            fatalError("Forgot case with tag: \(tag)")
+        }
         }
     }
 

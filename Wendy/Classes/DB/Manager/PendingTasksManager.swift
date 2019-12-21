@@ -1,6 +1,5 @@
 import CoreData
 import Foundation
-import Require
 import UIKit
 
 internal class PendingTasksManager {
@@ -25,7 +24,10 @@ internal class PendingTasksManager {
      * fatal error if task by taskId does not belong to any groups.
      */
     internal func isTaskFirstTaskOfGroup(_ taskId: Double) -> Bool {
-        let persistedPendingTask: PersistedPendingTask = getTaskByTaskId(taskId).require(hint: "Task with id: \(taskId) does not exist.")
+        guard let persistedPendingTask: PersistedPendingTask = getTaskByTaskId(taskId) else {
+            fatalError("Task with id: \(taskId) does not exist.")
+        }
+        
         if persistedPendingTask.groupId == nil {
             Fatal.preconditionFailure("Task: \(persistedPendingTask.pendingTask.describe()) does not belong to a group.")
         }
