@@ -155,7 +155,9 @@ class MainViewController: UIViewController {
     }
 
     @objc func runAllTasksButtonPressed(_ sender: Any) {
-        Wendy.shared.runTasks(filter: nil)
+        Wendy.shared.runTasks(filter: nil) { result in
+            print("Done running all tasks. Result: \(result)")
+        }
     }
     
     @objc func cancelButtonPressed(_ sender: Any) {
@@ -243,7 +245,9 @@ extension MainViewController: PendingTaskTableViewCellDelegate {
     }
     
     func runTaskButtonPressed(_ task: PendingTask) {
-        Wendy.shared.runTask(task.taskId!)
+        Wendy.shared.runTask(task.taskId!) { result in
+            print("Result of manually run task id ID: \(task.taskId!) is: \(result)")
+        }
     }
     
 }

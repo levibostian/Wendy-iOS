@@ -8,8 +8,8 @@
 import Foundation
 
 public enum ReasonPendingTaskSkipped {
-    case cancelled
+    case cancelled // Also counts if a task does not exist which means the task was cancelled.
     case notReadyToRun
     case partOfFailedGroup
-    case unresolvedRecordedError
+    case unresolvedRecordedError(unresolvedError: PendingTaskError)
 }

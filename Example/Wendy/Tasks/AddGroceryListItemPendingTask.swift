@@ -9,6 +9,21 @@
 import Foundation
 import Wendy
 
+enum AddGroceryListItemPendingTaskError: Error {
+    case randomError
+}
+// optional below
+extension AddGroceryListItemPendingTaskError: LocalizedError {
+    var errorDescription: String? {
+        return localizedDescription
+    }
+    var localizedDescription: String {
+        switch self {
+        case .randomError: return "Random error message here"
+        }
+    }
+}
+
 class AddGroceryListItemPendingTask: PendingTask {
 
     static let pendingTaskRunnerTag = String(describing: AddGroceryListItemPendingTask.self)
@@ -32,7 +47,7 @@ class AddGroceryListItemPendingTask: PendingTask {
         return canRunTask
     }
 
-    func runTask(complete: @escaping (Bool) -> Void) {
+    func runTask(complete: @escaping (Error?) -> Void) {
         sleep(2)
 
         let successful = drand48() > 0.5
@@ -41,7 +56,8 @@ class AddGroceryListItemPendingTask: PendingTask {
             Wendy.shared.recordError(taskId: self.taskId!, humanReadableErrorMessage: "Random error message here", errorId: nil)
         }
         
-        complete(successful)
+        let result: Error? = successful ? nil : AddGroceryListItemPendingTaskError.randomError
+        complete(result)
     }
 
 }
