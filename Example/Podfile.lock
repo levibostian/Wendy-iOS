@@ -1,10 +1,8 @@
 PODS:
-  - Require (2.0.0)
   - SnapKit (5.0.1)
   - SwiftFormat/CLI (0.43.0)
   - SwiftLint (0.34.0)
-  - Wendy (0.3.0):
-    - Require (~> 2.0.0)
+  - Wendy (0.3.0)
 
 DEPENDENCIES:
   - SnapKit (~> 5.0.1)
@@ -14,7 +12,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Require
     - SnapKit
     - SwiftFormat
     - SwiftLint
@@ -24,11 +21,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Require: f93abc18dda985f665465cf027cea7166455fb28
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SwiftFormat: 2f5705a6e9f4791004478d939722b6803b77fc5a
   SwiftLint: 79d48a17c6565dc286c37efb8322c7b450f95c67
-  Wendy: ec0dca93fa6280e1ae2dead8da6551ad8a74d76b
+  Wendy: b0c106661556dea55b294b938f280af670dd8da8
 
 PODFILE CHECKSUM: e72cd6175365e481c138643a363e1f4f47188e77
 

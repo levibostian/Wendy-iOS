@@ -44,5 +44,4 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'CoreData'
-  s.dependency 'Require', '~> 2.0.0'
 end
