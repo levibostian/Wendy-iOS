@@ -1,0 +1,19 @@
+--exclude "Example/Pods"
+
+--binarygrouping none 
+--decimalgrouping none 
+--hexgrouping none 
+--ifdef no-indent 
+--octalgrouping none 
+--patternlet inline 
+--ranges no-space 
+--self init-only 
+--semicolons never 
+--stripunusedargs closure-only 
+--wraparguments after-first
+--commas inline
+--header strip
+
+--disable unusedArguments
+
+--enable isEmpty

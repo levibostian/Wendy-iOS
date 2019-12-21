@@ -1,22 +1,12 @@
-//
-//  ExampleAppPendingTasksFactory.swift
-//  Wendy-iOS_Example
-//
-//  Created by Levi Bostian on 3/30/18.
-//  Copyright © 2018 CocoaPods. All rights reserved.
-//
-
 import Foundation
 import Wendy
 
 class ExampleAppPendingTasksFactory: PendingTasksFactory {
-
-    func getTask(tag: String) -> PendingTask? {
+    func getTask(tag: PendingTask.Tag) -> PendingTask? {
         switch tag {
-        case AddGroceryListItemPendingTask.pendingTaskRunnerTag:
+        case AddGroceryListItemPendingTask.tag:
             return AddGroceryListItemPendingTask()
         default: return nil
         }
     }
-
 }

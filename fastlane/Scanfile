@@ -1,0 +1,16 @@
+# For more information about this configuration visit
+# https://docs.fastlane.tools/actions/scan/#scanfile
+
+# In general, you can use the options available
+# fastlane scan --help
+
+scheme("Wendy_Example")
+workspace("Example/Wendy.xcworkspace")
+skip_slack(true)
+configuration("Debug")
+output_types("html,junit")
+output_directory("reports")
+open_report(false)
+code_coverage(true)
+
+device("iPhone 11")

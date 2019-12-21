@@ -11,7 +11,7 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 [Read the official announcement of Wendy](https://levibostian.com/blog/no-more-excuses-build-offline-apps/) to learn more about what it does and why to use it.
 
-Android developer? [I created an Android version of Wendy too!](https://github.com/levibostian/wendy-android)
+Android developer? [Check out the Android version of Wendy!](https://github.com/levibostian/wendy-android)
 
 ## What is Wendy?
 
@@ -60,7 +60,7 @@ import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
 
-    func getTask(tag: String) -> PendingTask? {
+    func getTask(tag: PendingTask.Tag) -> PendingTask? {
         switch tag {      
         default: return nil
         }
@@ -97,13 +97,13 @@ import Wendy
 
 class CreateGroceryListItemPendingTask: PendingTask {
 
-    static let pendingTaskRunnerTag = String(describing: CreateGroceryListItemPendingTask.self)
+    static let tag: Tag = String(describing: CreateGroceryListItemPendingTask.self)
+
     static let groceryStoreItemTextTooLongErrorId = "GROCERY_STORE_ITEM_TEXT_TOO_LONG"
 
     var taskId: Double?
     var dataId: String?
     var groupId: String?
-    var tag: String = CreateGroceryListItemPendingTask.pendingTaskRunnerTag
     var manuallyRun: Bool = false
     var createdAt: Date?
 
@@ -116,7 +116,7 @@ class CreateGroceryListItemPendingTask: PendingTask {
         return true
     }
 
-    func runTask(complete: @escaping (Bool) -> Void) {
+    func runTask(complete: @escaping (Error?) -> Void) {
         // Here, instantiate your dependencies, talk to your DB, your API, etc. Run the task.
         // After the task succeeds or fails, return to Wendy the result.
 
@@ -130,11 +130,9 @@ class CreateGroceryListItemPendingTask: PendingTask {
                 // If the error is a network error, for example, that does not require the user's attention to fix, do *not* record an error to Wendy.
                 // Wendy will not run your task if there is a recorded error for it. Record an error, prompt your user to fix it, then resolve it ASAP so it can run.
                 Wendy.shared.recordError(taskId: self.taskId, humanReadableErrorMessage: "Grocery store item too long. Please shorten it up for me.", errorId: groceryStoreItemTextTooLongErrorId)
-
-                complete(false)
-            } else {
-                complete(true)
-            }
+            } 
+            
+            complete(apiCallResult.error)            
         })
     }
 
@@ -148,9 +146,9 @@ import Wendy
 
 class GroceryListPendingTasksFactory: PendingTasksFactory {
 
-    func getTask(tag: String) -> PendingTask? {
+    func getTask(tag: PendingTask.Tag) -> PendingTask? {
         switch tag {
-        case CreateGroceryListItemPendingTask.pendingTaskRunnerTag: return CreateGroceryListItemPendingTask()     
+        case CreateGroceryListItemPendingTask.tag: return CreateGroceryListItemPendingTask()
         default: return nil
         }
     }
@@ -224,6 +222,112 @@ The only requirement is to call `Wendy.shared.performBackgroundFetch()`. You may
 Done! Wendy takes care of all the rest. Wendy will try to run your task right away but if you're offline or in a spotty Internet connection, Wendy will wait and try again later.
 
 There is a document on [best practices when using Wendy](https://github.com/levibostian/Wendy-Android/blob/master/BEST_PRACTICES.md). Check that out to answer your questions you have about why Wendy works the way that it does. The document's code is Android code, but it's not about the code, it's about the best practices so you should be able to understand it until I get a better "generic" document setup 😄.
+
+## Collections 
+
+This of the following scenario in your mobile app:
+
+1. Your app shows a list of a user's friend requests inside of your app. 
+2. Your user decides to accept one of these friend requests within the friend requests list. 
+3. Your code executes:
+  * Create a new Wendy pending task to accept this friend request. 
+  * Delete the friend request from the cache so the request no longer shows in the list within the app. 
+4. For some reason, the pending task to accept the friend request encounters an error. 
+5. The user of your app attempts to refresh the list of friend requests within the app by performing an HTTP request for the updated list of friend requests. 
+
+What could potentially happen if step 5 succeeds? I would guess that since the Wendy pending task has not run successfully yet, your app's remote database does not yet know about the accepted friend request. Therefore, step 5 was successful then the app would receive a list of friend request objects (which would include the friend request already accepted) and insert that into the app's cache. This would result in your app showing the old friend request that has already been accepted. 
+
+That's not good! That could (1) break your app from an unstable state and (2) confuse your user as they already accepted the request.
+
+To combat this scenario, use Wendy Collections. Let's get into them. 
+
+Collections are a way to be able to group *kinds* of pending tasks together. While the `PendingTask`'s `groupId` is meant to group *instances* of `PendingTask`s together of *the same type*, collections group together all `PendingTask`s of types. 
+
+With our example above, let's say you have a Wendy pending task for accepting a friend request and declining a friend request:
+
+```swift
+class AcceptFriendRequestPendingTask: PendingTask {    
+    static let tag: Tag = "Accept friend request"
+    ...
+}
+class DeclineFriendRequestPendingTask: PendingTask {    
+    static let tag: Tag = "Decline friend request"
+    ...
+}
+```
+
+Now, these 2 pending tasks have something in common. Each of them determine the friend requests of a user within the app. If the user of your app ever wants refresh their friend requests list, all of the pending tasks for accepting and declining friend requests should have run successfully to avoid the unstable issues previously mentioned. 
+
+So, let's define collections. 
+
+1. Collections can be defined with the `Wendy.setup()` function. Collections are simply a map between an ID and a set of `PendingTask`s. 
+
+```swift
+Wendy.setup(tasksFactory: AppPendingTasksFactory(), collections: [
+    "Friend Requests list": [
+        AcceptFriendRequestPendingTask.tag,
+        DeclineFriendRequestPendingTask.tag
+    ],
+    "Update user profile": [
+        UploadProfilePhotoPendingTask.tag,
+        UpdateEmailAddressPendingTask.tag
+    ],
+    "Friends list": [
+        AcceptFriendRequestPendingTask.tag
+    ]
+])
+```
+> Notice how you can add a `PendingTask` to multiple collections. 
+
+*Pro tip:* Strings are a good thing to avoid as typos can happen. Use an `enum` instead:
+
+```swift
+import Wendy
+
+enum WendyCollectionIds: CollectionId {
+    case friendRequestsList 
+    case updateUserProfile
+    case friendsList
+}
+
+Wendy.setup(tasksFactory: AppPendingTasksFactory(), collections: [
+    WendyCollectionIds.friendRequestsList.rawValue: [
+        ...
+    ],
+    WendyCollectionIds.updateUserProfile.rawValue: [
+        ...
+    ],
+    WendyCollectionIds.friendsList.rawValue: [
+        ...
+    ]
+])
+```
+
+Wendy will crash if it cannot find a collection by ID. Avoid Strings to avoid these mistakes. 
+
+2. Now that you have informed Wendy of your collection, we can run all `PendingTask`s in a collection:
+
+```swift
+Wendy.shared.runTasks(filter: RunAllTasksFilter.collection(id: WendyCollectionIds.friendRequestsList.rawValue)) { result in        
+}
+```
+
+*Note: If a `PendingTask` is marked to manually run, `runTasks()` will not run that task.*
+
+3. Now, in order to prevent the scenario where your app gets into an unstable state, run the collection of pending tasks *before* you run your HTTP request to get the list of friend requests:
+
+```swift
+Wendy.shared.runTasks(filter: RunAllTasksFilter.collection(id: WendyCollectionIds.friendRequestsList.rawValue)) { result in        
+    if let pendingTasksFirstFailure = result.firstFailedResult {
+        // Do not run the HTTP request to get list of friend requests. The app's state could become unstable. 
+        // Note: A failure could mean the pending task failed to run or was skipped. Don't assume it was a failure! 
+    } else 
+        // Go ahead and run the HTTP request to get the list of friend requests! All pending tasks in the collection have run successfully. 
+    }
+}
+```
+
+Because we are always making sure our pending tasks are running successfully before performing HTTP requests, your app's state should never become unstable. 
 
 ## Clear data
 

@@ -1,21 +1,11 @@
-//
-//  CoreDataManager.swift
-//  Wendy-iOS
-//
-//  Created by Levi Bostian on 11/13/17.
-//  Copyright © 2017 Curiosity IO. All rights reserved.
-//
-
-import Foundation
 import CoreData
+import Foundation
 
 internal class CoreDataManager {
-    
     internal static let shared = CoreDataManager()
-    
-    private init() {
-    }
-    
+
+    private init() {}
+
     internal lazy var viewContext: NSManagedObjectContext = {
         var managedObjectContext: NSManagedObjectContext?
         if #available(iOS 10.0, *) {
@@ -28,20 +18,20 @@ internal class CoreDataManager {
         }
         return managedObjectContext!
     }()
-    
+
     private lazy var applicationDocumentsDirectory: URL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named in the application's documents Application Support directory.
         var documentUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
         documentUrl.appendPathComponent("WendyDataModel.sqlite")
         return documentUrl
     }()
-    
+
     private lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
         let modelURL = Bundle.frameworkUrlForWendyFramework().url(forResource: "Wendy", withExtension: "momd")!
         return NSManagedObjectModel(contentsOf: modelURL)!
     }()
-    
+
     private lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         do {
@@ -52,7 +42,7 @@ internal class CoreDataManager {
             return coordinator
         }
     }()
-    
+
     @available(iOS 10.0, *)
     private lazy var persistentContainer: NSPersistentContainer = {
         /*
@@ -62,11 +52,11 @@ internal class CoreDataManager {
          error conditions that could cause the creation of the store to fail.
          */
         let container = NSPersistentContainer(name: "Wendy", managedObjectModel: self.managedObjectModel)
-        container.loadPersistentStores(completionHandler: { (_, error) in
+        container.loadPersistentStores(completionHandler: { _, error in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                
+
                 /*
                  Typical reasons for an error here include:
                  * The parent directory does not exist, cannot be created, or disallows writing.
@@ -80,11 +70,11 @@ internal class CoreDataManager {
         })
         return container
     }()
-    
-    internal func saveContext () {
-        if self.viewContext.hasChanges {
+
+    internal func saveContext() {
+        if viewContext.hasChanges {
             do {
-                try self.viewContext.save()
+                try viewContext.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.

@@ -1,18 +1,11 @@
-//
-//  WendyConfig.swift
-//  Wendy-iOS
-//
-//  Created by Levi Bostian on 3/27/18.
-//
-
 import Foundation
 
 public class WendyConfig {
-
     public static var logTag: String = "WENDY"
     public static var automaticallyRunTasks: Bool = true
     public static var strict: Bool = true
     public static var debug: Bool = false
+    public static var collections: Collections = [:]
 
     fileprivate static var taskRunnerListeners: [WeakReferenceTaskRunnerListener] = []
     public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
@@ -32,92 +25,92 @@ public class WendyConfig {
             listener.errorRecorded(taskId: taskId, errorMessage: latestError.errorMessage, errorId: latestError.errorId)
         }
     }
+
     internal class func getTaskStatusListenerForTask(_ taskId: Double) -> [WeakReferencePendingTaskStatusListener] {
-        return taskStatusListeners.filter({ (listener) -> Bool in
-            return listener.taskId == taskId
-        }).map({ (taskStatusListener) -> WeakReferencePendingTaskStatusListener in
-            return taskStatusListener.weakRefListener
-        })
+        return taskStatusListeners.filter { (listener) -> Bool in
+            listener.taskId == taskId
+        }.map { (taskStatusListener) -> WeakReferencePendingTaskStatusListener in
+            taskStatusListener.weakRefListener
+        }
     }
 
     private struct TaskStatusListener {
         let taskId: Double
         let weakRefListener: WeakReferencePendingTaskStatusListener
     }
-
 }
 
 internal extension WendyConfig {
-
-    internal class func logNewTaskAdded(_ task: PendingTask) {
+    class func logNewTaskAdded(_ task: PendingTask) {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.newTaskAdded(task)
-            })
+            }
         }
     }
 
-    internal class func logTaskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
+    class func logTaskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.taskSkipped(task, reason: reason)
-            })
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+            }
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
                 weakRefListener.listener?.skipped(taskId: task.taskId!, reason: reason)
-            })
+            }
         }
     }
 
-    internal class func logTaskComplete(_ task: PendingTask, successful: Bool) {
+    class func logTaskComplete(_ task: PendingTask, successful: Bool, cancelled: Bool) {
+        let successful = (successful || cancelled) // to make sure that cancelled marks succcessful as successful, always.
+
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
-                weakRefListener.listener.taskComplete(task, successful: successful)
-            })
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
-                weakRefListener.listener?.complete(taskId: task.taskId!, successful: successful)
-            })
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
+                weakRefListener.listener.taskComplete(task, successful: successful, cancelled: cancelled)
+            }
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
+                weakRefListener.listener?.complete(taskId: task.taskId!, successful: successful, cancelled: cancelled)
+            }
         }
     }
 
-    internal class func logTaskRunning(_ task: PendingTask) {
+    class func logTaskRunning(_ task: PendingTask) {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.runningTask(task)
-            })
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+            }
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
                 weakRefListener.listener?.running(taskId: task.taskId!)
-            })
+            }
         }
     }
-    
-    internal class func logErrorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
+
+    class func logErrorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.errorRecorded(task, errorMessage: errorMessage, errorId: errorId)
-            })
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+            }
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
                 weakRefListener.listener?.errorRecorded(taskId: task.taskId!, errorMessage: errorMessage, errorId: errorId)
-            })
+            }
         }
     }
-    
-    internal class func logErrorResolved(_ task: PendingTask) {
+
+    class func logErrorResolved(_ task: PendingTask) {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.errorResolved(task)
-            })
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach({ (weakRefListener) in
+            }
+            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
                 weakRefListener.listener?.errorResolved(taskId: task.taskId!)
-            })
+            }
         }
     }
 
-    internal class func logAllTasksComplete() {
+    class func logAllTasksComplete() {
         DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach({ (weakRefListener) in
+            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
                 weakRefListener.listener.allTasksComplete()
-            })
+            }
         }
     }
-
 }

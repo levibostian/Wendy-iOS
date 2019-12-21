@@ -1,14 +1,9 @@
-//
-//  ReasonPendingTaskSkipped.swift
-//  Wendy
-//
-//  Created by Levi Bostian on 4/2/18.
-//
-
 import Foundation
 
+/**
+ Tasks that were skipped and will run again at some time in the future.
+ */
 public enum ReasonPendingTaskSkipped {
-    case cancelled // Also counts if a task does not exist which means the task was cancelled.
     case notReadyToRun
     case partOfFailedGroup
     case unresolvedRecordedError(unresolvedError: PendingTaskError)

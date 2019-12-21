@@ -1,22 +1,16 @@
-//
-//  FooPendingTask.swift
-//  Wendy-iOS_Example
-//
-//  Created by Levi Bostian on 3/26/18.
-//  Copyright © 2018 CocoaPods. All rights reserved.
-//
-
 import Foundation
 import Wendy
 
 enum AddGroceryListItemPendingTaskError: Error {
     case randomError
 }
+
 // optional below
 extension AddGroceryListItemPendingTaskError: LocalizedError {
     var errorDescription: String? {
         return localizedDescription
     }
+
     var localizedDescription: String {
         switch self {
         case .randomError: return "Random error message here"
@@ -25,13 +19,11 @@ extension AddGroceryListItemPendingTaskError: LocalizedError {
 }
 
 class AddGroceryListItemPendingTask: PendingTask {
-
-    static let pendingTaskRunnerTag = String(describing: AddGroceryListItemPendingTask.self)
+    static let tag: Tag = String(describing: AddGroceryListItemPendingTask.self)
 
     var taskId: Double?
     var dataId: String?
     var groupId: String?
-    var tag: String = AddGroceryListItemPendingTask.pendingTaskRunnerTag
     var manuallyRun: Bool = false
     var createdAt: Date?
 
@@ -53,11 +45,10 @@ class AddGroceryListItemPendingTask: PendingTask {
         let successful = drand48() > 0.5
         let humanError = drand48() > 0.5
         if !successful && humanError {
-            Wendy.shared.recordError(taskId: self.taskId!, humanReadableErrorMessage: "Random error message here", errorId: nil)
+            Wendy.shared.recordError(taskId: taskId!, humanReadableErrorMessage: "Random error message here", errorId: nil)
         }
-        
+
         let result: Error? = successful ? nil : AddGroceryListItemPendingTaskError.randomError
         complete(result)
     }
-
 }
