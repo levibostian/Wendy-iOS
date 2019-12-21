@@ -1,3 +1,13 @@
+## [0.4.0] - 2019-12-21
+
+### Added
+- Collections! Be able to run groups of different `PendingTask`s together to keep your app stable. 
+
+### Changed
+- **Breaking Change**: `PendingTaskFactory.getTask()` no longer can return optional. 
+- **Breaking Change**: Wendy `runTask` functions now require a completion handler. 
+- **Breaking Change**: Change task listeners. Adding a `cancelled` case. 
+
 ## [0.3.0] - 2019-12-17
 
 ### Added
