@@ -5,12 +5,21 @@ inhibit_all_warnings!
 
 platform :ios, '10.0'
 
-target 'Wendy_Example' do
+def commonDependencies
   pod 'Wendy', :path => '../'
-  pod 'SnapKit', '~> 5.0.1'
-  pod 'SwiftLint'
+  pod 'SnapKit', '~> 5.0.1'  
+end 
 
-  target 'Wendy_Tests' do
-    inherit! :search_paths
-  end
+def testingDependencies
+  pod 'SwiftLint'  
+  pod 'SwiftFormat/CLI'
+end
+
+target 'Wendy_Example' do
+  commonDependencies()  
+end
+
+target 'Wendy_Tests' do
+  commonDependencies()
+  testingDependencies()
 end

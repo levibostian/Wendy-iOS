@@ -23,10 +23,10 @@ jobs:
   - stage: tests
     script:
       - pod lib lint --allow-warnings Wendy.podspec
-      # - bundle exec fastlane scan
+      - bundle exec fastlane scan
   - stage: pull-request
     script: 
-      # - bundle exec fastlane scan 
+      - bundle exec fastlane scan 
       - bundle exec danger --fail-on-errors=true
   - stage: deploy
     script: pod trunk push --allow-warnings

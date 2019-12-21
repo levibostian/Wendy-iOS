@@ -1,23 +1,14 @@
-//
-//  PendingTaskError+Extensions.swift
-//  Wendy
-//
-//  Created by Levi Bostian on 4/16/18.
-//
-
 import Foundation
 
 public extension PendingTaskError {
-    
-    public func describe() -> String {
-        let errorIdString: String = (self.errorId != nil) ? String(describing: self.errorId!) : "none"
-        let errorMessageString: String = (self.errorMessage != nil) ? String(describing: self.errorMessage!) : "none"
-        
-        return "errorId: \(errorIdString) errorMessage: \(errorMessageString) pendingTask: \(self.pendingTask.describe())"
+    func describe() -> String {
+        let errorIdString: String = (errorId != nil) ? String(describing: errorId!) : "none"
+        let errorMessageString: String = (errorMessage != nil) ? String(describing: errorMessage!) : "none"
+
+        return "errorId: \(errorIdString) errorMessage: \(errorMessageString) pendingTask: \(pendingTask.describe())"
     }
-    
-    public func resolveError() throws {
-        try Wendy.shared.resolveError(taskId: self.pendingTask.taskId!)
+
+    func resolveError() throws {
+        try Wendy.shared.resolveError(taskId: pendingTask.taskId!)
     }
-    
 }

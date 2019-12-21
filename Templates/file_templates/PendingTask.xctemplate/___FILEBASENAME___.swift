@@ -1,16 +1,7 @@
-//
-//  ___FILENAME___
-//  ___PROJECTNAME___
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//___COPYRIGHT___
-//
-
 import Foundation
 import Wendy
 
 class ___FILEBASENAMEASIDENTIFIER___: PendingTask {
-
     static let pendingTaskRunnerTag = String(describing: ___FILEBASENAMEASIDENTIFIER___.self)
 
     var taskId: Double?
@@ -29,7 +20,6 @@ class ___FILEBASENAMEASIDENTIFIER___: PendingTask {
     }
 
     func runTask(complete: @escaping (Bool) -> Void) {
-        // TODO
+        // TODO:
     }
-
 }

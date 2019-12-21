@@ -1,34 +1,29 @@
-//
-//  AppDelegate.swift
-//  Wendy-iOS
-//
-//  Created by Levi Bostian on 03/26/2018.
-//  Copyright (c) 2018 Levi Bostian. All rights reserved.
-//
-
 import UIKit
 import Wendy
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory())
+        Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory(), collections: [
+            WendyCollectionIds.groceryShopping.rawValue: [
+                AddGroceryListItemPendingTask.tag
+            ]
+        ])
         #if DEBUG
         WendyConfig.debug = true
         #endif
 
-        self.window?.rootViewController = MainViewController()
-        self.window?.makeKeyAndVisible()
+        window?.rootViewController = MainViewController()
+        window?.makeKeyAndVisible()
 
         return true
     }
-    
+
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         let backgroundFetchResult = Wendy.shared.performBackgroundFetch()
         completionHandler(backgroundFetchResult.backgroundFetchResult)
@@ -55,5 +50,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
 }

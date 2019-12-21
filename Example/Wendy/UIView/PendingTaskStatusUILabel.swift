@@ -1,68 +1,56 @@
-//
-//  PendingTaskStatusUILabel.swift
-//  Wendy_Example
-//
-//  Created by Levi Bostian on 4/20/18.
-//  Copyright © 2018 CocoaPods. All rights reserved.
-//
-
-import UIKit
 import SnapKit
+import UIKit
 import Wendy
 
 class PendingTaskStatusUILabel: UILabel {
-    
     fileprivate var didSetupConstraints = false
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         self.numberOfLines = 0
-        
-        self.setNeedsUpdateConstraints()
+
+        setNeedsUpdateConstraints()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override func updateConstraints() {
         if !didSetupConstraints {
             // snapkit add constraints.
-            
+
             didSetupConstraints = true
         }
         super.updateConstraints()
     }
-    
+
     func setPendingTask(_ task: PendingTask) {
-        self.text = "Not running"
-        
+        text = "Not running"
+
         WendyConfig.addTaskStatusListenerForTask(task.taskId!, listener: self)
     }
-    
 }
 
 extension PendingTaskStatusUILabel: PendingTaskStatusListener {
-    
     func running(taskId: Double) {
-        self.text = "Running"
+        text = "Running"
     }
-    
-    func complete(taskId: Double, successful: Bool) {
-        self.text = successful ? "Success!" : "Failure"
+
+    func complete(taskId: Double, successful: Bool, cancelled: Bool) {
+        text = successful ? "Success!" : "Failure"
     }
-    
+
     func skipped(taskId: Double, reason: ReasonPendingTaskSkipped) {
-        self.text = "Skipped"
+        text = "Skipped"
     }
-    
+
     func errorRecorded(taskId: Double, errorMessage: String?, errorId: String?) {
-        self.text = "Error recorded: \(errorMessage!)"
+        text = "Error recorded: \(errorMessage!)"
     }
-    
+
     func errorResolved(taskId: Double) {
-        self.text = "Error resolved"
+        text = "Error resolved"
     }
-    
 }
