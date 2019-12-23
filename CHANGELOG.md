@@ -1,3 +1,8 @@
+## [0.4.1] - 2019-12-23
+
+### Fixed
+- `PendingTaskError` properties now public
+
 ## [0.4.0] - 2019-12-21
 
 ### Added
