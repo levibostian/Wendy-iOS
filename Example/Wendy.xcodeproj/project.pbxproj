@@ -165,6 +165,7 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F7A727EE23B16E5C00C8B59B /* DB */,
 				F787F15F23AEB00E007EA1CE /* Type */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 				F787F16223AEB672007EA1CE /* ErrorForTesting.swift */,
@@ -231,6 +232,13 @@
 				F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */,
 			);
 			path = UIView;
+			sourceTree = "<group>";
+		};
+		F7A727EE23B16E5C00C8B59B /* DB */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DB;
 			sourceTree = "<group>";
 		};
 		F7EED054206967A600F2B7AF /* Tasks */ = {
