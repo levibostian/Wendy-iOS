@@ -144,6 +144,11 @@ class MainViewController: UIViewController {
         setupview()
 
         view.setNeedsUpdateConstraints()
+        
+        // Only exists here to make sure that PendingTaskError properties are accessible by the public.
+        Wendy.shared.getAllErrors().forEach { (error) in
+            print("Existing user recorded error. Id: \(String(describing: error.errorId)), message: \(error.errorMessage ?? "(none)")")
+        }
     }
 
     fileprivate func setupview() {

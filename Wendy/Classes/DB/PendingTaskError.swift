@@ -1,10 +1,10 @@
 import Foundation
 
 public class PendingTaskError {
-    let pendingTask: PendingTask!
-    let createdAt: Date?
-    let errorId: String?
-    let errorMessage: String?
+    public let pendingTask: PendingTask!
+    public let createdAt: Date?
+    public let errorId: String?
+    public let errorMessage: String?
 
     internal init(pendingTask: PendingTask, errorId: String?, errorMessage: String?, createdAt: Date) {
         self.pendingTask = pendingTask
