@@ -1,3 +1,11 @@
+## [0.5.0] - 2019-12-23
+
+### Added
+- Constructors to create instances for internal classes for testing purposes. 
+
+### Fixed 
+- `PendingTasksRunnerResult` properties now public 
+
 ## [0.4.1] - 2019-12-23
 
 ### Fixed
