@@ -10,6 +10,6 @@ public class PendingTaskError {
         self.pendingTask = pendingTask
         self.errorId = errorId
         self.errorMessage = errorMessage
-        self.createdAt = nil
+        self.createdAt = createdAt
     }
 }

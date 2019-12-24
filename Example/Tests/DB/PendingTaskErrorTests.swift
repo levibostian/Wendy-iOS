@@ -1,4 +1,4 @@
-@testable import Wendy
+import Wendy
 import XCTest
 @testable import Wendy_Example
 

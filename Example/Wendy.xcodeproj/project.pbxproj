@@ -24,6 +24,7 @@
 		F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */; };
 		F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */; };
 		F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */; };
+		F7B34B9E23B1928A002F355A /* AddGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EED055206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift */; };
 		F7B45F1C206E983F00BC547D /* Wendy.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F7B45F1B206E983F00BC547D /* Wendy.podspec */; };
 		F7E45BA82086697B00CEC32B /* Wendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E45BA72086697B00CEC32B /* Wendy.framework */; };
 		F7EED056206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EED055206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift */; };
@@ -508,6 +509,7 @@
 				F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */,
 				F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */,
 				F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */,
+				F7B34B9E23B1928A002F355A /* AddGroceryListItemPendingTask.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
