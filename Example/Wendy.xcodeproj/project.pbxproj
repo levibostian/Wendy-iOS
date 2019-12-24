@@ -21,6 +21,10 @@
 		F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16223AEB672007EA1CE /* ErrorForTesting.swift */; };
 		F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */; };
 		F79F54B9208A568F007DC508 /* PendingTaskResolveErrorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */; };
+		F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */; };
+		F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */; };
+		F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */; };
+		F7B34B9E23B1928A002F355A /* AddGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EED055206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift */; };
 		F7B45F1C206E983F00BC547D /* Wendy.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F7B45F1B206E983F00BC547D /* Wendy.podspec */; };
 		F7E45BA82086697B00CEC32B /* Wendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E45BA72086697B00CEC32B /* Wendy.framework */; };
 		F7EED056206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EED055206967BA00F2B7AF /* AddGroceryListItemPendingTask.swift */; };
@@ -68,6 +72,9 @@
 		F787F16223AEB672007EA1CE /* ErrorForTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorForTesting.swift; sourceTree = "<group>"; };
 		F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskStatusUILabel.swift; sourceTree = "<group>"; };
 		F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskResolveErrorButton.swift; sourceTree = "<group>"; };
+		F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PendingTasksRunnerResult+TestingTests.swift"; sourceTree = "<group>"; };
+		F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskErrorTests.swift; sourceTree = "<group>"; };
+		F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WendyUIBackgroundFetchResult+TestingTests.swift"; sourceTree = "<group>"; };
 		F7B45F1B206E983F00BC547D /* Wendy.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Wendy.podspec; path = ../Wendy.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F7B45F1E206E985000BC547D /* Wendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Wendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7B45F20206E985400BC547D /* Pods_Wendy_iOS_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Wendy_iOS_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -221,6 +228,8 @@
 			isa = PBXGroup;
 			children = (
 				F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */,
+				F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */,
+				F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */,
 			);
 			path = Type;
 			sourceTree = "<group>";
@@ -237,6 +246,7 @@
 		F7A727EE23B16E5C00C8B59B /* DB */ = {
 			isa = PBXGroup;
 			children = (
+				F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */,
 			);
 			path = DB;
 			sourceTree = "<group>";
@@ -495,7 +505,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F787F16123AEB034007EA1CE /* PendingTasksRunnerResultTest.swift in Sources */,
+				F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */,
 				F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */,
+				F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */,
+				F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */,
+				F7B34B9E23B1928A002F355A /* AddGroceryListItemPendingTask.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
