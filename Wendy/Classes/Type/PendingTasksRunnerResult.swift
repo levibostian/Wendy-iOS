@@ -1,14 +1,14 @@
 import Foundation
 
 public struct PendingTasksRunnerResult {
-    let numberTasksRun: Int
-    let numberSuccessfulTasks: Int
-    let numberCancelledTasks: Int
-    let numberFailedTasks: Int
-    let numberSkippedTasks: Int
-    let runResults: [TaskRunResult]
+    public let numberTasksRun: Int
+    public let numberSuccessfulTasks: Int
+    public let numberCancelledTasks: Int
+    public let numberFailedTasks: Int
+    public let numberSkippedTasks: Int
+    public let runResults: [TaskRunResult]
 
-    static func new(results: [TaskRunResult]? = nil) -> PendingTasksRunnerResult {
+    internal static func new(results: [TaskRunResult]? = nil) -> PendingTasksRunnerResult {
         var runnerResult = PendingTasksRunnerResult(numberTasksRun: 0, numberSuccessfulTasks: 0, numberCancelledTasks: 0, numberFailedTasks: 0, numberSkippedTasks: 0, runResults: [])
 
         results?.forEach { result in
@@ -18,7 +18,7 @@ public struct PendingTasksRunnerResult {
         return runnerResult
     }
 
-    func addResult(_ runResult: TaskRunResult) -> PendingTasksRunnerResult {
+    internal func addResult(_ runResult: TaskRunResult) -> PendingTasksRunnerResult {
         var numberSuccessfulTasks = self.numberSuccessfulTasks
         var numberCancelledTasks = self.numberCancelledTasks
         var numberFailedTasks = self.numberFailedTasks
@@ -46,7 +46,7 @@ public extension PendingTasksRunnerResult {
     /**
      Get first [TaskRunResult] that was a failed attempt. Note: This failed attempt could have been a task that failed or one that skipped.
      */
-    var firstFailedResult: TaskRunResult? {
+    public var firstFailedResult: TaskRunResult? {
         return runResults.first(where: { runResult in
             switch runResult {
             case .failure, .skipped:
@@ -60,7 +60,7 @@ public extension PendingTasksRunnerResult {
     /**
      cancelled are OK. They count as successful. Skipped means that they need to be run again so, that's not successful.
      */
-    var successful: Bool {
+    public var successful: Bool {
         return firstFailedResult == nil
     }
 }
