@@ -7,6 +7,19 @@ public struct PendingTasksRunnerResult {
     let numberFailedTasks: Int
     let numberSkippedTasks: Int
     let runResults: [TaskRunResult]
+    
+    internal var backgroundFetchResult: UIBackgroundFetchResult {
+        var backgroundFetchResult: UIBackgroundFetchResult!
+        if self.numberTasksRun == 0 {
+            backgroundFetchResult = .noData
+        } else if self.numberSuccessfulTasks >= self.numberFailedTasks {
+            backgroundFetchResult = .newData
+        } else {
+            backgroundFetchResult = .failed
+        }
+        
+        return backgroundFetchResult
+    }
 
     static func new(results: [TaskRunResult]? = nil) -> PendingTasksRunnerResult {
         var runnerResult = PendingTasksRunnerResult(numberTasksRun: 0, numberSuccessfulTasks: 0, numberCancelledTasks: 0, numberFailedTasks: 0, numberSkippedTasks: 0, runResults: [])

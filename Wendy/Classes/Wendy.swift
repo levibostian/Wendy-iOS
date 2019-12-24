@@ -34,16 +34,7 @@ public class Wendy {
         LogUtil.d("backgroundFetchRunTasks() called. Wendy configured to automatically run tasks. Running the background fetch job.")
         let runAllTasksResult = PendingTasksRunner.Scheduler.shared.scheduleRunAllTasksWait(filter: nil)
 
-        var backgroundFetchResult: UIBackgroundFetchResult!
-        if runAllTasksResult.numberTasksRun == 0 {
-            backgroundFetchResult = .noData
-        } else if runAllTasksResult.numberSuccessfulTasks >= runAllTasksResult.numberFailedTasks {
-            backgroundFetchResult = .newData
-        } else {
-            backgroundFetchResult = .failed
-        }
-
-        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: backgroundFetchResult)
+        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: runAllTasksResult.backgroundFetchResult)
     }
 
     public final func addTask(_ pendingTaskToAdd: PendingTask, resolveErrorIfTaskExists: Bool = true) -> Double {
@@ -251,9 +242,5 @@ public class Wendy {
             self.runTask(task.taskId!, onComplete: nil)
         }
     }
-
-    public struct WendyUIBackgroundFetchResult {
-        public let taskRunnerResult: PendingTasksRunnerResult
-        public let backgroundFetchResult: UIBackgroundFetchResult
-    }
+    
 }

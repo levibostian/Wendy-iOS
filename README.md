@@ -342,6 +342,32 @@ Wendy.shared.clear()
 
 *Note: If a `PendingTask` is currently being executed while you call `clear()`, that task will finish executing.*
 
+# Testing
+
+Wendy was built with unit/integration/UI testing in mind. Here is how to use Wendy in your tests:
+
+## Write unit tests against `PendingTask` implementations
+
+Your implementations of `PendingTask` should be no problem to test. `PendingTask` is just a protocol. You can unit test your implementation using dependency injection, for example, to test all of the functions of `PendingTask`.
+
+## Write unit tests for code that depends on Wendy classes
+
+When writing tests against code Wendy classes such as `PendingTaskError` or `PendingTasksRunnerResult`, Wendy allows you to create instances of these internal classes with the convenient `.testing.` property added to these internal classes. 
+
+Here are some examples:
+
+```swift
+PendingTaskError.testing.get(pendingTask: PendingTask, errorId: String, errorMessage: String, createdAt: Date)
+PendingTasksRunnerResult.testing.result(from results: [TaskRunResult])
+WendyUIBackgroundFetchResult.testing.get(runnerResult: PendingTasksRunnerResult)
+```
+
+## Write integration tests around Wendy 
+
+Coming soon! 
+
+You may be able to do this already, but it has not been tested. A good place to start would be clear Wendy before each test and use it like normal. See where that takes you. Report issues as you encounter them. 
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the `Example/` directory first. Then, open XCode and run the project.
