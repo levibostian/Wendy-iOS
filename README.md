@@ -13,6 +13,10 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 Android developer? [Check out the Android version of Wendy!](https://github.com/levibostian/wendy-android)
 
+### Announcement - version 1.0
+
+Version 1.0 has been announced and is in development. Check out [the issue](https://github.com/levibostian/Wendy-iOS/issues/39) to learn more. The pre-1.0 code will be in maintenance mode until v1.0 is complete. Pre-1.0 is used by myself in production apps today, but you have been warned that there will more then likely be large breaking changes when 1.0 comes out. 
+
 ## What is Wendy?
 
 Wendy is an iOS library designed to help you make your app offline-first. Use Wendy to define sync tasks, then Wendy will run those tasks periodically to keep your app's device offline data in sync with it's online remote storage.
