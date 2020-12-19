@@ -2,7 +2,7 @@ PODS:
   - SnapKit (5.0.1)
   - SwiftFormat/CLI (0.43.0)
   - SwiftLint (0.34.0)
-  - Wendy (0.4.1)
+  - Wendy (0.5.0)
 
 DEPENDENCIES:
   - SnapKit (~> 5.0.1)
@@ -24,8 +24,8 @@ SPEC CHECKSUMS:
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SwiftFormat: 2f5705a6e9f4791004478d939722b6803b77fc5a
   SwiftLint: 79d48a17c6565dc286c37efb8322c7b450f95c67
-  Wendy: e063303aa92761d7d5f53ea149da9b7c50a7c920
+  Wendy: fa67585a87c997c46314911e28b1838ab2b53aa1
 
 PODFILE CHECKSUM: e72cd6175365e481c138643a363e1f4f47188e77
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3

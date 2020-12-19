@@ -43,7 +43,8 @@ internal class PendingTasksUtil {
     }
 
     internal class func getRerunCurrentlyRunningPendingTaskTime() -> Date? {
-        guard let timeInternal: Double = UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey), timeInternal > 0 else {
+        let timeInternal = UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey)
+        guard timeInternal > 0 else {
             return nil
         }
 
