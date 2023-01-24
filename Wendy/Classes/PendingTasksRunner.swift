@@ -27,7 +27,7 @@ internal class PendingTasksRunner {
         private init() {}
 
         fileprivate func scheduleRunPendingTask(_ taskId: Double, onComplete: @escaping (TaskRunResult) -> Void) {
-            runPendingTaskDispatchQueue.sync {
+            runPendingTaskDispatchQueue.async {
                 let result = self.runPendingTask(taskId: taskId)
                 onComplete(result)
             }
@@ -209,7 +209,7 @@ internal class PendingTasksRunner {
         }
 
         internal func scheduleRunAllTasks(filter: RunAllTasksFilter?, onComplete: @escaping (PendingTasksRunnerResult) -> Void) {
-            runPendingTasksDispatchQueue.sync {
+            runPendingTasksDispatchQueue.async {
                 LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
                 let result = PendingTasksRunner.shared.runAllTasks(filter: filter)
                 onComplete(result)
