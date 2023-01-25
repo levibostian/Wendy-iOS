@@ -173,6 +173,18 @@ public class Wendy {
     public final func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.shared.getAllTasks()
     }
+    
+    public final func deleteTask(_ taskId: Double) {
+        PendingTasksManager.shared.deleteTask(taskId)
+    }
+    
+    public final func deleteAllTasks() {
+        for pendingTask in getAllTasks() {
+            if let taskId = pendingTask.taskId {
+                deleteTask(taskId)
+            }
+        }
+    }
 
     public final func recordError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) {
         guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
