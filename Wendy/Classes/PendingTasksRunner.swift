@@ -134,11 +134,10 @@ internal class PendingTasksRunner {
                 return
             })
             
-            #if DEBUG
-                let dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .distantFuture)
-            #else
-                let dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .now() + 35.0)
-            #endif
+            var dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .now() + 35.0)
+            if WendyConfig.debug {
+                dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .distantFuture)
+            }
             
             if dispatchGroupResult == DispatchTimeoutResult.timedOut {
                 if taskToRun.getLatestError() == nil {
