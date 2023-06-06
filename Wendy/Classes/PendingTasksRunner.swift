@@ -133,8 +133,13 @@ internal class PendingTasksRunner {
                 self.runTaskDispatchGroup.leave()
                 return
             })
-
+            
+            #if DEBUG
+            _ = runTaskDispatchGroup.wait(timeout: .distantFuture)
+            #else
             _ = runTaskDispatchGroup.wait(timeout: .now() + 35.0)
+            #endif
+            
             return runTaskResult
         }
     }
