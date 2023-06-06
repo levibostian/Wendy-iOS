@@ -141,11 +141,15 @@ internal class PendingTasksRunner {
             #endif
             
             if dispatchGroupResult == DispatchTimeoutResult.timedOut,
-                let unresolvedError = PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) {
-                WendyConfig.logTaskSkipped(taskToRun, reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
+                let error = taskToRun.getLatestError() {
+                if taskToRun.getLatestError() == nil {
+                    taskToRun.recordError(humanReadableErrorMessage:"DispatchGroup Timed Out", errorId:"timedOut")
+                }
+                
+                WendyConfig.logTaskSkipped(taskToRun, reason: .unresolvedRecordedError(unresolvedError: error))
                 LogUtil.d("Task: \(taskToRun.describe()) has a unresolved error recorded. Skipping it.")
                 syncQueue.sync {
-                    runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
+                    runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: error))
                 }
             }
             
