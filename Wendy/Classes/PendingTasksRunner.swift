@@ -134,7 +134,7 @@ internal class PendingTasksRunner {
                 return
             })
 
-            _ = runTaskDispatchGroup.wait(timeout: .distantFuture)
+            _ = runTaskDispatchGroup.wait(timeout: .now() + 35.0)
             return runTaskResult
         }
     }
