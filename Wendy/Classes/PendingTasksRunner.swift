@@ -151,6 +151,8 @@ internal class PendingTasksRunner {
                 syncQueue.sync {
                     runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: error))
                 }
+                
+                self.runTaskDispatchGroup.leave()
             }
             
             return runTaskResult
