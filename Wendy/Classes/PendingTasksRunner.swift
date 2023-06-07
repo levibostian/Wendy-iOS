@@ -161,8 +161,6 @@ internal class PendingTasksRunner {
                     runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
                 }
                 WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
-
-                self.runTaskDispatchGroup.leave()
             }
             
             return runTaskResult
