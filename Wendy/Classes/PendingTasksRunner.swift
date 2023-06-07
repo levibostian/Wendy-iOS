@@ -155,6 +155,16 @@ internal class PendingTasksRunner {
                 self.runTaskDispatchGroup.leave()
             }
             
+            if runTaskResult == nil {
+                LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
+                syncQueue.sync {
+                    runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
+                }
+                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
+
+                runTaskDispatchGroup.leave()
+            }
+            
             return runTaskResult
         }
     }
