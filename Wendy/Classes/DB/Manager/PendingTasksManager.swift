@@ -6,6 +6,18 @@ internal class PendingTasksManager {
     internal static let shared: PendingTasksManager = PendingTasksManager()
 
     private init() {}
+    
+    internal func addGroupIdToPendingTasksWithoutGroupId() {
+        let allTasksWithoutGroupIds = getAllTasks().filter({ $0.groupId == nil || $0.groupId == "" })
+        
+        for task in allTasksWithoutGroupIds {
+            if let taskId = task.taskId, let persistedPendingTask = getTaskByTaskId(taskId) {
+                persistedPendingTask.groupId = task.tag
+            }
+        }
+        
+        CoreDataManager.shared.saveContext()
+    }
 
     internal func insertPendingTask(_ task: PendingTask) -> PendingTask {
         if task.tag.isEmpty { Fatal.preconditionFailure("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }

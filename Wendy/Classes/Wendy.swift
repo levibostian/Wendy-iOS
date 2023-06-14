@@ -232,6 +232,10 @@ public class Wendy {
         PendingTasksManager.shared.deleteTask(taskId)
     }
     
+    public final func addGroupIdToPendingTasksWithoutGroupId() {
+        PendingTasksManager.shared.addGroupIdToPendingTasksWithoutGroupId()
+    }
+    
     /// This function will delete pending tasks that are older than the provided days. Returns an array of deleted taskIds
     public final func deleteAllTasksOlderThan(days: Int) -> [Double] {
         let allTasks = getAllTasks().filter { pendingTask in
