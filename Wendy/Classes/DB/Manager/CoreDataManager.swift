@@ -82,6 +82,7 @@ internal class CoreDataManager {
                     let nserror = error as NSError
 //                    fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
                     NotificationCenter.default.post(name: Notification.Name("wendyCoreDataSaveContextError"), object: "Wendy Coredata error \(nserror), \(nserror.userInfo)")
+                    NotificationCenter.default.post(name: Notification.Name("wendyCoreDataSaveContextErrorPendingTaskUserInfo"), object: nserror.userInfo)
                 }
             }
         }
