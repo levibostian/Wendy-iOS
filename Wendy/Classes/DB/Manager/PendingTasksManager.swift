@@ -6,6 +6,18 @@ internal class PendingTasksManager {
     internal static let shared: PendingTasksManager = PendingTasksManager()
 
     private init() {}
+    
+    internal func addGroupIdToPendingTasksWithoutGroupId() {
+        let allTasksWithoutGroupIds = getAllTasks().filter({ $0.groupId == nil || $0.groupId == "" })
+        
+        for task in allTasksWithoutGroupIds {
+            if let taskId = task.taskId, let persistedPendingTask = getTaskByTaskId(taskId) {
+                persistedPendingTask.groupId = task.tag
+            }
+        }
+        
+        CoreDataManager.shared.saveContext()
+    }
 
     internal func insertPendingTask(_ task: PendingTask) -> PendingTask {
         if task.tag.isEmpty { Fatal.preconditionFailure("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }
@@ -325,7 +337,7 @@ internal class PendingTasksManager {
             let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
             return pendingTasks.count
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return 0
         }
     }
@@ -341,7 +353,7 @@ internal class PendingTasksManager {
             let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
             return pendingTasks.first
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return nil
         }
     }
@@ -367,7 +379,7 @@ internal class PendingTasksManager {
 
             return persistedPendingTask.pendingTask
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return nil
         }
     }
