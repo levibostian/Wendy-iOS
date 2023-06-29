@@ -16,9 +16,19 @@ internal class CoreDataManager {
             managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
             managedObjectContext?.persistentStoreCoordinator = coordinator
         }
+        
         return managedObjectContext!
     }()
-
+    
+    /// This function will return a new child context whose parent is the main context from persistentContainer.
+    func newPrivateContext() -> NSManagedObjectContext {
+        let newPrivateContext = persistentContainer.newBackgroundContext()
+        newPrivateContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        newPrivateContext.automaticallyMergesChangesFromParent = true
+        
+        return newPrivateContext
+    }
+    
     private lazy var applicationDocumentsDirectory: URL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named in the application's documents Application Support directory.
         var documentUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
