@@ -337,7 +337,7 @@ internal class PendingTasksManager {
             let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
             return pendingTasks.count
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return 0
         }
     }
@@ -353,7 +353,7 @@ internal class PendingTasksManager {
             let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
             return pendingTasks.first
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return nil
         }
     }
@@ -379,7 +379,7 @@ internal class PendingTasksManager {
 
             return persistedPendingTask.pendingTask
         } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
+//            Fatal.error("Error in Wendy while fetching data from database.", error: error)
             return nil
         }
     }
