@@ -134,35 +134,6 @@ internal class PendingTasksRunner {
                 return
             })
             
-//            var dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .now() + 35.0)
-//            if WendyConfig.debug {
-//                dispatchGroupResult = runTaskDispatchGroup.wait(timeout: .distantFuture)
-//            }
-//
-//            if dispatchGroupResult == DispatchTimeoutResult.timedOut {
-//                if taskToRun.getLatestError() == nil {
-//                    taskToRun.recordError(humanReadableErrorMessage:"DispatchGroup Timed Out", errorId:"timedOut")
-//                }
-//
-//                let error = PendingTaskError(pendingTask: taskToRun, errorId: "timedOut", errorMessage: "DispatchGroup Timed Out", createdAt: Date())
-//
-//                WendyConfig.logTaskSkipped(taskToRun, reason: .unresolvedRecordedError(unresolvedError: error))
-//                LogUtil.d("Task: \(taskToRun.describe()) has a unresolved error recorded. Skipping it.")
-//                syncQueue.sync {
-//                    runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: error))
-//                }
-//
-//                self.runTaskDispatchGroup.leave()
-//            }
-//
-//            if runTaskResult == nil {
-//                LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
-//                syncQueue.sync {
-//                    runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
-//                }
-//                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
-//            }
-      
             _ = runTaskDispatchGroup.wait(timeout: .distantFuture)
             
             return runTaskResult
