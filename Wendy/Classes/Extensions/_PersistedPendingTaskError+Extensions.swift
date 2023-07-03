@@ -3,7 +3,7 @@ import Foundation
 
 internal extension PersistedPendingTaskError {
     convenience init() {
-        let managedContext = CoreDataManager.shared.viewContext
+        let managedContext = CoreDataManager.shared.privateContext
         self.init(entity: NSEntityDescription.entity(forEntityName: "PersistedPendingTaskError", in: managedContext)!, insertInto: managedContext)
     }
 

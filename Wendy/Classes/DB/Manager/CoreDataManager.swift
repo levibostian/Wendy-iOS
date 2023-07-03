@@ -5,30 +5,20 @@ internal class CoreDataManager {
     internal static let shared = CoreDataManager()
 
     private init() {}
-
-    internal lazy var viewContext: NSManagedObjectContext = {
+    
+    internal lazy var privateContext: NSManagedObjectContext = {
         var managedObjectContext: NSManagedObjectContext?
         if #available(iOS 10.0, *) {
-            managedObjectContext = self.persistentContainer.viewContext
+            managedObjectContext = self.persistentContainer.newBackgroundContext()
         } else {
             // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
             let coordinator = self.persistentStoreCoordinator
-            managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+            managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
             managedObjectContext?.persistentStoreCoordinator = coordinator
         }
-        
         return managedObjectContext!
     }()
-    
-    /// This function will return a new child context whose parent is the main context from persistentContainer.
-    func newPrivateContext() -> NSManagedObjectContext {
-        let newPrivateContext = persistentContainer.newBackgroundContext()
-        newPrivateContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-        newPrivateContext.automaticallyMergesChangesFromParent = true
-        
-        return newPrivateContext
-    }
-    
+
     private lazy var applicationDocumentsDirectory: URL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named in the application's documents Application Support directory.
         var documentUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
@@ -82,10 +72,10 @@ internal class CoreDataManager {
     }()
 
     internal func saveContext() {
-        if viewContext.hasChanges {
-            viewContext.performAndWait {
+        if privateContext.hasChanges {
+            privateContext.performAndWait {
                 do {
-                    try viewContext.save()
+                    try privateContext.save()
                 } catch {
                     // Replace this implementation with code to handle the error appropriately.
                     // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.

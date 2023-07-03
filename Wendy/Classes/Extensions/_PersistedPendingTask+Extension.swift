@@ -4,7 +4,7 @@ import Foundation
 internal extension PersistedPendingTask {
     convenience init() {
         // This exists so when children of PendingTask initialize pending tasks with self.init(), we are automatically setting the CoreData context. We don't want the developer to even realize we are using CoreData here so we are hiding this.
-        let managedContext = CoreDataManager.shared.viewContext
+        let managedContext = CoreDataManager.shared.privateContext
         self.init(entity: NSEntityDescription.entity(forEntityName: "PersistedPendingTask", in: managedContext)!, insertInto: managedContext)
     }
 

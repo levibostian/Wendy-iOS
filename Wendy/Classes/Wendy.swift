@@ -104,6 +104,11 @@ public class Wendy {
             LogUtil.d("Task is not able to manually run. Skipping execution of newly added task: \(task.describe())")
             return false
         }
+        if let groupId = task.groupId{
+            if groupId.contains("ImageUploadPendingTask"){
+                return false
+            }
+        }
         
         LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
         runTask(task.taskId!, onComplete: nil)
