@@ -21,7 +21,7 @@ internal class PendingTasksRunner {
     fileprivate class RunSinglePendingTaskRunner {
         static let shared = RunSinglePendingTaskRunner()
 
-        private let runPendingTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTask")
+        private let runPendingTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTask", qos: .default)
         private let runTaskDispatchGroup = DispatchGroup()
 
         private init() {}
