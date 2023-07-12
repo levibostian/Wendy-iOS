@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Wendy'
-  s.version          = '0.5.6'
+  s.version          = '0.5.7'
   s.swift_version    = '5.0'
   s.summary          = 'Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.'
 
