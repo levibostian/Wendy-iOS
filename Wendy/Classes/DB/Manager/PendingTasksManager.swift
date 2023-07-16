@@ -97,6 +97,19 @@ internal class PendingTasksManager {
         
         return result
     }
+    
+    internal func getPendingTasksCount() -> Int {
+        let viewContext = CoreDataManager.shared.privateContext
+        let pendingTaskFactory = Wendy.shared.pendingTasksFactory
+        var count = 0
+        viewContext.performAndWait {
+            do {
+                count = try viewContext.count(for:PersistedPendingTask.fetchRequest())
+            } catch {
+            }
+        }
+        return count
+    }
 
     internal func getAllTasks() -> [PendingTask] {
         let viewContext = CoreDataManager.shared.privateContext

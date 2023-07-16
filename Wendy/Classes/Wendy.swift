@@ -175,6 +175,10 @@ public class Wendy {
         }
     }
     
+    public final func getPendingTasksCount() -> Int {
+        return PendingTasksManager.shared.getPendingTasksCount()
+    }
+    
     public final func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.shared.getAllTasks()
     }
