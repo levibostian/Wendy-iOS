@@ -9,13 +9,11 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 ![project logo. A picture of a person with long red hair.](misc/wendy_logo.jpg)
 
-[Read the official announcement of Wendy](https://levibostian.com/blog/no-more-excuses-build-offline-apps/) to learn more about what it does and why to use it.
-
 Android developer? [Check out the Android version of Wendy!](https://github.com/levibostian/wendy-android)
 
-### Announcement - version 1.0
+## Announcement 
 
-Version 1.0 has been announced and is in development. Check out [the issue](https://github.com/levibostian/Wendy-iOS/issues/39) to learn more. The pre-1.0 code will be in maintenance mode until v1.0 is complete. Pre-1.0 is used by myself in production apps today, but you have been warned that there will more then likely be large breaking changes when 1.0 comes out. 
+See [latest announcement](https://github.com/levibostian/Wendy-iOS/discussions/51) from maintainers discussing API changes coming to Wendy. 
 
 ## What is Wendy?
 
