@@ -23,14 +23,3 @@ target 'Wendy_Tests' do
   commonDependencies()
   testingDependencies()
 end
-
-# Workaround for a comilation issue. 
-# In future release of Wendy, use of CoreData and sqlite will be removed so this workaround is good for time being. 
-# https://stackoverflow.com/a/77513296
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = "11.0"
-    end
-  end
-end
