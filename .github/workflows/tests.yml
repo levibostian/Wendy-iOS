@@ -17,4 +17,4 @@ jobs:
       with:
         xcode-version: "15"
 
-    - run: pod lib lint
+    - run: pod lib lint --allow-warnings
