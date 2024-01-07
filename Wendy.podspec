@@ -31,7 +31,7 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
   s.source           = { :git => 'https://github.com/levibostian/Wendy-iOS.git', :tag => s.version.to_s }
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '11.0'
 
   s.source_files = 'Wendy/Classes/**/*'  
   s.resources = 'Wendy/Assets/**/*'
