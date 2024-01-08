@@ -9,7 +9,7 @@ public extension PendingTask {
         dateFormatter.dateFormat = "MM-dd-yyyy HH:mm:ss Z"
         let createdAtString: String = (createdAt != nil) ? dateFormatter.string(from: createdAt!) : "none"
 
-        return "taskId: \(taskIdString) dataId: \(dataIdString) manuallyRun: \(manuallyRun) groupId: \(groupIdString) createdAt: \(createdAtString)"
+        return "taskId: \(taskIdString) dataId: \(dataIdString) groupId: \(groupIdString) createdAt: \(createdAtString)"
     }
 
     func addTaskStatusListenerForTask(listener: PendingTaskStatusListener) {

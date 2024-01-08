@@ -96,10 +96,6 @@ public class Wendy {
             LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(task.describe())")
             return false
         }
-        if task.manuallyRun {
-            LogUtil.d("Task is set to manually run. Skipping execution of newly added task: \(task.describe())")
-            return false
-        }
         if try !isTaskAbleToManuallyRun(task.taskId!) {
             LogUtil.d("Task is not able to manually run. Skipping execution of newly added task: \(task.describe())")
             return false
