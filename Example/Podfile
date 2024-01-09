@@ -3,7 +3,7 @@ use_frameworks!
 # ignore all warnings from all pods
 inhibit_all_warnings!
 
-platform :ios, '10.0'
+platform :ios, '13.0'
 
 def commonDependencies
   pod 'Wendy', :path => '../'
@@ -11,8 +11,6 @@ def commonDependencies
 end 
 
 def testingDependencies
-  pod 'SwiftLint'  
-  pod 'SwiftFormat/CLI'
 end
 
 target 'Wendy_Example' do

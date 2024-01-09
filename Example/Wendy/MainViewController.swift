@@ -19,27 +19,6 @@ class MainViewController: UIViewController {
         return view
     }()
 
-    fileprivate let manuallyRunSwitch: UISwitch = {
-        let view = UISwitch()
-        view.setOn(false, animated: false)
-        return view
-    }()
-
-    fileprivate let manuallyRunSwitchLabel: UILabel = {
-        let view = UILabel()
-        view.text = "Manually run task"
-        return view
-    }()
-
-    fileprivate lazy var manuallyRunViewsStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.manuallyRunSwitch, self.manuallyRunSwitchLabel])
-        view.alignment = .leading
-        view.distribution = .fill
-        view.spacing = 8.0
-        view.axis = .horizontal
-        return view
-    }()
-
     fileprivate let automaticallyRunWendySwitch: UISwitch = {
         let view = UISwitch()
         view.setOn(false, animated: false)
@@ -106,7 +85,7 @@ class MainViewController: UIViewController {
     }()
 
     fileprivate lazy var textFieldStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.dataTextField, self.groupTextField, self.manuallyRunViewsStackView, self.automaticallyRunWendyViewsStackView, self.buttonsStackView, self.secondButtonsRowStackView])
+        let view = UIStackView(arrangedSubviews: [self.dataTextField, self.groupTextField, self.automaticallyRunWendyViewsStackView, self.buttonsStackView, self.secondButtonsRowStackView])
         view.alignment = .leading
         view.distribution = .fillEqually
         view.spacing = 8.0
@@ -195,7 +174,7 @@ class MainViewController: UIViewController {
         }
         let groupId: String? = (groupTextField.text!.isEmpty) ? nil : groupTextField.text
 
-        _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, manuallyRun: manuallyRunSwitch.isOn, groupId: groupId))
+        _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, groupId: groupId))
     }
 
     override func updateViewConstraints() {
