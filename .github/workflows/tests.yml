@@ -1,0 +1,20 @@
+on: 
+  pull_request: # build app for every commit pushed to an open pull request (including drafts)
+  push: 
+    branches: [main]
+
+concurrency: # cancel previous workflow run if one exists. 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:    
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: "15"
+
+    - run: pod lib lint --allow-warnings

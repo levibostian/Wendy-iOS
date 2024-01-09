@@ -35,18 +35,13 @@ class PendingTaskTableViewCell: UITableViewCell {
         return view
     }()
 
-    fileprivate let manuallyRunTaskLabel: UILabel = {
-        let view = UILabel()
-        return view
-    }()
-
     fileprivate let createdAtLabel: UILabel = {
         let view = UILabel()
         return view
     }()
 
     fileprivate lazy var labelsStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [idLabel, tagLabel, dataIdLabel, groupIdLabel, manuallyRunTaskLabel, createdAtLabel])
+        let view = UIStackView(arrangedSubviews: [idLabel, tagLabel, dataIdLabel, groupIdLabel, createdAtLabel])
         view.alignment = .leading
         view.distribution = .fill
         view.spacing = 2.0
@@ -90,7 +85,6 @@ class PendingTaskTableViewCell: UITableViewCell {
         tagLabel.text = "tag: \(item.tag)"
         dataIdLabel.text = "dataId: \(item.dataId!)"
         groupIdLabel.text = "groupId: \(item.groupId ?? "(none)")"
-        manuallyRunTaskLabel.text = "manuallyRun: \(item.manuallyRun)"
         createdAtLabel.text = "createdAt: \(item.createdAt!)"
         pendingTaskStatusLabel.setPendingTask(item)
 

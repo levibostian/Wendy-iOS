@@ -24,13 +24,11 @@ class AddGroceryListItemPendingTask: PendingTask {
     var taskId: Double?
     var dataId: String?
     var groupId: String?
-    var manuallyRun: Bool = false
     var createdAt: Date?
 
-    convenience init(groceryListItemName: String, manuallyRun: Bool, groupId: String?) {
+    convenience init(groceryListItemName: String, groupId: String?) {
         self.init()
         self.dataId = groceryListItemName
-        self.manuallyRun = manuallyRun
         self.groupId = groupId
     }
 

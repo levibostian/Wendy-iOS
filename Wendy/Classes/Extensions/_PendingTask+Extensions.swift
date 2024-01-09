@@ -4,7 +4,6 @@ internal extension PendingTask {
     mutating func populate(from: PersistedPendingTask) {
         taskId = from.id
         dataId = from.dataId
-        manuallyRun = from.manuallyRun
         groupId = from.groupId
         createdAt = from.createdAt!
     }

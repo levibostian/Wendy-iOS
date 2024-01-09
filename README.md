@@ -34,7 +34,6 @@ Wendy currently has the following functionality:
 * Wendy uses the iOS background fetch scheduler API to run tasks periodically to keep data in sync without using the user's battery too much.
 * Wendy is not opinionated. You may use whatever method you choose to sync data with it's remote storage and whatever method you choose to store data locally on the device. Wendy works with your workflow you already have. Store user data in Core Data locally and a Rails API for the cloud storage. Store user data in Realm locally and a Parse server for the cloud storage. Use just NSUserDefaults and GraphQL. Whatever you want, Wendy works with it.
 * Dynamically allow and disallow tasks to sync at runtime. Wendy works in a FIFO style with it's tasks. When Wendy is about to run a certain task, it always asks the task if it is able to run.
-* Mark tasks to manually run instead of automatically from Wendy. This allows you to use the same Wendy API to define all of your sync tasks, but Wendy will simply not attempt to run these tasks periodically automatically.
 * Group tasks together to enforce they all run (and succeed) in an exact order from start to finish.
 * Wendy also comes with an error reporter to report errors that your user needs to fix for a task to succeed.
 * Wendy takes care of all of the use cases that could happen with building an offline-first mobile app. "What if this task succeeds but this one doesn't? What happens when the network is flaky and a couple of tasks fail but should retry? What happens if this task needs to succeed in order for this task to succeed on my API?" Wendy takes care of handling all of this for you. You define the behavior, Wendy takes care of running it when it is confident it can run the task and succeed.
@@ -107,7 +106,6 @@ class CreateGroceryListItemPendingTask: PendingTask {
     var taskId: Double?
     var dataId: String?
     var groupId: String?
-    var manuallyRun: Bool = false
     var createdAt: Date?
 
     convenience init(groceryStoreItemId: Int) {
@@ -316,8 +314,6 @@ Wendy will crash if it cannot find a collection by ID. Avoid Strings to avoid th
 Wendy.shared.runTasks(filter: RunAllTasksFilter.collection(id: WendyCollectionIds.friendRequestsList.rawValue)) { result in        
 }
 ```
-
-*Note: If a `PendingTask` is marked to manually run, `runTasks()` will not run that task.*
 
 3. Now, in order to prevent the scenario where your app gets into an unstable state, run the collection of pending tasks *before* you run your HTTP request to get the list of friend requests:
 
