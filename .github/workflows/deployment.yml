@@ -10,7 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ios
-      
+
+      - uses: ./.github/actions/setup-semantic-release      
       - uses: cycjimmy/semantic-release-action@v4
         with:
           branch: latest # have this match what this workflow triggers on
