@@ -9,21 +9,11 @@ jobs:
       contents: write # to make a git tag       
     steps:
       - uses: actions/checkout@v4
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: "15"
-
+      - uses: ./.github/actions/setup-ios
+      
       - uses: cycjimmy/semantic-release-action@v4
         with:
           branch: latest # have this match what this workflow triggers on
           semantic_version: latest
-          extra_plugins: |
-            conventional-changelog-conventionalcommits
-            @semantic-release/github
-            @semantic-release/git
-            semantic-release-recovery
-            semantic-release-cocoapods
-            semantic-release-precheck
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

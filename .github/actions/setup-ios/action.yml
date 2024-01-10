@@ -1,0 +1,10 @@
+name: Setup iOS
+description: Setup CI with iOS development tools to compile and test iOS source code. 
+
+runs:
+  using: "composite"
+  steps:
+  - name: Install XCode 
+    uses: maxim-lobanov/setup-xcode@v1
+    with:
+      xcode-version: "15"

@@ -1,7 +1,6 @@
 on: 
   pull_request: # build app for every commit pushed to an open pull request (including drafts)
-  push: 
-    branches: [main]
+  push:
 
 concurrency: # cancel previous workflow run if one exists. 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,9 +11,27 @@ jobs:
     runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-ios
     
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: "15"
-
     - run: pod lib lint --allow-warnings
+
+  deployment:
+    if: github.event_name == 'push' # semantic-release only seems to work when running on push, not on pull_request because of temp branch made during PRs. 
+    runs-on: macos-13 # because cocoapods is already installed on these machines
+    permissions:
+      contents: write # to set permissions for semantic-release dry-run to pass 
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: setup git user to run semantic-release
+      run: |
+        git config --global user.email "user@example.com"
+        git config --global user.name "Example User"
+
+    - uses: ./.github/actions/setup-semantic-release
+    
+    - name: Run semantic-release in dry run
+      run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "${{ github.ref_name }},main"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
