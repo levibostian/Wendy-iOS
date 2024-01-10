@@ -1,0 +1,32 @@
+name: Trigger deploy after merges to main 
+
+on: 
+  push:
+    branches: [main]
+
+jobs:
+  merge-commits-trigger-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write # be able to trigger another workflow 
+      contents: write # to merge commits into latest branch 
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Merge main -> latest to trigger a deploy on latest 
+      uses: devmasx/merge-branch@v1.4.0
+      with:
+        type: now
+        from_branch: main
+        target_branch: latest
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    # We manually run here because github will not execute github actions as a result of commits being pushed to latest branch. 
+    - name: Trigger deploy 
+      uses: aurelien-baudet/workflow-dispatch@v2
+      id: deploy-action
+      with:
+        workflow: deployment.yml
+        wait-for-completion: false
+        ref: latest # run the workflow on latest branch so deploy happens on it. 
+        token: ${{ secrets.GITHUB_TOKEN }}
