@@ -15,12 +15,5 @@ jobs:
         with:
           branch: latest # have this match what this workflow triggers on
           semantic_version: latest
-          extra_plugins: |
-            conventional-changelog-conventionalcommits
-            @semantic-release/github
-            @semantic-release/git
-            semantic-release-recovery
-            semantic-release-cocoapods
-            semantic-release-precheck
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

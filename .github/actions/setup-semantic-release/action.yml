@@ -1,0 +1,16 @@
+name: Setup semantic-release 
+description: Install all of the tools that the server needs to run semantic-release
+
+runs:
+  using: "composite"
+  steps:
+  - name: Install semantic-release plugins that we need for deployment of this project 
+    run: |
+      npm install -g \ 
+        conventional-changelog-conventionalcommits \
+        @semantic-release/github \
+        @semantic-release/git \
+        semantic-release-recovery \
+        semantic-release-cocoapods \ 
+        semantic-release-precheck
+    shell: bash
