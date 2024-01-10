@@ -1,22 +1,27 @@
 
 on:
-  push: 
-    branches: [latest]
-
+  workflow_dispatch: # this workflow gets manually executed when commits merged into main 
+  
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     permissions:
       contents: write # to make a git tag       
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy git tag via semantic-release
-        uses: cycjimmy/semantic-release-action@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
+          xcode-version: "15"
+
+      - uses: cycjimmy/semantic-release-action@v4
+        with:
+          branch: latest # have this match what this workflow triggers on
           semantic_version: latest
           extra_plugins: |
             conventional-changelog-conventionalcommits
             @semantic-release/github
+            @semantic-release/git
             semantic-release-recovery
             semantic-release-cocoapods
             semantic-release-precheck
