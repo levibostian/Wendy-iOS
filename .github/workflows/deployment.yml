@@ -1,0 +1,24 @@
+
+on:
+  push: 
+    branches: [latest]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to make a git tag       
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy git tag via semantic-release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          semantic_version: latest
+          extra_plugins: |
+            conventional-changelog-conventionalcommits
+            @semantic-release/github
+            semantic-release-recovery
+            semantic-release-cocoapods
+            semantic-release-precheck
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

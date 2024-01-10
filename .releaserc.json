@@ -1,0 +1,40 @@
+{
+    "tagFormat": "${version}",
+    "branches": [
+        "main",
+        { "name": "beta", "prerelease": true },
+        { "name": "alpha", "prerelease": true }
+    ],
+    "plugins": [
+        ["@semantic-release/commit-analyzer", {
+            "preset": "conventionalcommits"
+        }],
+        ["@semantic-release/release-notes-generator", {
+            "preset": "conventionalcommits"
+        }],
+        ["semantic-release-recovery", {
+            "plugins": [
+                ["semantic-release-precheck", {
+                    "is_it_deployed": {
+                        "package_manager": "cocoapods",
+                        "package_name": "Wendy"
+                    },
+                    "deploy_plugin": 
+                        ["semantic-release-cocoapods", {
+                            "podLint": false,
+                            "podPushArgs": "--allow-warnings"
+                        }]
+                  }]
+            ]
+        }],
+        ["@semantic-release/git", {
+            "assets": ["*.podspec"],
+            "message": "chore: update metadata for release ${nextRelease.version}"
+        }],
+        ["@semantic-release/github", {
+            "labels": false,
+            "successComment": false,
+            "failTitle": false
+        }]
+    ]
+}
