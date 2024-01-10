@@ -9,11 +9,8 @@ jobs:
       contents: write # to make a git tag       
     steps:
       - uses: actions/checkout@v4
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: "15"
-
+      - uses: ./.github/actions/setup-ios
+      
       - uses: cycjimmy/semantic-release-action@v4
         with:
           branch: latest # have this match what this workflow triggers on
