@@ -5,5 +5,4 @@ import Foundation
  */
 public enum RunAllTasksFilter {
     case group(id: String)
-    case collection(id: CollectionId)
 }

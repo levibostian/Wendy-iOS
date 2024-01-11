@@ -14,9 +14,8 @@ public class Wendy {
 
     private init() {}
 
-    public class func setup(tasksFactory: PendingTasksFactory, collections: Collections = [:], debug: Bool = false) {
+    public class func setup(tasksFactory: PendingTasksFactory, debug: Bool = false) {
         WendyConfig.debug = debug
-        WendyConfig.collections = collections
         Wendy.shared.pendingTasksFactory = tasksFactory
     }
 
