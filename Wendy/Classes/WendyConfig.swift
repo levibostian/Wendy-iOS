@@ -5,7 +5,6 @@ public class WendyConfig {
     public static var automaticallyRunTasks: Bool = true
     public static var strict: Bool = true
     public static var debug: Bool = false
-    public static var collections: Collections = [:]
 
     fileprivate static var taskRunnerListeners: [WeakReferenceTaskRunnerListener] = []
     public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {

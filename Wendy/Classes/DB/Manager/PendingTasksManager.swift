@@ -282,16 +282,10 @@ internal class PendingTasksManager {
 
     private func applyFilterPredicates(_ filter: RunAllTasksFilter, to keyValues: [String: NSObject]) -> [String: NSObject] {
         var keyValues = keyValues
-        let collections = WendyConfig.collections
 
         switch filter {
         case .group(let groupId):
             keyValues["groupId = %@"] = groupId as NSObject
-        case .collection(let collectionId):
-            let collection = collections.getCollection(id: collectionId)
-
-            // Pending tasks where the tag of the pending task is in the collection
-            keyValues["tag IN %@"] = collection as NSObject
         }
 
         return keyValues
