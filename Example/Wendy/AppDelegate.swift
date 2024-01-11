@@ -9,11 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory(), collections: [
-            WendyCollectionIds.groceryShopping.rawValue: [
-                AddGroceryListItemPendingTask.tag
-            ]
-        ])
+        Wendy.setup(tasksFactory: ExampleAppPendingTasksFactory())
         #if DEBUG
         WendyConfig.debug = true
         #endif
