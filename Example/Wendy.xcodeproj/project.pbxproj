@@ -16,7 +16,6 @@
 		F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */; };
 		F75239302090FD2200E2D76A /* CreateGroceryListItemPendingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752392F2090FD2200E2D76A /* CreateGroceryListItemPendingTask.swift */; };
 		F76AFB662086738A001A427B /* Pods_Wendy_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66F6204D5DD1D3F56DFF7D6D /* Pods_Wendy_Example.framework */; };
-		F787F15D23AE9DC4007EA1CE /* WendyCollectionIds.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F15C23AE9DC4007EA1CE /* WendyCollectionIds.swift */; };
 		F787F16123AEB034007EA1CE /* PendingTasksRunnerResultTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */; };
 		F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16223AEB672007EA1CE /* ErrorForTesting.swift */; };
 		F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */; };
@@ -67,7 +66,6 @@
 		F73E96E3206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleAppPendingTasksFactory.swift; sourceTree = "<group>"; };
 		F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskTableViewCell.swift; sourceTree = "<group>"; };
 		F752392F2090FD2200E2D76A /* CreateGroceryListItemPendingTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroceryListItemPendingTask.swift; sourceTree = "<group>"; };
-		F787F15C23AE9DC4007EA1CE /* WendyCollectionIds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WendyCollectionIds.swift; sourceTree = "<group>"; };
 		F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTasksRunnerResultTest.swift; sourceTree = "<group>"; };
 		F787F16223AEB672007EA1CE /* ErrorForTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorForTesting.swift; sourceTree = "<group>"; };
 		F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskStatusUILabel.swift; sourceTree = "<group>"; };
@@ -155,7 +153,6 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
-				F787F15C23AE9DC4007EA1CE /* WendyCollectionIds.swift */,
 			);
 			name = "Example for Wendy-iOS";
 			path = Wendy;
@@ -458,7 +455,6 @@
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */,
 				F75239302090FD2200E2D76A /* CreateGroceryListItemPendingTask.swift in Sources */,
-				F787F15D23AE9DC4007EA1CE /* WendyCollectionIds.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */,
 				F73E96E4206EDF8500E7306F /* ExampleAppPendingTasksFactory.swift in Sources */,

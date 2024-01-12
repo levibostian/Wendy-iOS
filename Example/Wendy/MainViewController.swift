@@ -61,23 +61,8 @@ class MainViewController: UIViewController {
         return view
     }()
 
-    fileprivate let runCollectionButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("Run collection \(WendyCollectionIds.groceryShopping.rawValue)", for: UIControl.State.normal)
-        view.setTitleColor(UIColor.blue, for: .normal)
-        return view
-    }()
-
     fileprivate lazy var buttonsStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.addTaskButton, self.runAllTasksButton])
-        view.alignment = .leading
-        view.distribution = .fill
-        view.axis = .horizontal
-        return view
-    }()
-
-    fileprivate lazy var secondButtonsRowStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.cancelButton, self.runCollectionButton])
+        let view = UIStackView(arrangedSubviews: [self.addTaskButton, self.runAllTasksButton, self.cancelButton])
         view.alignment = .leading
         view.distribution = .fill
         view.axis = .horizontal
@@ -85,7 +70,7 @@ class MainViewController: UIViewController {
     }()
 
     fileprivate lazy var textFieldStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [self.dataTextField, self.groupTextField, self.automaticallyRunWendyViewsStackView, self.buttonsStackView, self.secondButtonsRowStackView])
+        let view = UIStackView(arrangedSubviews: [self.dataTextField, self.groupTextField, self.automaticallyRunWendyViewsStackView, self.buttonsStackView])
         view.alignment = .leading
         view.distribution = .fillEqually
         view.spacing = 8.0
@@ -136,7 +121,6 @@ class MainViewController: UIViewController {
         cancelButton.addTarget(self, action: #selector(MainViewController.cancelButtonPressed(_:)), for: .touchUpInside)
 
         automaticallyRunWendySwitch.addTarget(self, action: #selector(automaticallyRunWendySwitchPressed(_:)), for: .touchUpInside)
-        runCollectionButton.addTarget(self, action: #selector(runCollectionButtonPressed(_:)), for: .touchUpInside)
         automaticallyRunWendySwitch.setOn(WendyConfig.automaticallyRunTasks, animated: false)
 
         pendingTaskTableView.delegate = self
@@ -153,12 +137,6 @@ class MainViewController: UIViewController {
 
     @objc func cancelButtonPressed(_ sender: Any) {
         Wendy.shared.clear()
-    }
-
-    @objc func runCollectionButtonPressed(_ sender: Any) {
-        Wendy.shared.runTasks(filter: RunAllTasksFilter.collection(id: WendyCollectionIds.groceryShopping.rawValue)) { result in
-            print("Done running all tasks. Result: \(result)")
-        }
     }
 
     @objc func automaticallyRunWendySwitchPressed(_ sender: Any) {
@@ -182,9 +160,6 @@ class MainViewController: UIViewController {
             didSetupConstraints = true
 
             buttonsStackView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
-            }
-            secondButtonsRowStackView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
             }
             textFieldStackView.snp.makeConstraints { make in
