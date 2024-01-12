@@ -224,7 +224,7 @@ The only requirement is to call `Wendy.shared.performBackgroundFetch()`. You may
 
 Done! Wendy takes care of all the rest. Wendy will try to run your task right away but if you're offline or in a spotty Internet connection, Wendy will wait and try again later.
 
-There is a document on [best practices when using Wendy](https://github.com/levibostian/Wendy-Android/blob/master/BEST_PRACTICES.md). Check that out to answer your questions you have about why Wendy works the way that it does. The document's code is Android code, but it's not about the code, it's about the best practices so you should be able to understand it until I get a better "generic" document setup 😄.
+There is a document on [best practices when using Wendy](BEST_PRACTICES.md). Check that out to answer your questions you have about why Wendy works the way that it does. The document's code is Android code, but it's not about the code, it's about the best practices so you should be able to understand it until I get a better "generic" document setup 😄.
 
 ## Clear data
 
