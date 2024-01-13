@@ -8,11 +8,18 @@ The breaking change that caused Wendy to go from v1 to v2 is the removal of a fe
 
 If your app currently uses this feature, the recommended migration path is to no longer use Wendy to run the jobs in your app you're manually managing. Wendy does not provide an alternative feature inside of it that can be used as an alternative. Either write code yourself to run these tasks or use a 3rd party SDK to run these jobs. 
 
-# v2 to v3 - Removal of Collections feature 
+# v2 to v3 - Removal of Collections feature
 
 The breaking change that caused Wendy to go from v2 to v3 is the removal of a feature known as *Collections*. This feature was originally added to satisfy an old best practice that was recommended at the time. However, this best practice is no longer recommended. Because of that, Collections has been removed to encourage the new best practice instead.  
 
 If your app currently uses this feature, the recommended migration path is to modify your app’s logic to [follow this new best practice][2]. 
 
+# v3 to v4 - Removal of error reporting feature
+
+The breaking change that caused Wendy to go from v3 to v4 is the removal of a feature known as *error reporting*. This feature was originally added to satisfy an old best practice that was recommended at the time. However, this best practice is no longer recommended. Because of that, error reporting has been removed to encourage the new best practice instead.  
+
+If your app currently uses this feature, the recommended migration path is to modify your app’s logic to [follow this new best practice][3]. 
+
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
+[3]:	BEST_PRACTICES.md#handle-errors-when-a-task-runs
