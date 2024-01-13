@@ -45,12 +45,4 @@ extension PendingTaskStatusUILabel: PendingTaskStatusListener {
     func skipped(taskId: Double, reason: ReasonPendingTaskSkipped) {
         text = "Skipped"
     }
-
-    func errorRecorded(taskId: Double, errorMessage: String?, errorId: String?) {
-        text = "Error recorded: \(errorMessage!)"
-    }
-
-    func errorResolved(taskId: Double) {
-        text = "Error resolved"
-    }
 }

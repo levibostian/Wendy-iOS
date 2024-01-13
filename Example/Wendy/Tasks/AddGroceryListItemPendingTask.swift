@@ -41,10 +41,6 @@ class AddGroceryListItemPendingTask: PendingTask {
         sleep(2)
 
         let successful = drand48() > 0.5
-        let humanError = drand48() > 0.5
-        if !successful && humanError {
-            Wendy.shared.recordError(taskId: taskId!, humanReadableErrorMessage: "Random error message here", errorId: nil)
-        }
 
         let result: Error? = successful ? nil : AddGroceryListItemPendingTaskError.randomError
         complete(result)

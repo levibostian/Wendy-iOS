@@ -3,7 +3,6 @@ import UIKit
 import Wendy
 
 protocol PendingTaskTableViewCellDelegate: AnyObject {
-    func resolveErrorButtonPressed(_ task: PendingTask)
     func runTaskButtonPressed(_ task: PendingTask)
 }
 
@@ -62,13 +61,8 @@ class PendingTaskTableViewCell: UITableViewCell {
         return view
     }()
 
-    fileprivate let resolveErrorButton: PendingTaskResolveErrorButton = {
-        let view = PendingTaskResolveErrorButton()
-        return view
-    }()
-
     fileprivate lazy var buttonsStackView: UIStackView = { [unowned self] in
-        let view = UIStackView(arrangedSubviews: [pendingTaskStatusLabel, runTaskButton, resolveErrorButton])
+        let view = UIStackView(arrangedSubviews: [pendingTaskStatusLabel, runTaskButton])
         view.alignment = .leading
         view.distribution = .fill
         view.spacing = 2.0
@@ -93,8 +87,6 @@ class PendingTaskTableViewCell: UITableViewCell {
 
         runTaskButton.addTarget(self, action: #selector(runTaskButtonPressed(_:)), for: .touchUpInside)
         runTaskButton.isHidden = !item.isAbleToManuallyRun()
-        resolveErrorButton.delegate = self
-        resolveErrorButton.setPendingTask(item)
 
         setNeedsUpdateConstraints()
     }
@@ -121,11 +113,5 @@ class PendingTaskTableViewCell: UITableViewCell {
             didSetupConstraints = true
         }
         super.updateConstraints()
-    }
-}
-
-extension PendingTaskTableViewCell: PendingTaskResolveErrorButtonDelegate {
-    func resolveErrorButtonPressed(_ task: PendingTask) {
-        delegate?.resolveErrorButtonPressed(task)
     }
 }
