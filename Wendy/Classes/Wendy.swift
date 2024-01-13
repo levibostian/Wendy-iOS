@@ -36,7 +36,7 @@ public class Wendy {
         return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: runAllTasksResult.backgroundFetchResult)
     }
 
-    public final func addTask(_ pendingTaskToAdd: PendingTask, resolveErrorIfTaskExists: Bool = true) -> Double {
+    public final func addTask(_ pendingTaskToAdd: PendingTask) -> Double {
         _ = pendingTasksFactory.getTask(tag: pendingTaskToAdd.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late!
 
         // We enforce a best practice here.
@@ -54,12 +54,6 @@ public class Wendy {
 
             if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(sampleExistingPendingTask) {
                 PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
-                return sampleExistingPendingTask.id
-            }
-            if doesErrorExist(taskId: sampleExistingPendingTask.id), resolveErrorIfTaskExists {
-                for pendingTask in existingPendingTasks {
-                    try resolveError(taskId: pendingTask.id)
-                }
                 return sampleExistingPendingTask.id
             }
             // If a PendingTask belongs to a group, but is *not* the last item in the group, we want to insert it into CoreData. Let is pass through below to add itself.
@@ -167,59 +161,6 @@ public class Wendy {
 
     public final func getAllTasks() -> [PendingTask] {
         return PendingTasksManager.shared.getAllTasks()
-    }
-
-    public final func recordError(taskId: Double, humanReadableErrorMessage: String?, errorId: String?) {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
-            return
-        }
-
-        PendingTasksManager.shared.insertPendingTaskError(taskId: taskId, humanReadableErrorMessage: humanReadableErrorMessage, errorId: errorId)
-
-        WendyConfig.logErrorRecorded(pendingTask, errorMessage: humanReadableErrorMessage, errorId: errorId)
-    }
-
-    public final func getLatestError(taskId: Double) -> PendingTaskError? {
-        guard PendingTasksManager.shared.getPendingTaskTaskById(taskId) != nil else {
-            return nil
-        }
-
-        return PendingTasksManager.shared.getLatestError(pendingTaskId: taskId)
-    }
-
-    public final func doesErrorExist(taskId: Double) -> Bool {
-        return getLatestError(taskId: taskId) != nil
-    }
-
-    public final func resolveError(taskId: Double) -> Bool {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
-            return false
-        }
-
-        if let existingPendingTasks = PendingTasksManager.shared.getExistingTasks(pendingTask), !existingPendingTasks.isEmpty {
-            for existingTask in existingPendingTasks {
-                let existingTaskPendingTask = existingTask.pendingTask
-
-                if try PendingTasksManager.shared.deletePendingTaskError(existingTask.id) {
-                    WendyConfig.logErrorResolved(existingTaskPendingTask)
-                    LogUtil.d("Task: \(existingTaskPendingTask.describe()) successfully resolved previously recorded error.")
-
-                    if let pendingTaskGroupId = existingTaskPendingTask.groupId {
-                        runTasks(filter: RunAllTasksFilter.group(id: pendingTaskGroupId), onComplete: nil)
-                    } else {
-                        try runTaskAutomaticallyIfAbleTo(existingTaskPendingTask)
-                    }
-
-                    return true
-                }
-            }
-        }
-
-        return false
-    }
-
-    public final func getAllErrors() -> [PendingTaskError] {
-        return PendingTasksManager.shared.getAllErrors()
     }
 
     /**
