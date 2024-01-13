@@ -71,14 +71,6 @@ internal class PendingTasksRunner {
                 runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            if let unresolvedError = PendingTasksManager.shared.getLatestError(pendingTaskId: taskToRun.taskId!) {
-                WendyConfig.logTaskSkipped(taskToRun, reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
-                LogUtil.d("Task: \(taskToRun.describe()) has a unresolved error recorded. Skipping it.")
-                runTaskResult = TaskRunResult.skipped(reason: .unresolvedRecordedError(unresolvedError: unresolvedError))
-
-                runTaskDispatchGroup.leave()
-                return runTaskResult // This code should *not* be executed because of .leave() above.
-            }
 
             PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
             PendingTasksRunner.shared.currentlyRunningTask = persistedPendingTask
@@ -96,15 +88,6 @@ internal class PendingTasksRunner {
 
                     self.runTaskDispatchGroup.leave()
                     return
-                }
-
-                if Wendy.shared.doesErrorExist(taskId: taskToRun.taskId!) {
-                    let errorMessage = "Task: \(taskToRun.describe()) successfully ran, but you have unresolved errors. You should resolve the previously recorded error to Wendy, or return false for running your task."
-                    if WendyConfig.strict {
-                        Fatal.preconditionFailure(errorMessage)
-                    } else {
-                        LogUtil.w(errorMessage)
-                    }
                 }
 
                 LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
@@ -167,7 +150,7 @@ internal class PendingTasksRunner {
             return runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         case .skipped(let reason):
             switch reason {
-            case .notReadyToRun, .unresolvedRecordedError:
+            case .notReadyToRun:
                 if let taskGroupId = nextTaskToRun.groupId {
                     failedTasksGroups.append(taskGroupId)
                 }
