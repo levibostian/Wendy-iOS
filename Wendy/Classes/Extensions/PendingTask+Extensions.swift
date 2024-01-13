@@ -18,26 +18,6 @@ public extension PendingTask {
         }
     }
 
-    func recordError(humanReadableErrorMessage: String?, errorId: String?) {
-        let taskId = assertHasBeenAddedToWendy()
-        Wendy.shared.recordError(taskId: taskId, humanReadableErrorMessage: humanReadableErrorMessage, errorId: errorId)
-    }
-
-    func resolveError() {
-        let taskId = assertHasBeenAddedToWendy()
-        try Wendy.shared.resolveError(taskId: taskId)
-    }
-
-    func getLatestError() -> PendingTaskError? {
-        let taskId = assertHasBeenAddedToWendy()
-        return Wendy.shared.getLatestError(taskId: taskId)
-    }
-
-    func doesErrorExist() -> Bool {
-        let taskId = assertHasBeenAddedToWendy()
-        return Wendy.shared.doesErrorExist(taskId: taskId)
-    }
-
     func isAbleToManuallyRun() -> Bool {
         let taskId = assertHasBeenAddedToWendy()
         return Wendy.shared.isTaskAbleToManuallyRun(taskId)

@@ -32,11 +32,9 @@ Wendy helps you with item #2. You define how the local storage is supposed to sy
 Wendy currently has the following functionality:
 
 * Wendy uses the iOS background fetch scheduler API to run tasks periodically to keep data in sync without using the user's battery too much.
-* Wendy is not opinionated. You may use whatever method you choose to sync data with it's remote storage and whatever method you choose to store data locally on the device. Wendy works with your workflow you already have. Store user data in Core Data locally and a Rails API for the cloud storage. Store user data in Realm locally and a Parse server for the cloud storage. Use just NSUserDefaults and GraphQL. Whatever you want, Wendy works with it.
+* Wendy is not opinionated in your network and data storage model. You may use whatever method you choose to sync data with it's remote storage and whatever method you choose to store data locally on the device. Wendy works with your workflow you already have. Store user data in Core Data locally and a Rails API for the cloud storage. Store user data in Realm locally and a Parse server for the cloud storage. Use just NSUserDefaults and GraphQL. Whatever you want, Wendy works with it.
 * Dynamically allow and disallow tasks to sync at runtime. Wendy works in a FIFO style with it's tasks. When Wendy is about to run a certain task, it always asks the task if it is able to run.
 * Group tasks together to enforce they all run (and succeed) in an exact order from start to finish.
-* Wendy also comes with an error reporter to report errors that your user needs to fix for a task to succeed.
-* Wendy takes care of all of the use cases that could happen with building an offline-first mobile app. "What if this task succeeds but this one doesn't? What happens when the network is flaky and a couple of tasks fail but should retry? What happens if this task needs to succeed in order for this task to succeed on my API?" Wendy takes care of handling all of this for you. You define the behavior, Wendy takes care of running it when it is confident it can run the task and succeed.
 
 # Install
 
@@ -101,8 +99,6 @@ class CreateGroceryListItemPendingTask: PendingTask {
 
     static let tag: Tag = String(describing: CreateGroceryListItemPendingTask.self)
 
-    static let groceryStoreItemTextTooLongErrorId = "GROCERY_STORE_ITEM_TEXT_TOO_LONG"
-
     var taskId: Double?
     var dataId: String?
     var groupId: String?
@@ -124,15 +120,6 @@ class CreateGroceryListItemPendingTask: PendingTask {
         let groceryStoreItem = localDatabase.queryGroceryStoreItem(self.dataId)
 
         performApiCall(groceryStoreItem, complete: { apiCallResult in
-            if let apiError = apiCallResult.error {
-                // There was an error. Parse the error and decide what to do from here.
-
-                // If it's an error that deserves the attention of your user to fix, make sure and record it with Wendy.
-                // If the error is a network error, for example, that does not require the user's attention to fix, do *not* record an error to Wendy.
-                // Wendy will not run your task if there is a recorded error for it. Record an error, prompt your user to fix it, then resolve it ASAP so it can run.
-                Wendy.shared.recordError(taskId: self.taskId, humanReadableErrorMessage: "Grocery store item too long. Please shorten it up for me.", errorId: groceryStoreItemTextTooLongErrorId)
-            } 
-            
             complete(apiCallResult.error)            
         })
     }
@@ -193,14 +180,6 @@ extension View: PendingTaskStatusListener {
         self.text = "Skipped"
     }
 
-    func errorRecorded(taskId: Double, errorMessage: String?, errorId: String?) {
-        self.text = "Error recorded: \(errorMessage!)"
-    }
-
-    func errorResolved(taskId: Double) {
-        self.text = "Error resolved"
-    }
-
 }
 
 ```
@@ -246,12 +225,11 @@ Your implementations of `PendingTask` should be no problem to test. `PendingTask
 
 ## Write unit tests for code that depends on Wendy classes
 
-When writing tests against code Wendy classes such as `PendingTaskError` or `PendingTasksRunnerResult`, Wendy allows you to create instances of these internal classes with the convenient `.testing.` property added to these internal classes. 
+When writing tests against code Wendy classes such as `PendingTasksRunnerResult`, Wendy allows you to create instances of these internal classes with the convenient `.testing.` property added to these internal classes. 
 
 Here are some examples:
 
 ```swift
-PendingTaskError.testing.get(pendingTask: PendingTask, errorId: String, errorMessage: String, createdAt: Date)
 PendingTasksRunnerResult.testing.result(from results: [TaskRunResult])
 WendyUIBackgroundFetchResult.testing.get(runnerResult: PendingTasksRunnerResult)
 ```
@@ -320,9 +298,9 @@ WendyConfig.debug = true
 #endif
 ```
 
-## Author
+## Maintainers 
 
-* Levi Bostian - [GitHub](https://github.com/levibostian), [Twitter](https://twitter.com/levibostian), [Website/blog](http://levibostian.com)
+* Levi Bostian - [GitHub](https://github.com/levibostian)
 
 ![Levi Bostian image](https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250)
 

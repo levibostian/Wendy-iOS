@@ -20,9 +20,6 @@ public class WendyConfig {
         if taskRunner.currentlyRunningTask?.id == taskId {
             listener.running(taskId: taskId)
         }
-        if let latestError = Wendy.shared.getLatestError(taskId: taskId) {
-            listener.errorRecorded(taskId: taskId, errorMessage: latestError.errorMessage, errorId: latestError.errorId)
-        }
     }
 
     internal class func getTaskStatusListenerForTask(_ taskId: Double) -> [WeakReferencePendingTaskStatusListener] {
@@ -79,28 +76,6 @@ internal extension WendyConfig {
             }
             WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
                 weakRefListener.listener?.running(taskId: task.taskId!)
-            }
-        }
-    }
-
-    class func logErrorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
-        DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
-                weakRefListener.listener.errorRecorded(task, errorMessage: errorMessage, errorId: errorId)
-            }
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
-                weakRefListener.listener?.errorRecorded(taskId: task.taskId!, errorMessage: errorMessage, errorId: errorId)
-            }
-        }
-    }
-
-    class func logErrorResolved(_ task: PendingTask) {
-        DispatchQueue.main.async {
-            WendyConfig.taskRunnerListeners.forEach { weakRefListener in
-                weakRefListener.listener.errorResolved(task)
-            }
-            WendyConfig.getTaskStatusListenerForTask(task.taskId!).forEach { weakRefListener in
-                weakRefListener.listener?.errorResolved(taskId: task.taskId!)
             }
         }
     }

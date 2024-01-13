@@ -9,9 +9,6 @@ public protocol TaskRunnerListener: AnyObject {
     func taskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped)
 
     func allTasksComplete()
-
-    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?)
-    func errorResolved(_ task: PendingTask)
 }
 
 internal struct WeakReferenceTaskRunnerListener {
