@@ -108,11 +108,6 @@ class MainViewController: UIViewController {
         setupview()
 
         view.setNeedsUpdateConstraints()
-        
-        // Only exists here to make sure that PendingTaskError properties are accessible by the public.
-        Wendy.shared.getAllErrors().forEach { (error) in
-            print("Existing user recorded error. Id: \(String(describing: error.errorId)), message: \(error.errorMessage ?? "(none)")")
-        }
     }
 
     fileprivate func setupview() {
@@ -211,10 +206,6 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension MainViewController: PendingTaskTableViewCellDelegate {
-    func resolveErrorButtonPressed(_ task: PendingTask) {
-        _ = Wendy.shared.resolveError(taskId: task.taskId!)
-    }
-
     func runTaskButtonPressed(_ task: PendingTask) {
         Wendy.shared.runTask(task.taskId!) { result in
             print("Result of manually run task id ID: \(task.taskId!) is: \(result)")
@@ -223,14 +214,6 @@ extension MainViewController: PendingTaskTableViewCellDelegate {
 }
 
 extension MainViewController: TaskRunnerListener {
-    func errorRecorded(_ task: PendingTask, errorMessage: String?, errorId: String?) {
-        populateWendyPendingTasks()
-    }
-
-    func errorResolved(_ task: PendingTask) {
-        populateWendyPendingTasks()
-    }
-
     func allTasksComplete() {
         populateWendyPendingTasks()
     }

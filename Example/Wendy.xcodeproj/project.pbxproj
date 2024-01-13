@@ -19,7 +19,6 @@
 		F787F16123AEB034007EA1CE /* PendingTasksRunnerResultTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */; };
 		F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16223AEB672007EA1CE /* ErrorForTesting.swift */; };
 		F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */; };
-		F79F54B9208A568F007DC508 /* PendingTaskResolveErrorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */; };
 		F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */; };
 		F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */; };
 		F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */; };
@@ -69,7 +68,6 @@
 		F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTasksRunnerResultTest.swift; sourceTree = "<group>"; };
 		F787F16223AEB672007EA1CE /* ErrorForTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorForTesting.swift; sourceTree = "<group>"; };
 		F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskStatusUILabel.swift; sourceTree = "<group>"; };
-		F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskResolveErrorButton.swift; sourceTree = "<group>"; };
 		F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PendingTasksRunnerResult+TestingTests.swift"; sourceTree = "<group>"; };
 		F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskErrorTests.swift; sourceTree = "<group>"; };
 		F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WendyUIBackgroundFetchResult+TestingTests.swift"; sourceTree = "<group>"; };
@@ -235,7 +233,6 @@
 			isa = PBXGroup;
 			children = (
 				F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */,
-				F79F54B8208A568F007DC508 /* PendingTaskResolveErrorButton.swift */,
 			);
 			path = UIView;
 			sourceTree = "<group>";
@@ -451,7 +448,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F79F54B9208A568F007DC508 /* PendingTaskResolveErrorButton.swift in Sources */,
 				607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */,
 				F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */,
 				F75239302090FD2200E2D76A /* CreateGroceryListItemPendingTask.swift in Sources */,
