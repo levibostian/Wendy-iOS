@@ -4,6 +4,11 @@ description: Install all of the tools that the server needs to run semantic-rele
 runs:
   using: "composite"
   steps:
+  # semantic-release requires newer versions of node then what is bundled in github action runner. 
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 'lts/*'
+
   - name: Install semantic-release plugins that we need for deployment of this project 
     run: >
       npm install 
