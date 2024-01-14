@@ -1,11 +1,11 @@
 import Foundation
 
 public struct PendingTask {
-    let tag: String
-    let taskId: Double? // populated later
-    let dataId: String?
-    let groupId: String?
-    let createdAt: Date? // populated later
+    public let tag: String
+    public let taskId: Double? // populated later
+    public let dataId: String?
+    public let groupId: String?
+    public let createdAt: Date? // populated later
     
     internal static func nonPersisted(tag: String, dataId: String?, groupId: String?) -> PendingTask {
         return PendingTask(tag: tag, taskId: nil, dataId: dataId, groupId: groupId, createdAt: nil)
