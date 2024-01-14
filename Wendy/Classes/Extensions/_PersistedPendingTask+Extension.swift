@@ -10,7 +10,7 @@ internal extension PersistedPendingTask {
 
     var pendingTask: PendingTask {
         var blankPendingTask = Wendy.shared.pendingTasksFactory.getTask(tag: self.tag!)
-        blankPendingTask.populate(from: self)
+        blankPendingTask.from(persistedPendingTask: self)
         return blankPendingTask
     }
 

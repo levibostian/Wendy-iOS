@@ -63,50 +63,44 @@ internal class PendingTasksRunner {
                 runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            if !taskToRun.isReadyToRun() {
-                LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
-                runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
-                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
-
-                runTaskDispatchGroup.leave()
-                return runTaskResult // This code should *not* be executed because of .leave() above.
-            }
 
             PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
             PendingTasksRunner.shared.currentlyRunningTask = persistedPendingTask
 
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
-            taskToRun.runTask(complete: { (error: Error?) in
-                let successful = error == nil
-                PendingTasksRunner.shared.currentlyRunningTask = nil
-
-                if let error = error {
-                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
-                    WendyConfig.logTaskComplete(taskToRun, successful: false, cancelled: false)
-                    runTaskResult = TaskRunResult.failure(error: error)
-
-                    self.runTaskDispatchGroup.leave()
-                    return
-                }
-
-                LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
-                if PendingTasksUtil.rerunCurrentlyRunningPendingTask {
-                    LogUtil.d("Task: \(taskToRun.describe()) is set to re-run. Not deleting it.")
-                    PendingTasksManager.shared.updatePlaceInLine(taskToRun.taskId!, createdAt: PendingTasksUtil.getRerunCurrentlyRunningPendingTaskTime()!)
-                } else {
-                    LogUtil.d("Deleting task: \(taskToRun.describe()).")
-                    PendingTasksManager.shared.deleteTask(taskId)
-                }
-                PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
-
-                WendyConfig.logTaskComplete(taskToRun, successful: successful, cancelled: false)
-
-                runTaskResult = TaskRunResult.successful
-
-                self.runTaskDispatchGroup.leave()
-                return
-            })
+            
+            // runTask() will be re-added in next commits
+//            taskToRun.runTask(complete: { (error: Error?) in
+//                let successful = error == nil
+//                PendingTasksRunner.shared.currentlyRunningTask = nil
+//
+//                if let error = error {
+//                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
+//                    WendyConfig.logTaskComplete(taskToRun, successful: false, cancelled: false)
+//                    runTaskResult = TaskRunResult.failure(error: error)
+//
+//                    self.runTaskDispatchGroup.leave()
+//                    return
+//                }
+//
+//                LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
+//                if PendingTasksUtil.rerunCurrentlyRunningPendingTask {
+//                    LogUtil.d("Task: \(taskToRun.describe()) is set to re-run. Not deleting it.")
+//                    PendingTasksManager.shared.updatePlaceInLine(taskToRun.taskId!, createdAt: PendingTasksUtil.getRerunCurrentlyRunningPendingTaskTime()!)
+//                } else {
+//                    LogUtil.d("Deleting task: \(taskToRun.describe()).")
+//                    PendingTasksManager.shared.deleteTask(taskId)
+//                }
+//                PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
+//
+//                WendyConfig.logTaskComplete(taskToRun, successful: successful, cancelled: false)
+//
+//                runTaskResult = TaskRunResult.successful
+//
+//                self.runTaskDispatchGroup.leave()
+//                return
+//            })
 
             _ = runTaskDispatchGroup.wait(timeout: .distantFuture)
             return runTaskResult
@@ -149,14 +143,6 @@ internal class PendingTasksRunner {
             }
             return runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         case .skipped(let reason):
-            switch reason {
-            case .notReadyToRun:
-                if let taskGroupId = nextTaskToRun.groupId {
-                    failedTasksGroups.append(taskGroupId)
-                }
-            default: break
-            }
-
             return runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         }
     }
