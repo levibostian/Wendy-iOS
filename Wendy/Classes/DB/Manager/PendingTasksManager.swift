@@ -64,7 +64,6 @@ internal class PendingTasksManager {
 
     internal func getAllTasks() -> [PendingTask] {
         let viewContext = CoreDataManager.shared.viewContext
-        let pendingTaskFactory = Wendy.shared.pendingTasksFactory
 
         do {
             let persistedPendingTasks: [PersistedPendingTask] = try viewContext.fetch(PersistedPendingTask.fetchRequest()) as [PersistedPendingTask]

@@ -3,20 +3,10 @@ import Foundation
 public class Wendy {
     public static var shared: Wendy = Wendy()
 
-    // Setup this way to (1) be a less buggy way of making sure that the developer remembers to call setup() to populate pendingTasksFactory.
-    private var initPendingTasksFactory: PendingTasksFactory?
-    internal lazy var pendingTasksFactory: PendingTasksFactory = {
-        guard let pendingTasksFactory = self.initPendingTasksFactory else {
-            fatalError("You forgot to setup Wendy via Wendy.setup()")
-        }
-        return pendingTasksFactory
-    }()
-
     private init() {}
 
-    public class func setup(tasksFactory: PendingTasksFactory, debug: Bool = false) {
+    public class func setup(debug: Bool = false) {
         WendyConfig.debug = debug
-        Wendy.shared.pendingTasksFactory = tasksFactory
     }
 
     /**
@@ -38,8 +28,6 @@ public class Wendy {
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
         let pendingTaskToAdd = PendingTask.nonPersisted(tag: tag, dataId: dataId, groupId: groupId)
-        
-        _ = pendingTasksFactory.getTask(tag: pendingTaskToAdd.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late!
 
         // We enforce a best practice here.
         if let similarTask = PendingTasksManager.shared.getRandomTaskForTag(pendingTaskToAdd.tag) {
