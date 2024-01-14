@@ -1,21 +1,17 @@
 import Foundation
 
-public protocol PendingTask {
-    typealias Tag = String
-
-    static var tag: Tag { get }
-
-    var taskId: Double? { get set } // Simply links a PendingTask to a PersistedPendingTask. This identifies a PendingTask. It is *not* used as the sort order for when tasks will be run.
-    var dataId: String? { get set }
-    var groupId: String? { get set }
-    var createdAt: Date? { get set } // How the order is determined by the task runner. Just like taskId, this is nil until the PendingTask is added to Wendy.
-
-    func runTask(complete: @escaping (Error?) -> Void)
-    func isReadyToRun() -> Bool
-}
-
-public extension PendingTask {
-    var tag: Tag {
-        return Self.tag
+public struct PendingTask {
+    let tag: String
+    let taskId: Double? // populated later
+    let dataId: String?
+    let groupId: String?
+    let createdAt: Date? // populated later
+    
+    internal static func nonPersisted(tag: String, dataId: String?, groupId: String?) -> PendingTask {
+        return PendingTask(tag: tag, taskId: nil, dataId: dataId, groupId: groupId, createdAt: nil)
+    }
+    
+    internal func from(persistedPendingTask: PersistedPendingTask) -> PendingTask {
+        return PendingTask(tag: self.tag, taskId: persistedPendingTask.id, dataId: self.dataId, groupId: self.groupId, createdAt: persistedPendingTask.createdAt)
     }
 }
