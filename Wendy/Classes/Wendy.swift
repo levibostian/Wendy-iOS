@@ -2,10 +2,17 @@ import Foundation
 
 public class Wendy {
     public static var shared: Wendy = Wendy()
+    
+    private var initializedData: InitializedData? = nil // populated after setup() called.
+    
+    internal var taskRunner: WendyTaskRunner? {
+        initializedData?.taskRunner
+    }
 
     private init() {}
 
-    public class func setup(debug: Bool = false) {
+    public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
+        Wendy.shared.initializedData = InitializedData(taskRunner: taskRunner)
         WendyConfig.debug = debug
     }
 
@@ -169,4 +176,7 @@ public class Wendy {
         }
     }
     
+    struct InitializedData {
+        let taskRunner: WendyTaskRunner
+    }
 }
