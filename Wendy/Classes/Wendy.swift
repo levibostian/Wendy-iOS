@@ -35,8 +35,10 @@ public class Wendy {
 
         return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: runAllTasksResult.backgroundFetchResult)
     }
-
-    public final func addTask(_ pendingTaskToAdd: PendingTask) -> Double {
+    
+    public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
+        let pendingTaskToAdd = PendingTask.nonPersisted(tag: tag, dataId: dataId, groupId: groupId)
+        
         _ = pendingTasksFactory.getTask(tag: pendingTaskToAdd.tag) // Asserts that you didn't forget to add your PendingTask to the factory. Might as well check for it now while instead of when it's too late!
 
         // We enforce a best practice here.
