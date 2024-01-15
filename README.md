@@ -1,27 +1,25 @@
-[![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
-[![License](https://img.shields.io/cocoapods/l/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
-[![Platform](https://img.shields.io/cocoapods/p/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
-![Swift 5.0.x](https://img.shields.io/badge/Swift-5.0.x-orange.svg)
+[![Version][image-1]][1]
+[![License][image-2]][2]
+[![Platform][image-3]][3]
+![Swift 5.0.x][image-4]
 
 # Wendy
 
 Remove the difficulty in making offline-first iOS apps. Sync your offline device storage with remote cloud storage easily. When building offline-first mobile apps, there are *lots* of use cases to think about. Wendy takes care of handling them all for you!
 
-![project logo. A picture of a person with long red hair.](misc/wendy_logo.jpg)
+![project logo. A picture of a person with long red hair.][image-5]
 
-Android developer? [Check out the Android version of Wendy!](https://github.com/levibostian/wendy-android)
+Android developer? [Check out the Android version of Wendy!][4]
 
-## Announcement 
+## Announcement
 
-See [latest announcement](https://github.com/levibostian/Wendy-iOS/discussions/51) from maintainers discussing API changes coming to Wendy. 
+See [latest announcement][5] from maintainers discussing API changes coming to Wendy. 
 
 ## What is Wendy?
 
 Wendy is an iOS library designed to help you make your app offline-first. Use Wendy to define sync tasks, then Wendy will run those tasks periodically to keep your app's device offline data in sync with it's online remote storage.
 
 Wendy is a FIFO task runner. You give it tasks one by one. Wendy persists those tasks to storage. Then, when Wendy has determined it's a good time for your task to run, it will call your task's sync function to perform a sync. Wendy goes through all of the tasks available one by one running them to succeed or fail and try again.
-
-*Note: Wendy is currently in an alpha stage. The API most definitely could change and breaking changes will come in future releases. It is used in production apps today. Use the latest release of Wendy as you wish but be prepared for having to update your code base in future releases.*
 
 ## Why use Wendy?
 
@@ -38,134 +36,115 @@ Wendy currently has the following functionality:
 
 # Install
 
-Wendy-iOS is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
+Wendy-iOS is available through [CocoaPods][6]. To install it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'Wendy', '~> version-here'
 ```
 
-(replace `version-here` with [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy))
-
-*Note:* It is recommended to specify the version code in your Podfile (as done above) for Wendy as Wendy is in `alpha` stage of development. The API will more then likely change and have broken changes on releases until beta and stable releases come out. The latest version at this time is: [![Version](https://img.shields.io/cocoapods/v/Wendy.svg?style=flat)](http://cocoapods.org/pods/Wendy)
+(replace `version-here` with [![Version][image-6]][7])
 
 # Getting started
 
 For this getting started guide, lets work through an example for you to follow along with. Let's say you are building a grocery list app. We will call it, `Grocery List`.
 
-First, create a `PendingTasksFactory` subclass that stores all of your app's Wendy `PendingTask`s. It's pretty blank to start but we will add more to it later. ([I plan to remove this requirement in the future](https://github.com/levibostian/Wendy-Android/issues/17). PRs welcome 😄)
+### Initialize SDK
+
+The first step to setting up Wendy is to initialize it when your app starts. 
+
+Either in your  `AppDelegate` (UIKit apps) or in your `App` (SwiftUI), initialize the SDK: 
+
+```swift
+class AppDelegate {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {  
+    Wendy.setup(taskRunner: MyWendyTaskRunner())
+    ...
+  }
+}
+```
+
+```swift
+class App {
+  init() {
+    Wendy.setup(taskRunner: MyWendyTaskRunner())
+  }
+}
+```
+
+To finish initialization, we need to create a task runner subclass. Create a new file in your project and use this placeholder code for now:  
 
 ```swift
 import Wendy
 
-class GroceryListPendingTasksFactory: PendingTasksFactory {
-
-    func getTask(tag: PendingTask.Tag) -> PendingTask {
-        switch tag {      
-        default: 
-            fatalError("Forgot case with tag: \(tag)")
-        }
+class MyWendyTaskRunner: WendyTaskRunner {
+    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
     }
-
 }
 ```
-
-Add the following code to your `AppDelegate`'s `application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool` function:
-
-```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {  
-    Wendy.setup(tasksFactory: GroceryListPendingTasksFactory())
-    #if DEBUG
-    WendyConfig.debug = true
-    #endif
-
-    return true
-}
-```
-
-(check [this out](https://stackoverflow.com/a/30013587/1486374) if you don't know how to get `#if DEBUG` working in your app)
 
 Wendy is now configured. It's time to use it!
 
-For each separate task that you need to sync local storage with remote cloud storage, you define a `PendingTask` subclass.
+### Add tasks to sync data
 
-In our Grocery List app, we want to allow users to create new grocery items. Every time that a user creates a new grocery list item, we don't want to show them a progress bar saying, "Saving grocery list item..." while we perform an API call! We want to be able to *instantly* save that grocery list item and sync it with the cloud storage later so our user can get on with their life (can't you just see your App Store reviews going up, up, up right now? ⭐⭐⭐⭐⭐).
+Now that the SDK is initialized, it’s time to sync some data to our network API! 
 
-Let's create our first `PendingTask` subclass for creating new grocery items.
+In our Grocery List app example, we want to allow users to create new grocery items. Every time that a user creates a new grocery list item, we don't want to show them a progress bar saying, "Saving grocery list item..." while we perform an API call. We want to be able to *instantly* save that grocery list item and sync it with the cloud storage later so our user can get on with their life (can't you just see your App Store reviews going up, up, up right now? ⭐⭐⭐⭐⭐).
+
+There are 2 steps to setting up Wendy for syncing data. 
+1. [Adding tasks to Wendy][8]
+2. [Writing the network code to perform the sync][9]
+
+Let’s get into each of these steps. 
+
+#### Adding tasks to Wendy  
+
+To tell Wendy that you have a piece of data that needs to sync with a network API later, use `addTask`. Wendy will execute this task at a later time. 
+
+```swift
+Wendy.shared.addTask(tag: "AddGroceryListItem", dataId: "<identifier-here>") 
+```
+
+* `tag` is the data type identifier. It’s common to use 1 `tag`  per network API endpoint. Here, we use `AddGroceryListItem` because the user added a new grocery store list item. 
+* `dataId` - identifier that identifies the data. This is used to identify the data. In our example, identify the 1 grocery  store list item that got added by the user.
+
+#### Writing the network code to perform the sync
+
+After you add a task to Wendy, Wendy will execute it at a later time. When it’s time for the task to run, Wendy will call your task runner that you provided when you initialized the SDK.  
+  
+Let’s look at some example code that runs the grocery store list item. 
 
 ```swift
 import Wendy
 
-class CreateGroceryListItemPendingTask: PendingTask {
-
-    static let tag: Tag = String(describing: CreateGroceryListItemPendingTask.self)
-
-    var taskId: Double?
-    var dataId: String?
-    var groupId: String?
-    var createdAt: Date?
-
-    convenience init(groceryStoreItemId: Int) {
-        self.init()
-        self.dataId = String(groceryStoreItemId)
+class MyWendyTaskRunner: WendyTaskRunner {
+    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
+  switch tag {
+        case "AddGroceryListItem":
+         // Add your network code below to perform the async network call. The code below is for example, only. Replace with your own network code. 
+         performApiCall(dataId) { httpRequestError in 
+		   // If httpRequestError is not nil, Wendy will retry running this task again in the future. Otherwise, Wendy will delete the task and not re-run it. 
+           complete(httpRequestError)
+         }
+         break 
     }
-
-    func isReadyToRun() -> Bool {
-        return true
-    }
-
-    func runTask(complete: @escaping (Error?) -> Void) {
-        // Here, instantiate your dependencies, talk to your DB, your API, etc. Run the task.
-        // After the task succeeds or fails, return to Wendy the result.
-
-        let groceryStoreItem = localDatabase.queryGroceryStoreItem(self.dataId)
-
-        performApiCall(groceryStoreItem, complete: { apiCallResult in
-            complete(apiCallResult.error)            
-        })
-    }
-
 }
 ```
 
-Each time that you create a new subclass of `PendingTask`, you need to add that to the `PendingTasksFactory` you created. Your `GroceryListPendingTasksFactory` should look like this now:
+Done! You’re using Wendy 🎊! 
+
+# Event listeners
+
+Wendy tries to promote a positive user experience with offline-first mobile apps. One important step to this to communicating to your app user the status of their data. If a piece of data in the app has not yet synced successfully with the network API, your app should reflect this status in the UI. Using event listeners is one way to do that. 
+
+When you call `Wendy.shared.addTask()`, that function returns an ID back to you. That ID maps to the 1 task that you added to Wendy. With this ID, you can check the status of a task in Wendy. 
 
 ```swift
-import Wendy
+// Add a listener to Wendy for the task that got added. 
+// Note: Wendy keeps weak references to listeners. Keep a strong reference in your app. 
+WendyConfig.addTaskStatusListenerForTask(taskId, listener: self) 
 
-class GroceryListPendingTasksFactory: PendingTasksFactory {
-
-    func getTask(tag: PendingTask.Tag) -> PendingTask {
-        switch tag {
-        case CreateGroceryListItemPendingTask.tag: return CreateGroceryListItemPendingTask()
-        default: 
-            fatalError("Forgot case with tag: \(tag)")
-        }
-        }
-    }
-
-}
-```
-
-Just about done.
-
-Let's check out the code you wrote in your Grocery List app when your users want to create a new grocery store item in the app.
-
-```swift
-func createNewGroceryStoreItem(itemName: String) {
-    // First thing you need to do to make a mobile app offline-first is to save it to the device's storage.
-    // Below, we are saving to a `localDatabase`. Whatever that is. It could be whatever you wish. Core Data, Sqlite, Realm, Keychain, NSUserDefaults, whatever you decide to use works. After we save to the database, we probably get an ID back to reference that piece of data in the database. This ID could be the key in NSUserDefaults, the database row ID, it doesn't matter. Simply some way to identify that piece of data *to query later* in your PendingTask.
-    let id: Int = localDatabase.createNewGroceryStoreItem(itemName)
-
-    // We will now create a new `CreateGroceryListItemPendingTask` pending task instance and give it to Wendy.
-    let pendingTaskId: Double = Wendy.shared.addTask(CreateGroceryListItemPendingTask(groceryStoreItemId: id))
-
-    // When you add a task to Wendy, you get back an ID for that new `PendingTask`. It's your responsibility to save that ID (or ignore it). It's best practice to save that ID with the data that this `PendingTask` links to. In our example here, the grocery store item in our localDatabase is where we should save the ID.
-    localDatabase.queryGroceryStoreItem(id).pendingTaskId = pendingTaskId
-
-    // The reason you may want to save the ID of the `PendingTask` is to assert that it runs successfully. Also, you can show in the UI of your app the syncing status of that data to the user. This is all optional, but recommended for the best user experience.
-    WendyConfig.addTaskStatusListenerForTask(task.taskId!, listener: self) // View the extension code below.     
-}
-
+// Here is an example of making a UIKit View a listener of a Wendy 
+// The UI changes depending on the state of the sync. 
 extension View: PendingTaskStatusListener {
 
     func running(taskId: Double) {
@@ -184,11 +163,13 @@ extension View: PendingTaskStatusListener {
 
 ```
 
-The very last step. Getting Wendy to run your tasks periodically.
+It’s suggested to view the [Best practices doc][10] to learn more about making a great experience in your offline-first app. 
+
+# Setup Wendy to run periodically while app in background
 
 In XCode, follow these steps below to enable the background fetch capability for your app:
 
-![In XCode go to your project settings tab. Then the capabilities section. Turn on Background Modes and then check the box Background fetch](misc/enable_background_fetch_xcode.png)
+![In XCode go to your project settings tab. Then the capabilities section. Turn on Background Modes and then check the box Background fetch][image-7]
 
 In your `AppDelegate`, you will now need to run Wendy from the background fetch function. Below is an example of that:
 
@@ -200,10 +181,6 @@ func application(_ application: UIApplication, performFetchWithCompletionHandler
 ```
 
 The only requirement is to call `Wendy.shared.performBackgroundFetch()`. You may decide to ignore Wendy's result from this function is you wish and you need to run more in this function. If you decide to, Wendy does parse the background fetch result for you: `backgroundFetchResult.backgroundFetchResult`.
-
-Done! Wendy takes care of all the rest. Wendy will try to run your task right away but if you're offline or in a spotty Internet connection, Wendy will wait and try again later.
-
-There is a document on [best practices when using Wendy](BEST_PRACTICES.md). Check that out to answer your questions you have about why Wendy works the way that it does. The document's code is Android code, but it's not about the code, it's about the best practices so you should be able to understand it until I get a better "generic" document setup 😄.
 
 ## Clear data
 
@@ -234,7 +211,7 @@ PendingTasksRunnerResult.testing.result(from results: [TaskRunResult])
 WendyUIBackgroundFetchResult.testing.get(runnerResult: PendingTasksRunnerResult)
 ```
 
-## Write integration tests around Wendy 
+## Write integration tests around Wendy
 
 Coming soon! 
 
@@ -246,7 +223,7 @@ To run the example project, clone the repo, and run `pod install` from the `Exam
 
 ## Install template files
 
-Wendy comes with some XCode template files to create `PendingTask`s and `PendingTaskFactory`s very quickly within XCode from the File > New File menu.
+Wendy comes with some XCode template files to create `PendingTask`s and `PendingTaskFactory`s very quickly within XCode from the File \> New File menu.
 
 All you need to do is run this bash script to install the scripts on your machine in the XCode templates directory:
 
@@ -265,8 +242,7 @@ Wendy currently *does not* have full code documentation. It is planned to have f
 Until then, the best thing to do is:
 
 * Read this README on how to get started.
-* Wendy-Android has [full documentation created for it](https://levibostian.github.io/Wendy-Android/wendy/). If you are wondering how a specific function works, you may be able to learn there. *Warning: Wendy-Android and Wendy-iOS are kept up to date between one another as soon as possible. When a bug is fixed on one, the other gets the same bug fixed on it as well. However, it may take a day or two for this sync to happen by the contributors. With that in mind, the documentation might be a tad bit off between the libraries.*
-* [Contact that author, Levi, on Twitter](https://twitter.com/levibostian/).
+* Wendy-Android has [full documentation created for it][11]. If you are wondering how a specific function works, you may be able to learn there. *Warning: Wendy-Android and Wendy-iOS are kept up to date between one another as soon as possible. When a bug is fixed on one, the other gets the same bug fixed on it as well. However, it may take a day or two for this sync to happen by the contributors. With that in mind, the documentation might be a tad bit off between the libraries.*
 
 ## Configure Wendy
 
@@ -298,11 +274,11 @@ WendyConfig.debug = true
 #endif
 ```
 
-## Maintainers 
+## Maintainers
 
-* Levi Bostian - [GitHub](https://github.com/levibostian)
+* Levi Bostian - [GitHub][12]
 
-![Levi Bostian image](https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250)
+![Levi Bostian image][image-8]
 
 ## License
 
@@ -310,9 +286,9 @@ Wendy-iOS is available under the MIT license. See the LICENSE file for more info
 
 ## Contribute
 
-Wendy is open for pull requests. Check out the [list of issues](https://github.com/levibostian/wendy-ios/issues) for tasks I am planning on working on. Check them out if you wish to contribute in that way.
+Wendy is open for pull requests. Check out the [list of issues][13] for tasks I am planning on working on. Check them out if you wish to contribute in that way.
 
-**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue](https://github.com/levibostian/Wendy-iOS/issues/new) stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
+**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][14] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
 
 Follow the steps below to compile the Wendy project on your machine for contributing!
 
@@ -321,4 +297,30 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 # Credits
 
-Header photo by [Allef Vinicius](https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+Header photo by [Allef Vinicius][15] on [Unsplash][16]
+
+[1]:	http://cocoapods.org/pods/Wendy
+[2]:	http://cocoapods.org/pods/Wendy
+[3]:	http://cocoapods.org/pods/Wendy
+[4]:	https://github.com/levibostian/wendy-android
+[5]:	https://github.com/levibostian/Wendy-iOS/discussions/51
+[6]:	http://cocoapods.org
+[7]:	http://cocoapods.org/pods/Wendy
+[8]:	#adding-tasks-to-wendy
+[9]:	#writing-the-network-code-to-perform-the-sync
+[10]:	BEST_PRACTICES.md
+[11]:	https://levibostian.github.io/Wendy-Android/wendy/
+[12]:	https://github.com/levibostian
+[13]:	https://github.com/levibostian/wendy-ios/issues
+[14]:	https://github.com/levibostian/Wendy-iOS/issues/new
+[15]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+[16]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+
+[image-1]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
+[image-2]:	https://img.shields.io/cocoapods/l/Wendy.svg?style=flat
+[image-3]:	https://img.shields.io/cocoapods/p/Wendy.svg?style=flat
+[image-4]:	https://img.shields.io/badge/Swift-5.0.x-orange.svg
+[image-5]:	misc/wendy_logo.jpg
+[image-6]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
+[image-7]:	misc/enable_background_fetch_xcode.png
+[image-8]:	https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250
