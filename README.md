@@ -221,20 +221,6 @@ You may be able to do this already, but it has not been tested. A good place to 
 
 To run the example project, clone the repo, and run `pod install` from the `Example/` directory first. Then, open XCode and run the project.
 
-## Install template files
-
-Wendy comes with some XCode template files to create `PendingTask`s and `PendingTaskFactory`s very quickly within XCode from the File \> New File menu.
-
-All you need to do is run this bash script to install the scripts on your machine in the XCode templates directory:
-
-```bash
-./Pods/Wendy/Templates/install_templates.sh
-```
-
-Restart XCode if it is currently open on your machine.
-
-Then, the next time you open XCode and go to "New file", you will see a section called "Wendy" with file templates inside!
-
 ## Documentation
 
 Wendy currently *does not* have full code documentation. It is planned to have full documentation generated via jazzy in the near future.
