@@ -20,6 +20,84 @@ The breaking change that caused Wendy to go from v3 to v4 is the removal of a fe
 
 If your app currently uses this feature, the recommended migration path is to modify your app’s logic to [follow this new best practice][3]. 
 
+# v4 to v5 - No more `PendingTask` subclasses
+
+The breaking change that caused Wendy to go from v4 to v5 is the removal of the `PendingTask` protocol. This change drastically reduces the amount of boilerplate code required to use Wendy! 🎊 Let’s go over how you can migrate your code to this breaking change and get your apps compiling again. 
+
+Let’s use an example. Let’s say that your app currently has this `PendingTask` in it. 
+
+```swift
+import Wendy
+
+class CreateGroceryListItemPendingTask: PendingTask {
+
+    static let tag: Tag = String(describing: CreateGroceryListItemPendingTask.self)
+
+    var taskId: Double?
+    var dataId: String?
+    var groupId: String?
+    var createdAt: Date?
+
+    convenience init(groceryStoreItemId: Int) {
+        self.init()
+        self.dataId = String(groceryStoreItemId)
+    }
+
+    func isReadyToRun() -> Bool {
+        return true
+    }
+
+    func runTask(complete: @escaping (Error?) -> Void) {
+        // Here, instantiate your dependencies, talk to your DB, your API, etc. Run the task.
+        // After the task succeeds or fails, return to Wendy the result.
+
+        let groceryStoreItem = localDatabase.queryGroceryStoreItem(self.dataId)
+
+        performApiCall(groceryStoreItem, complete: { apiCallResult in
+            complete(apiCallResult.error)            
+        })
+    }
+
+}
+```
+
+Here are the steps that we need to take to migrate away from using this: 
+1. All of the class parameters will now go into your `Wendy.shared.addTask()` call. 
+
+```swift
+// Before
+Wendy.shared.addTask(CreateGroceryListItemPendingTask(groceryStoreItemId: 5))
+
+// After
+Wendy.shared.addTask(tag: "CreateGroceryListItemPendingTask", dataId: String(groceryStoreItemId))
+```
+
+2. All of the code inside of `runTask` will be moved into a new task runner. See the updated [getting started docs][4] to learn how to create a new task runner in your app. 
+
+```swift
+import Wendy
+
+class MyWendyTaskRunner: WendyTaskRunner {
+    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {        
+        switch tag {
+        case "CreateGroceryListItemPendingTask":
+			// Here, instantiate your dependencies, talk to your DB, your API, etc. Run the task.
+			// After the task succeeds or fails, return to Wendy the result.
+			
+			let groceryStoreItem = localDatabase.queryGroceryStoreItem(self.dataId)
+			
+			performApiCall(groceryStoreItem, complete: { apiCallResult in
+			  complete(apiCallResult.error)            
+			})
+           break 
+        }
+    }
+}
+```
+
+3. Delete your `PendingTaskFactory` class. It’s no longer needed! 
+
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
 [3]:	BEST_PRACTICES.md#handle-errors-when-a-task-runs
+[4]:	README.md#getting-started
