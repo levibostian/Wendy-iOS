@@ -63,21 +63,14 @@ internal class PendingTasksRunner {
                 runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            if !taskToRun.isReadyToRun() {
-                LogUtil.d("Task: \(taskToRun.describe()) is not ready to run. Skipping it.")
-                runTaskResult = TaskRunResult.skipped(reason: .notReadyToRun)
-                WendyConfig.logTaskSkipped(taskToRun, reason: ReasonPendingTaskSkipped.notReadyToRun)
-
-                runTaskDispatchGroup.leave()
-                return runTaskResult // This code should *not* be executed because of .leave() above.
-            }
 
             PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
             PendingTasksRunner.shared.currentlyRunningTask = persistedPendingTask
 
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
-            taskToRun.runTask(complete: { (error: Error?) in
+            
+            Wendy.shared.taskRunner?.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId, complete: { error in
                 let successful = error == nil
                 PendingTasksRunner.shared.currentlyRunningTask = nil
 
@@ -149,14 +142,6 @@ internal class PendingTasksRunner {
             }
             return runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         case .skipped(let reason):
-            switch reason {
-            case .notReadyToRun:
-                if let taskGroupId = nextTaskToRun.groupId {
-                    failedTasksGroups.append(taskGroupId)
-                }
-            default: break
-            }
-
             return runAllTasks(filter: filter, result: result.addResult(jobRunResult))
         }
     }

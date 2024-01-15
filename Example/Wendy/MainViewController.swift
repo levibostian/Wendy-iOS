@@ -146,8 +146,8 @@ class MainViewController: UIViewController {
             return
         }
         let groupId: String? = (groupTextField.text!.isEmpty) ? nil : groupTextField.text
-
-        _ = Wendy.shared.addTask(AddGroceryListItemPendingTask(groceryListItemName: dataTextEntered, groupId: groupId))
+        
+        _ = Wendy.shared.addTask(tag: TaskTag.addGroceryListItem.rawValue, dataId: dataTextEntered, groupId: groupId)
     }
 
     override func updateViewConstraints() {
