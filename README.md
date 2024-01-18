@@ -11,9 +11,9 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 Android developer? [Check out the Android version of Wendy!][4]
 
-## Announcement
+## Announcements
 
-See [latest announcement][5] from maintainers discussing API changes coming to Wendy. 
+If interested, see the [latest announcement][5] from maintainers discussing the latest set of changes coming to Wendy.
 
 ## What is Wendy?
 
@@ -289,7 +289,7 @@ Header photo by [Allef Vinicius][15] on [Unsplash][16]
 [2]:	http://cocoapods.org/pods/Wendy
 [3]:	http://cocoapods.org/pods/Wendy
 [4]:	https://github.com/levibostian/wendy-android
-[5]:	https://github.com/levibostian/Wendy-iOS/discussions/51
+[5]:	https://github.com/levibostian/Wendy-iOS/discussions/categories/announcements
 [6]:	http://cocoapods.org
 [7]:	http://cocoapods.org/pods/Wendy
 [8]:	#adding-tasks-to-wendy
