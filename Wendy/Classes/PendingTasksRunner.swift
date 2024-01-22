@@ -14,7 +14,7 @@ internal class PendingTasksRunner {
 
     private var lastSuccessfulOrFailedTaskId: Double = 0
     private var failedTasksGroups: [String] = []
-    internal var currentlyRunningTask: PersistedPendingTask?
+    internal var currentlyRunningTask: PendingTask?
 
     // I created a separate class for running a single pending task simply as a wrapper to the function runPendingTask(taskId).
     // this function is very important to have it run in a synchronized way and to enforce that, I need to make sure it uses a DispatchQueue to run all of it's callers requests. So, I created this class to make sure I don't make the mistake of accidently calling this `runPendingTask(taskId)` function inside of the `PendingTasksRunner` without following my rule of *this function must run in a synchonized way!* (I already made this mistake....)
@@ -46,13 +46,12 @@ internal class PendingTasksRunner {
             runTaskDispatchGroup.enter()
             var runTaskResult: TaskRunResult!
 
-            guard let persistedPendingTask: PersistedPendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
+            guard let taskToRun = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
                 runTaskResult = TaskRunResult.cancelled
 
                 runTaskDispatchGroup.leave()
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
-            let taskToRun: PendingTask = persistedPendingTask.pendingTask
 
             if !PendingTasksUtil.isTaskValid(taskId: taskId) {
                 LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
@@ -65,7 +64,7 @@ internal class PendingTasksRunner {
             }
 
             PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
-            PendingTasksRunner.shared.currentlyRunningTask = persistedPendingTask
+            PendingTasksRunner.shared.currentlyRunningTask = taskToRun
 
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
@@ -169,7 +168,7 @@ internal class PendingTasksRunner {
 
         internal func scheduleRunAllTasks(filter: RunAllTasksFilter?, onComplete: @escaping (PendingTasksRunnerResult) -> Void) {
             runPendingTasksDispatchQueue.async {
-                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
+                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : "").")
                 let result = PendingTasksRunner.shared.runAllTasks(filter: filter)
                 onComplete(result)
             }
@@ -177,7 +176,7 @@ internal class PendingTasksRunner {
 
         internal func scheduleRunAllTasksWait(filter: RunAllTasksFilter?) -> PendingTasksRunnerResult {
             return runPendingTasksDispatchQueue.sync { () -> PendingTasksRunnerResult in
-                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : ""). Running total of: \(PendingTasksManager.shared.getTotalNumberOfTasksForRunnerToRun(filter: filter)) tasks.")
+                LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : "").")
                 return PendingTasksRunner.shared.runAllTasks(filter: filter)
             }
         }

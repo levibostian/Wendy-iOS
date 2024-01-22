@@ -4,7 +4,7 @@ public class Wendy {
     public static var shared: Wendy = Wendy()
     
     private var initializedData: InitializedData? = nil // populated after setup() called.
-    
+        
     internal var taskRunner: WendyTaskRunner? {
         initializedData?.taskRunner
     }
@@ -34,34 +34,8 @@ public class Wendy {
     }
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
+        // TODO: we give the parameters to the Writer directly. No need to create a non-persisted version of PendingTask.
         let pendingTaskToAdd = PendingTask.nonPersisted(tag: tag, dataId: dataId, groupId: groupId)
-
-        // We enforce a best practice here.
-        if let similarTask = PendingTasksManager.shared.getRandomTaskForTag(pendingTaskToAdd.tag) {
-            if similarTask.groupId == nil && pendingTaskToAdd.groupId != nil {
-                Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does not have a groupId. The task you are trying to add does have a groupId.")
-            }
-            if similarTask.groupId != nil && pendingTaskToAdd.groupId == nil {
-                Fatal.preconditionFailure("Cannot add task: \(pendingTaskToAdd.describe()). All subclasses of a PendingTask must either **all** have a groupId or **none** of them have a groupId. Other \(pendingTaskToAdd.tag)'s you have previously added does have a groupId. The task you are trying to add does not have a groupId.")
-            }
-        }
-
-        if let existingPendingTasks = PendingTasksManager.shared.getExistingTasks(pendingTaskToAdd), !existingPendingTasks.isEmpty {
-            let sampleExistingPendingTask = existingPendingTasks.last!
-
-            if let currentlyRunningTask = PendingTasksRunner.shared.currentlyRunningTask, currentlyRunningTask.equals(sampleExistingPendingTask) {
-                PendingTasksUtil.rerunCurrentlyRunningPendingTask = true
-                return sampleExistingPendingTask.id
-            }
-            // If a PendingTask belongs to a group, but is *not* the last item in the group, we want to insert it into CoreData. Let is pass through below to add itself.
-            if let groupId = pendingTaskToAdd.groupId {
-                if let lastPendingTaskInGroup = PendingTasksManager.shared.getLastPendingTaskInGroup(groupId), lastPendingTaskInGroup.pendingTask.equals(pendingTaskToAdd) {
-                    return lastPendingTaskInGroup.id
-                }
-            } else {
-                return sampleExistingPendingTask.id
-            }
-        }
 
         let addedPendingTask: PendingTask = PendingTasksManager.shared.insertPendingTask(pendingTaskToAdd)
 
@@ -98,7 +72,7 @@ public class Wendy {
     }
 
     public final func runTask(_ taskId: Double, onComplete: ((TaskRunResult) -> Void)?) {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
+        guard let pendingTask: PendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
             onComplete?(TaskRunResult.cancelled)
             return
         }
@@ -113,7 +87,7 @@ public class Wendy {
     }
 
     public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getPendingTaskTaskById(taskId) else {
+        guard let pendingTask: PendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
             return false
         }
 
@@ -121,7 +95,7 @@ public class Wendy {
             return true
         }
 
-        return PendingTasksManager.shared.isTaskFirstTaskOfGroup(taskId)
+        return false
     }
 
     /**
