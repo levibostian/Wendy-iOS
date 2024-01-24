@@ -18,4 +18,12 @@ public struct PendingTask {
     internal func from(persistedPendingTask: PersistedPendingTask) -> PendingTask {
         return PendingTask(tag: self.tag, taskId: persistedPendingTask.id, dataId: self.dataId, groupId: self.groupId, createdAt: persistedPendingTask.createdAt)
     }
+        
+    public init(tag: String, taskId: Double?, dataId: String?, groupId: String?, createdAt: Date?) {
+        self.tag = tag
+        self.taskId = taskId
+        self.dataId = dataId
+        self.groupId = groupId
+        self.createdAt = createdAt
+    }
 }
