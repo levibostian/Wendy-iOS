@@ -55,7 +55,7 @@ internal class PendingTasksRunner {
 
             if !PendingTasksUtil.isTaskValid(taskId: taskId) {
                 LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
-                PendingTasksManager.shared.deleteTask(taskId)
+                PendingTasksManager.shared.delete(taskId: taskId)
                 runTaskResult = TaskRunResult.cancelled
                 WendyConfig.logTaskComplete(taskToRun, successful: true, cancelled: true)
 
@@ -88,7 +88,7 @@ internal class PendingTasksRunner {
                     PendingTasksManager.shared.updatePlaceInLine(taskToRun.taskId!, createdAt: PendingTasksUtil.getRerunCurrentlyRunningPendingTaskTime()!)
                 } else {
                     LogUtil.d("Deleting task: \(taskToRun.describe()).")
-                    PendingTasksManager.shared.deleteTask(taskId)
+                    PendingTasksManager.shared.delete(taskId: taskId)
                 }
                 PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
 

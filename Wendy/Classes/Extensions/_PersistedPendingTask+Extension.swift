@@ -9,7 +9,7 @@ internal extension PersistedPendingTask {
     }
 
     var pendingTask: PendingTask {
-        return PendingTask.persisted(self)
+        return PendingTask.from(persistedPendingTask: self)
     }
 
     convenience init(pendingTask: PendingTask) {
@@ -17,6 +17,16 @@ internal extension PersistedPendingTask {
         self.dataId = pendingTask.dataId
         self.groupId = pendingTask.groupId
         self.tag = pendingTask.tag
+        self.createdAt = Date() // Very important. This determines the sort order of when tasks run by the task runner. createdAt needs to be set by Wendy internally and only modified by Wendy under certain circumstances.
+
+        self.id = PendingTasksUtil.getNextPendingTaskId()
+    }
+    
+    convenience init(tag: String, dataId: String?, groupId: String?) {
+        self.init()
+        self.dataId = dataId
+        self.groupId = groupId
+        self.tag = tag
         self.createdAt = Date() // Very important. This determines the sort order of when tasks run by the task runner. createdAt needs to be set by Wendy internally and only modified by Wendy under certain circumstances.
 
         self.id = PendingTasksUtil.getNextPendingTaskId()
