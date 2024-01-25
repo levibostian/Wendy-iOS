@@ -34,16 +34,13 @@ public class Wendy {
     }
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
-        // TODO: we give the parameters to the Writer directly. No need to create a non-persisted version of PendingTask.
-        let pendingTaskToAdd = PendingTask.nonPersisted(tag: tag, dataId: dataId, groupId: groupId)
+        let addedTask = PendingTasksManager.shared.add(tag: tag, dataId: dataId, groupId: groupId)
 
-        let addedPendingTask: PendingTask = PendingTasksManager.shared.insertPendingTask(pendingTaskToAdd)
+        WendyConfig.logNewTaskAdded(addedTask)
 
-        WendyConfig.logNewTaskAdded(pendingTaskToAdd)
+        try runTaskAutomaticallyIfAbleTo(addedTask)
 
-        try runTaskAutomaticallyIfAbleTo(addedPendingTask)
-
-        return addedPendingTask.taskId!
+        return addedTask.taskId!
     }
 
     /**
