@@ -34,8 +34,9 @@ public class FileSystemQueueWriter: QueueWriter {
     
     public func delete(taskId: Double) -> Bool {
         // TODO: mutex the queue cache
-        
-        // TODO: implement
+
+        queueCache.removeAll { $0.taskId == taskId }
+        fileStore.saveFile(JsonAdapterImpl.shared.toData(queueCache)!, filePath: queueCacheFilePath)
         
         return false
     }
