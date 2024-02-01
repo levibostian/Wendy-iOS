@@ -12,13 +12,31 @@ public class FileSystemQueueWriter: QueueWriter {
     
     private let fileStore: FileSystemStore = FileManagerFileSystemStore()
     
+    private var queueCache: [PendingTask] = [] // TODO: implement a real cache
+    
+    private let queueCacheFilePath: [String] = ["tasks_queue.json"]
+    
     public func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
-        // TODO:
-        return PendingTask(tag: tag, taskId: nil, dataId: nil, groupId: nil, createdAt: nil)
+        // TODO: mutex the queue cache
+        
+        let newTaskId = PendingTasksUtil.getNextPendingTaskId() // same that the coredata store uses.
+        let newCreatedAt = Date()
+        let newPendingTask = PendingTask(tag: tag, taskId: newTaskId, dataId: dataId, groupId: groupId, createdAt: newCreatedAt)
+        
+        let jsonStringPendingTask = JsonAdapterImpl.shared.toData(newPendingTask)!
+        
+        queueCache.append(newPendingTask)
+        
+        fileStore.saveFile(JsonAdapterImpl.shared.toData(queueCache)!, filePath: queueCacheFilePath)
+        
+        return newPendingTask
     }
     
     public func delete(taskId: Double) -> Bool {
-        // TODO:
+        // TODO: mutex the queue cache
+        
+        // TODO: implement
+        
         return false
     }
 }
