@@ -16,6 +16,12 @@ internal protocol FileSystemStore {
 }
 
 internal class FileManagerFileSystemStore: FileSystemStore {
+
+    // This class makes sure that all files created in SDK are in the same directory
+    private lazy var rootSdkDirectoryPath: URL = {
+        let rootAppDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return rootAppDirectory.appendingPathComponent("wendy", isDirectory: false)
+    }()
     
     func saveFile(_ data: Data, filePath: [String]) -> Bool {
         guard !filePath.isEmpty else {
@@ -24,11 +30,9 @@ internal class FileManagerFileSystemStore: FileSystemStore {
         
         let fileName = filePath.last!
         let fileDirectoryNames = Array(filePath.dropLast())
-
-        let rootAppDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         
-        let fullDirectoryPath: URL = rootAppDirectory.appending(components: fileDirectoryNames, isDirectory: true)
-        let fullFilePath = rootAppDirectory.appending(components: filePath)
+        let fullDirectoryPath: URL = rootSdkDirectoryPath.appending(components: fileDirectoryNames, isDirectory: true)
+        let fullFilePath = fullDirectoryPath.appending(components: filePath)
         
         do {
             try FileManager.default.createDirectory(at: fullDirectoryPath, withIntermediateDirectories: true, attributes: nil)
