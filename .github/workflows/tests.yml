@@ -13,6 +13,15 @@ jobs:
     
     - run: pod lib lint --allow-warnings
 
+  run-tests:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-ios
+    - uses: ./.github/actions/setup-fastlane
+    
+    - run: bundle exec fastlane scan
+
   deployment:
     runs-on: macos-13 # because cocoapods is already installed on these machines
     permissions:
