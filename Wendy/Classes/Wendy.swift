@@ -14,6 +14,10 @@ public class Wendy {
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
         Wendy.shared.initializedData = InitializedData(taskRunner: taskRunner)
         WendyConfig.debug = debug
+        
+        // TODO: load the queue cache so it's ready to use.
+        // Disabled for now while the file system queue code is still being developed.
+        // FileSystemQueueImpl.shared.load()
     }
 
     /**
