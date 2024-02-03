@@ -29,7 +29,7 @@ class PendingTasksRunnerResultTest: XCTestCase {
     func test_firstFailedResult_givenSuccessfulAndSkipped_expectFirstSkip() {
         let givenResults: [TaskRunResult] = [
             .successful,
-            .skipped(reason: .notReadyToRun)
+            .skipped(reason: .partOfFailedGroup)
         ]
         let runnerResult = PendingTasksRunnerResult.new(results: givenResults)
 
