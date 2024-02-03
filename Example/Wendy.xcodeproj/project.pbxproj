@@ -21,7 +21,6 @@
 		F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16223AEB672007EA1CE /* ErrorForTesting.swift */; };
 		F79F54B7208A5435007DC508 /* PendingTaskStatusUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */; };
 		F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */; };
-		F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */; };
 		F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */; };
 		F7B45F1C206E983F00BC547D /* Wendy.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F7B45F1B206E983F00BC547D /* Wendy.podspec */; };
 		F7E45BA82086697B00CEC32B /* Wendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E45BA72086697B00CEC32B /* Wendy.framework */; };
@@ -69,7 +68,6 @@
 		F787F16223AEB672007EA1CE /* ErrorForTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorForTesting.swift; sourceTree = "<group>"; };
 		F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskStatusUILabel.swift; sourceTree = "<group>"; };
 		F7B34B9823B17E97002F355A /* PendingTasksRunnerResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PendingTasksRunnerResult+TestingTests.swift"; sourceTree = "<group>"; };
-		F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskErrorTests.swift; sourceTree = "<group>"; };
 		F7B34B9C23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WendyUIBackgroundFetchResult+TestingTests.swift"; sourceTree = "<group>"; };
 		F7B45F1B206E983F00BC547D /* Wendy.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Wendy.podspec; path = ../Wendy.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F7B45F1E206E985000BC547D /* Wendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Wendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -167,7 +165,6 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				F7A727EE23B16E5C00C8B59B /* DB */,
 				F787F15F23AEB00E007EA1CE /* Type */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 				F787F16223AEB672007EA1CE /* ErrorForTesting.swift */,
@@ -244,14 +241,6 @@
 				F79F54B6208A5435007DC508 /* PendingTaskStatusUILabel.swift */,
 			);
 			path = UIView;
-			sourceTree = "<group>";
-		};
-		F7A727EE23B16E5C00C8B59B /* DB */ = {
-			isa = PBXGroup;
-			children = (
-				F7B34B9A23B18015002F355A /* PendingTaskErrorTests.swift */,
-			);
-			path = DB;
 			sourceTree = "<group>";
 		};
 		F7EED054206967A600F2B7AF /* Tasks */ = {
@@ -473,7 +462,6 @@
 				F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */,
 				F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */,
 				F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */,
-				F7B34B9B23B18015002F355A /* PendingTaskErrorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -658,6 +646,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -674,6 +663,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
