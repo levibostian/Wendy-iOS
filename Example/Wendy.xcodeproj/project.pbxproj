@@ -15,6 +15,8 @@
 		F70C72C72B5416D6002A5560 /* MyWendyTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70C72C62B5416D6002A5560 /* MyWendyTaskRunner.swift */; };
 		F70C72CA2B541746002A5560 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70C72C92B541746002A5560 /* Errors.swift */; };
 		F70C72CC2B54179A002A5560 /* TaskTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70C72CB2B54179A002A5560 /* TaskTags.swift */; };
+		F71471602B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F714715F2B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift */; };
+		F71471622B6FC52300AE8E78 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71471612B6FC52300AE8E78 /* TestHelpers.swift */; };
 		F73E96E9206EE7B400E7306F /* PendingTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */; };
 		F76AFB662086738A001A427B /* Pods_Wendy_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66F6204D5DD1D3F56DFF7D6D /* Pods_Wendy_Example.framework */; };
 		F787F16123AEB034007EA1CE /* PendingTasksRunnerResultTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */; };
@@ -63,6 +65,8 @@
 		F70C72C62B5416D6002A5560 /* MyWendyTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWendyTaskRunner.swift; sourceTree = "<group>"; };
 		F70C72C92B541746002A5560 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F70C72CB2B54179A002A5560 /* TaskTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTags.swift; sourceTree = "<group>"; };
+		F714715F2B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemQueueIntegrationTest.swift; sourceTree = "<group>"; };
+		F71471612B6FC52300AE8E78 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		F73E96E8206EE7B400E7306F /* PendingTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTaskTableViewCell.swift; sourceTree = "<group>"; };
 		F787F16023AEB034007EA1CE /* PendingTasksRunnerResultTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTasksRunnerResultTest.swift; sourceTree = "<group>"; };
 		F787F16223AEB672007EA1CE /* ErrorForTesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorForTesting.swift; sourceTree = "<group>"; };
@@ -165,9 +169,11 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F714715E2B6FC42300AE8E78 /* Store */,
 				F787F15F23AEB00E007EA1CE /* Type */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 				F787F16223AEB672007EA1CE /* ErrorForTesting.swift */,
+				F71471612B6FC52300AE8E78 /* TestHelpers.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -215,6 +221,14 @@
 				F70C72CB2B54179A002A5560 /* TaskTags.swift */,
 			);
 			path = Type;
+			sourceTree = "<group>";
+		};
+		F714715E2B6FC42300AE8E78 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				F714715F2B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift */,
+			);
+			path = Store;
 			sourceTree = "<group>";
 		};
 		F73E96E7206EE79700E7306F /* UITableViewCell */ = {
@@ -462,6 +476,8 @@
 				F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */,
 				F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */,
 				F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */,
+				F71471602B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift in Sources */,
+				F71471622B6FC52300AE8E78 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
