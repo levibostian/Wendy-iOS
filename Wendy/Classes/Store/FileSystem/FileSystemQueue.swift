@@ -18,7 +18,11 @@ internal protocol FileSystemQueue {
 
 internal class FileSystemQueueImpl: FileSystemQueue {
     
-    internal static let shared = FileSystemQueueImpl()
+    internal static var shared = FileSystemQueueImpl()
+    
+    internal static func reset() { // for tests
+        Self.shared = FileSystemQueueImpl()
+    }
     
     private let fileStore: FileSystemStore = FileManagerFileSystemStore()
     private let queueFilePath: [String] = ["tasks_queue.json"]
