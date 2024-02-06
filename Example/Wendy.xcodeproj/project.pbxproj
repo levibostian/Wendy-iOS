@@ -27,6 +27,8 @@
 		F7B45F1C206E983F00BC547D /* Wendy.podspec in Resources */ = {isa = PBXBuildFile; fileRef = F7B45F1B206E983F00BC547D /* Wendy.podspec */; };
 		F7E45BA82086697B00CEC32B /* Wendy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7E45BA72086697B00CEC32B /* Wendy.framework */; };
 		F7F01444206AF59F00896E9B /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7F01445206AF59F00896E9B /* SnapKit.framework */; };
+		F7FDAD8A2B76575600DA7D56 /* PendingTasksManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDAD892B76575600DA7D56 /* PendingTasksManagerTests.swift */; };
+		F7FDAD8C2B765AD900DA7D56 /* QueueReaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDAD8B2B765AD900DA7D56 /* QueueReaderStub.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +82,8 @@
 		F7E45BA52086697B00CEC32B /* Pods_Wendy_iOS_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_Wendy_iOS_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7E45BA72086697B00CEC32B /* Wendy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Wendy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7F01445206AF59F00896E9B /* SnapKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnapKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7FDAD892B76575600DA7D56 /* PendingTasksManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTasksManagerTests.swift; sourceTree = "<group>"; };
+		F7FDAD8B2B765AD900DA7D56 /* QueueReaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueReaderStub.swift; sourceTree = "<group>"; };
 		F8E5425B4B841F6DAC94C636 /* Pods_Wendy_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wendy_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -174,6 +178,7 @@
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 				F787F16223AEB672007EA1CE /* ErrorForTesting.swift */,
 				F71471612B6FC52300AE8E78 /* TestHelpers.swift */,
+				F7FDAD892B76575600DA7D56 /* PendingTasksManagerTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -227,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				F714715F2B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift */,
+				F7FDAD8B2B765AD900DA7D56 /* QueueReaderStub.swift */,
 			);
 			path = Store;
 			sourceTree = "<group>";
@@ -474,9 +480,11 @@
 			files = (
 				F787F16123AEB034007EA1CE /* PendingTasksRunnerResultTest.swift in Sources */,
 				F7B34B9D23B1814F002F355A /* WendyUIBackgroundFetchResult+TestingTests.swift in Sources */,
+				F7FDAD8A2B76575600DA7D56 /* PendingTasksManagerTests.swift in Sources */,
 				F787F16323AEB672007EA1CE /* ErrorForTesting.swift in Sources */,
 				F7B34B9923B17E98002F355A /* PendingTasksRunnerResult+TestingTests.swift in Sources */,
 				F71471602B6FC44700AE8E78 /* FileSystemQueueIntegrationTest.swift in Sources */,
+				F7FDAD8C2B765AD900DA7D56 /* QueueReaderStub.swift in Sources */,
 				F71471622B6FC52300AE8E78 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
