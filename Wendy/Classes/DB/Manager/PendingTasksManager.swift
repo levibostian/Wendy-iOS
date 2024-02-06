@@ -4,6 +4,8 @@ import UIKit
 
 internal class PendingTasksManager: QueueReader, QueueWriter {
     internal static let shared: PendingTasksManager = PendingTasksManager()
+    
+    private var queueReaders: [QueueReader] = []
 
     private init() {}
 
@@ -121,4 +123,9 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
 
         return keyValues
     }
+    
+    public func addQueueReader(_ queueReader: QueueReader) {
+        queueReaders.append(queueReader)
+    }
+    
 }
