@@ -151,6 +151,10 @@ public class Wendy {
         }
     }
     
+    public func addQueueReader(_ reader: QueueReader) {
+        PendingTasksManager.shared.addQueueReader(reader)
+    }
+    
     struct InitializedData {
         let taskRunner: WendyTaskRunner
     }
