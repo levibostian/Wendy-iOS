@@ -3,9 +3,22 @@ import Foundation
 import UIKit
 
 internal class PendingTasksManager: QueueReader, QueueWriter {
-    internal static let shared: PendingTasksManager = PendingTasksManager()
+    internal static var shared: PendingTasksManager = PendingTasksManager()
+    
+    private let coreDataReader = WendyCoreDataQueueReader()
+    
+    private var queueReaders: [QueueReader] = []
+    
+    internal static func initForTesting(queueReaders: [QueueReader]) {
+        shared = PendingTasksManager()
+        shared.queueReaders = queueReaders
+    }
 
-    private init() {}
+    // singleton constructor
+    private init() {
+        // Set the default, production readers and writers
+        queueReaders.append(coreDataReader)
+    }
 
     func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
         if tag.isEmpty { Fatal.preconditionFailure("You need to set a unique tag for \(String(describing: PendingTask.self)) instances.") }
@@ -20,44 +33,13 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
     }
 
     internal func getAllTasks() -> [PendingTask] {
-        let viewContext = CoreDataManager.shared.viewContext
-
-        do {
-            let persistedPendingTasks: [PersistedPendingTask] = try viewContext.fetch(PersistedPendingTask.fetchRequest()) as [PersistedPendingTask]
-
-            var pendingTasks: [PendingTask] = []
-            persistedPendingTasks.forEach { persistedPendingTask in
-                pendingTasks.append(persistedPendingTask.pendingTask)
-            }
-
-            return pendingTasks
-        } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
-            return []
-        }
-    }
-
-    private func getPersistedTaskByTaskId(_ taskId: Double) -> PersistedPendingTask? {
-        let context = CoreDataManager.shared.viewContext
-
-        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
-        pendingTaskFetchRequest.predicate = NSPredicate(format: "id == %f", taskId)
-
-        do {
-            let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
-            return pendingTasks.first
-        } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
-            return nil
-        }
+        return queueReaders.flatMap { return $0.getAllTasks() }
+            .filter { return $0.createdAt != nil }
+            .sorted(by: { $0.createdAt! < $1.createdAt! })
     }
 
     internal func getTaskByTaskId(_ taskId: Double) -> PendingTask? {
-        guard let persistedPendingTask = getPersistedTaskByTaskId(taskId) else {
-            return nil
-        }
-
-        return persistedPendingTask.pendingTask
+        return queueReaders.compactMap { return $0.getTaskByTaskId(taskId) }.first
     }
 
     // Note: Make sure to keep the query at "delete this table item by ID _____".
@@ -65,7 +47,7 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
     func delete(taskId: Double) -> Bool {
         let context = CoreDataManager.shared.viewContext
         
-        guard let persistedPendingTask = getPersistedTaskByTaskId(taskId) else {
+        guard let persistedPendingTask = coreDataReader.getPersistedTaskByTaskId(taskId) else {
             return false
         }
     
@@ -76,7 +58,7 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
     }
 
     internal func updatePlaceInLine(_ taskId: Double, createdAt: Date) {
-        guard let persistedPendingTask = getPersistedTaskByTaskId(taskId) else {
+        guard let persistedPendingTask = coreDataReader.getPersistedTaskByTaskId(taskId) else {
             return
         }
 
@@ -86,39 +68,13 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
     }
 
     internal func getNextTaskToRun(_ lastSuccessfulOrFailedTaskId: Double, filter: RunAllTasksFilter?) -> PendingTask? {
-        let context = CoreDataManager.shared.viewContext
-
-        let pendingTaskFetchRequest: NSFetchRequest<PersistedPendingTask> = PersistedPendingTask.fetchRequest()
-
-        var keyValues = ["id > %@": lastSuccessfulOrFailedTaskId as NSObject, "manuallyRun = %@": NSNumber(value: false) as NSObject]
-        if let filter = filter {
-            keyValues = applyFilterPredicates(filter, to: keyValues)
-        }
-
-        let predicates = keyValues.map { NSPredicate(format: $0.key, $0.value) }
-        pendingTaskFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        pendingTaskFetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(PersistedPendingTask.createdAt), ascending: true)]
-
-        do {
-            let pendingTasks: [PersistedPendingTask] = try context.fetch(pendingTaskFetchRequest)
-            if pendingTasks.isEmpty { return nil }
-            let persistedPendingTask: PersistedPendingTask = pendingTasks[0]
-
-            return persistedPendingTask.pendingTask
-        } catch let error as NSError {
-            Fatal.error("Error in Wendy while fetching data from database.", error: error)
-            return nil
-        }
+        return queueReaders.compactMap { reader in
+            return reader.getNextTaskToRun(lastSuccessfulOrFailedTaskId, filter: filter)
+        }.first
     }
-
-    private func applyFilterPredicates(_ filter: RunAllTasksFilter, to keyValues: [String: NSObject]) -> [String: NSObject] {
-        var keyValues = keyValues
-
-        switch filter {
-        case .group(let groupId):
-            keyValues["groupId = %@"] = groupId as NSObject
-        }
-
-        return keyValues
+    
+    public func addQueueReader(_ queueReader: QueueReader) {
+        queueReaders.append(queueReader)
     }
+    
 }
