@@ -36,11 +36,4 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
   s.source_files = 'Wendy/Classes/**/*'  
   s.resources = 'Wendy/Assets/**/*'
 
-# I may run some bash scripts here in the future for running after the cocoapod is installed, but for now I will give the user the option of running it manually for privacy.
-#  def s.post_install(target)
-#    // TODO run bash script to install templates.
-#  end
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  s.frameworks = 'CoreData'
 end

@@ -6,7 +6,6 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
 
     internal static var shared: PendingTasksManager = PendingTasksManager()
     
-    private let coreDataReader = WendyCoreDataQueueReader()
     private let queueWriter = FileSystemQueueWriter()
     
     private var queueReaders: [QueueReader] = []
@@ -19,7 +18,7 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
     // singleton constructor
     private init() {
         // Set the default, production readers and writers
-        queueReaders.append(coreDataReader)
+        queueReaders.append(FileSystemQueueReader())
     }
 
     func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
