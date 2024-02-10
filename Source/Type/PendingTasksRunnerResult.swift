@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 public struct PendingTasksRunnerResult {
     public let numberTasksRun: Int
