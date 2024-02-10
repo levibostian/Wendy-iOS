@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
     
-    - run: pod lib lint --allow-warnings
+    - run: make build
 
   run-tests:
     runs-on: macos-13
