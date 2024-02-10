@@ -62,7 +62,7 @@ class CreateGroceryListItemPendingTask: PendingTask {
 ```
 
 Here are the steps that we need to take to migrate away from using this: 
-1. All of the class parameters will now go into your `Wendy.shared.addTask()` call. 
+1. All of the class parameters will now go into your `Wendy.shared.addTask()` call.
 
 ```swift
 // Before
@@ -72,7 +72,7 @@ Wendy.shared.addTask(CreateGroceryListItemPendingTask(groceryStoreItemId: 5))
 Wendy.shared.addTask(tag: "CreateGroceryListItemPendingTask", dataId: String(groceryStoreItemId))
 ```
 
-2. All of the code inside of `runTask` will be moved into a new task runner. See the updated [getting started docs][4] to learn how to create a new task runner in your app. 
+2. All of the code inside of `runTask` will be moved into a new task runner. See the updated [getting started docs][4] to learn how to create a new task runner in your app.
 
 ```swift
 import Wendy
@@ -95,9 +95,20 @@ class MyWendyTaskRunner: WendyTaskRunner {
 }
 ```
 
-3. Delete your `PendingTaskFactory` class. It’s no longer needed! 
+3. Delete your `PendingTaskFactory` class. It’s no longer needed!
+
+# v5 to v6 - Change data store from CoreData to File System
+
+The breaking change that caused Wendy to go from v5 to v6 is that we have changed how SDK data is stored on the device. 
+
+For those of you who have installed any version of Wendy \<= 5, all tasks that your app added to Wendy were saved on the device via the CoreData framework. Starting in Wendy version 6, all tasks that your app adds to Wendy will be instead saved to files in the file system on the device.  **All CoreData framework related code has been removed from the Wendy codebase.** This means that all Wendy tasks saved via CoreData will not be run by Wendy, *unless you add the new plugin* when you upgrade Wendy to version 6. 
+
+Navigate over to [the README for a new, separate CocoaPod][5] to learn how to install this plugin in your app. 
+
+When you install this plugin, all tasks added to Wendy in version 6 will still be written to the file system. This plugin will simply read tasks added when version \<= 5 was running in the app. 
 
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
 [3]:	BEST_PRACTICES.md#handle-errors-when-a-task-runs
 [4]:	README.md#getting-started
+[5]:	https://github.com/levibostian/Wendy-iOS-Reader-CoreData
