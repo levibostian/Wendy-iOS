@@ -3,7 +3,6 @@ import Foundation
 internal class PendingTasksUtil {
     private static let prefix = "pendingTasks_"
     private static let pendingTasksNextPendingTaskIdKey = "\(prefix)pendingTasksNextPendingTaskIdKey"
-    private static let rerunCurrentlyRunningPendingTaskKey = "\(prefix)rerunCurrentlyRunningPendingTaskKey"
     // Tasks with id >= validPendingTasksIdThreshold are valid. < are invalid.
     private static let validPendingTasksIdThresholdKey = "\(prefix)validPendingTasksIdThresholdKey"
 
@@ -27,31 +26,5 @@ internal class PendingTasksUtil {
 
     internal class func setValidPendingTasksIdThreshold() {
         UserDefaults.standard.set(currentPendingTaskId + 1, forKey: validPendingTasksIdThresholdKey)
-    }
-
-    internal static var rerunCurrentlyRunningPendingTask: Bool {
-        get {
-            return UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey) > 0
-        }
-        set {
-            if newValue {
-                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: rerunCurrentlyRunningPendingTaskKey)
-            } else {
-                UserDefaults.standard.set(0, forKey: rerunCurrentlyRunningPendingTaskKey)
-            }
-        }
-    }
-
-    internal class func getRerunCurrentlyRunningPendingTaskTime() -> Date? {
-        let timeInternal = UserDefaults.standard.double(forKey: rerunCurrentlyRunningPendingTaskKey)
-        guard timeInternal > 0 else {
-            return nil
-        }
-
-        return Date(timeIntervalSince1970: timeInternal)
-    }
-
-    internal class func resetRerunCurrentlyRunningPendingTask() {
-        rerunCurrentlyRunningPendingTask = false
     }
 }
