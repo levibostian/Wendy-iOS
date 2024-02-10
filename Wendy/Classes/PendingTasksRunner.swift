@@ -63,7 +63,6 @@ internal class PendingTasksRunner {
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
 
-            PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
             PendingTasksRunner.shared.currentlyRunningTask = taskToRun
 
             WendyConfig.logTaskRunning(taskToRun)
@@ -83,14 +82,8 @@ internal class PendingTasksRunner {
                 }
 
                 LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
-                if PendingTasksUtil.rerunCurrentlyRunningPendingTask {
-                    LogUtil.d("Task: \(taskToRun.describe()) is set to re-run. Not deleting it.")
-                    PendingTasksManager.shared.updatePlaceInLine(taskToRun.taskId!, createdAt: PendingTasksUtil.getRerunCurrentlyRunningPendingTaskTime()!)
-                } else {
-                    LogUtil.d("Deleting task: \(taskToRun.describe()).")
-                    PendingTasksManager.shared.delete(taskId: taskId)
-                }
-                PendingTasksUtil.resetRerunCurrentlyRunningPendingTask()
+                LogUtil.d("Deleting task: \(taskToRun.describe()).")
+                PendingTasksManager.shared.delete(taskId: taskId)
 
                 WendyConfig.logTaskComplete(taskToRun, successful: successful, cancelled: false)
 
