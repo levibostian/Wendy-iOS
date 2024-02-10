@@ -1,6 +1,5 @@
 import CoreData
 import Foundation
-import UIKit
 
 internal class PendingTasksManager: QueueReader, QueueWriter {
 
