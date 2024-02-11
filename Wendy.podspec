@@ -33,7 +33,6 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
 
   s.ios.deployment_target = '11.0'
 
-  s.source_files = 'Wendy/Classes/**/*'  
-  s.resources = 'Wendy/Assets/**/*'
+  s.source_files = 'Source/**/*'
 
 end
