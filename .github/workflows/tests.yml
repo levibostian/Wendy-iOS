@@ -1,4 +1,7 @@
-on: [pull_request]
+on: 
+  pull_request:
+  push:
+    branches: [main]
 
 concurrency: # cancel previous workflow run if one exists. 
   group: ${{ github.workflow }}-${{ github.ref }}
