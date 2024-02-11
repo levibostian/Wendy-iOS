@@ -18,7 +18,8 @@ tasks:
   test:
     cmds:
       - task: clean
-      - xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -resultBundlePath './Wendy.xcresult' -enableCodeCoverage YES test | xcbeautify
+      - xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES build-for-testing | xcbeautify
+      - xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES test-without-building | xcbeautify
   
   # Resourced used to create this command:
   # https://github.com/michaelhenry/swifty-code-coverage/
@@ -26,6 +27,6 @@ tasks:
     preconditions:
       - test -d .build/
     cmds:
-      - xcrun llvm-cov export "$(find .build -name WendyTests.xctest | tail -n1)/WendyTests" -format=lcov -instr-profile=$(find .build -name *.profdata | tail -n1) > .build/lcov.info
-      - xcrun llvm-cov report "$(find .build -name WendyTests.xctest | tail -n1)/WendyTests"  -instr-profile=$(find .build -name *.profdata | tail -n1) -use-color
+      - xcrun llvm-cov export "$(find .build -name WendyTests.xctest | tail -n1)/WendyTests" -instr-profile=$(find .build -name *.profdata | tail -n1) -ignore-filename-regex=Tests/* -format=lcov > .build/lcov.info
+      - xcrun llvm-cov report "$(find .build -name WendyTests.xctest | tail -n1)/WendyTests" -instr-profile=$(find .build -name *.profdata | tail -n1) -ignore-filename-regex=Tests/* -use-color
   
