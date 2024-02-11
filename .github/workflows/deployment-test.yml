@@ -1,0 +1,30 @@
+
+# Can only run on push events, not pull requests.
+# PRs on github generate weird branch names that semantic-release does not support. 
+on: [push]
+
+concurrency: # cancel previous workflow run if one exists. 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  deployment:
+    runs-on: macos-13 # because cocoapods is already installed on these machines
+    permissions:
+      contents: write # to set permissions for semantic-release dry-run to pass 
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: setup git user to run semantic-release
+      run: |
+        git config --global user.email "user@example.com"
+        git config --global user.name "Example User"
+
+    - uses: ./.github/actions/setup-semantic-release
+    
+    - name: Run semantic-release in dry run
+      run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "${{ github.ref_name }},main"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}

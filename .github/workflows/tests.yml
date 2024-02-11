@@ -1,4 +1,4 @@
-on: [push]
+on: [pull_request]
 
 concurrency: # cancel previous workflow run if one exists. 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,23 +29,10 @@ jobs:
     
     - run: task test
     - run: task coverage
-
-  deployment:
-    runs-on: macos-13 # because cocoapods is already installed on these machines
-    permissions:
-      contents: write # to set permissions for semantic-release dry-run to pass 
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: setup git user to run semantic-release
-      run: |
-        git config --global user.email "user@example.com"
-        git config --global user.name "Example User"
-
-    - uses: ./.github/actions/setup-semantic-release
-    
-    - name: Run semantic-release in dry run
-      run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "${{ github.ref_name }},main"
+    - name: Upload coverage for analysis 
+      uses: coverallsapp/github-action@v2
+      with: 
+        file: .build/lcov.info
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        # try and speedup the action by homebrew not having to do more then it needs when installing the coveralls tool 
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
