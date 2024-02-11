@@ -10,17 +10,25 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
+    - name: Install Task
+      uses: arduino/setup-task@v2
+      with:
+        version: 3.x
     
-    - run: make build
+    - run: task build
 
   run-tests:
     runs-on: macos-13
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
-    - uses: ./.github/actions/setup-fastlane
+    - name: Install Task
+      uses: arduino/setup-task@v2
+      with:
+        version: 3.x
     
-    - run: bundle exec fastlane scan
+    - run: task test
+    - run: task coverage
 
   deployment:
     runs-on: macos-13 # because cocoapods is already installed on these machines

@@ -1,5 +1,7 @@
 .build/
 .swiftpm/
+*.xml
+*.xcresult/
 
 reports/
 
