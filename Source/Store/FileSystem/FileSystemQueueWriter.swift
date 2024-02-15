@@ -11,17 +11,28 @@ import Foundation
 
 // A writer, that stores data in the form of files on the file system.
 public class FileSystemQueueWriter: QueueWriter {
+    
+    @Atomic public private(set) static var shared = FileSystemQueueWriter()
+    
+    internal static func reset() { // for tests
+        Self.shared = FileSystemQueueWriter()
+    }
+    
+    private let mutex = Mutex()
+    
+    private init() {}
 
     private var queue: FileSystemQueue {
         return FileSystemQueueImpl.shared
     }
     
     public func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
         let newTaskId = PendingTasksUtil.getNextPendingTaskId() // same that the coredata store uses.
         let newCreatedAt = Date()
         let newPendingTask = PendingTask(tag: tag, taskId: newTaskId, dataId: dataId, groupId: groupId, createdAt: newCreatedAt)
-        
-        let jsonStringPendingTask = JsonAdapterImpl.shared.toData(newPendingTask)!
         
         queue.add(newPendingTask)
         
@@ -29,6 +40,9 @@ public class FileSystemQueueWriter: QueueWriter {
     }
     
     public func delete(taskId: Double) -> Bool {
+        mutex.lock()
+        defer { mutex.unlock() }
+        
         queue.delete(taskId)
         
         return false

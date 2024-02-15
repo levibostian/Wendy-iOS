@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import Wendy
 
-class PendingTasksManagerTest: XCTestCase {
+class PendingTasksManagerTest: TestClass {
     
     private var queueReader: QueueReaderStub!
     private var queueReader2: QueueReaderStub!

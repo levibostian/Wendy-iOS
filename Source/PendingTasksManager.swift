@@ -5,9 +5,15 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
 
     internal static var shared: PendingTasksManager = PendingTasksManager()
     
-    private let queueWriter = FileSystemQueueWriter()
+    private var queueWriter: FileSystemQueueWriter {
+        return FileSystemQueueWriter.shared
+    }
     
     private var queueReaders: [QueueReader] = []
+    
+    internal static func reset() {
+        shared = PendingTasksManager()
+    }
     
     internal static func initForTesting(queueReaders: [QueueReader]) {
         shared = PendingTasksManager()
