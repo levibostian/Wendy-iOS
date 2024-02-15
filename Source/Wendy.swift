@@ -10,6 +10,10 @@ public class Wendy {
     }
 
     private init() {}
+    
+    internal static func reset() { // for testing
+        Self.shared = Wendy()
+    }
 
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
         Wendy.shared.initializedData = InitializedData(taskRunner: taskRunner)

@@ -9,6 +9,12 @@ import Foundation
  */
 internal class PendingTasksRunner {
     internal static var shared: PendingTasksRunner = PendingTasksRunner()
+    
+    internal static func reset() { // for testing
+        shared = PendingTasksRunner()
+        Scheduler.reset()
+        RunSinglePendingTaskRunner.reset()
+    }
 
     private init() {}
 
@@ -19,10 +25,14 @@ internal class PendingTasksRunner {
     // I created a separate class for running a single pending task simply as a wrapper to the function runPendingTask(taskId).
     // this function is very important to have it run in a synchronized way and to enforce that, I need to make sure it uses a DispatchQueue to run all of it's callers requests. So, I created this class to make sure I don't make the mistake of accidently calling this `runPendingTask(taskId)` function inside of the `PendingTasksRunner` without following my rule of *this function must run in a synchonized way!* (I already made this mistake....)
     fileprivate class RunSinglePendingTaskRunner {
-        static let shared = RunSinglePendingTaskRunner()
+        static var shared = RunSinglePendingTaskRunner()
 
         private let runPendingTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTask")
         private let runTaskDispatchGroup = DispatchGroup()
+    
+        internal static func reset() { // for testing            
+            shared = RunSinglePendingTaskRunner()
+        }
 
         private init() {}
 
@@ -145,7 +155,11 @@ internal class PendingTasksRunner {
     }
 
     internal class Scheduler {
-        static let shared = Scheduler()
+        static var shared = Scheduler()
+        
+        internal static func reset() {
+            Self.shared = Scheduler()
+        }
 
         fileprivate let runPendingTasksDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTasks")
 

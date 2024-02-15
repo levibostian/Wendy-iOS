@@ -52,6 +52,8 @@ internal class FileSystemQueueImpl: FileSystemQueue {
     }
     
     var queue: [PendingTask] {
+        load()
+        
         return cache
     }
     
