@@ -17,6 +17,7 @@ jobs:
       uses: arduino/setup-task@v2
       with:
         version: 3.x
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     
     - run: task build
 
@@ -29,6 +30,7 @@ jobs:
       uses: arduino/setup-task@v2
       with:
         version: 3.x
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
     
     - run: task test
     - run: task coverage

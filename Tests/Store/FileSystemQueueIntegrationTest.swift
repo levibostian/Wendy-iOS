@@ -10,19 +10,18 @@ import Foundation
 @testable import Wendy
 import XCTest
 
-class FileSystemQueueIntegrationTest: XCTestCase {
+class FileSystemQueueIntegrationTest: TestClass {
     private var reader: FileSystemQueueReader!
-    private var writer: FileSystemQueueWriter!
+    private var writer: FileSystemQueueWriter {
+        return FileSystemQueueWriter.shared
+    }
     
     override func setUp() {
         super.setUp()
         
         FileSystemQueueImpl.reset()
-        deleteAllFileSystemFiles()
-        deleteKeyValueStore() 
 
         reader = FileSystemQueueReader()
-        writer = FileSystemQueueWriter()
     }
     
     // MARK: simple reading and writing
@@ -47,5 +46,17 @@ class FileSystemQueueIntegrationTest: XCTestCase {
         let _ = writer.delete(taskId: 1)
         
         XCTAssertNil(reader.getTaskByTaskId(1))
+    }
+    
+    // MARK: persist tasks to data store
+    
+    func test_givenAddTasks_givenClearMemory_expectLoadPreviouslyAddedTasks() {
+        let _ = writer.add(tag: "foo", dataId: nil, groupId: nil)
+        
+        FileSystemQueueImpl.reset()
+        
+        let actual = reader.getAllTasks()
+        XCTAssertEqual(actual[0].taskId, 1)
+        XCTAssertEqual(actual[0].tag, "foo")
     }
 }

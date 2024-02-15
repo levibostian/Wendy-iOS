@@ -32,7 +32,7 @@ internal class FileManagerFileSystemStore: FileSystemStore {
         let fileDirectoryNames = Array(filePath.dropLast())
         
         let fullDirectoryPath: URL = rootSdkDirectoryPath.appending(components: fileDirectoryNames, isDirectory: true)
-        let fullFilePath = fullDirectoryPath.appending(components: filePath)
+        let fullFilePath = fullDirectoryPath.appending(components: [fileName], isDirectory: false)
         
         do {
             try FileManager.default.createDirectory(at: fullDirectoryPath, withIntermediateDirectories: true, attributes: nil)
@@ -44,7 +44,7 @@ internal class FileManagerFileSystemStore: FileSystemStore {
     }
     
     func readFile(_ filePath: [String]) -> Data? {
-        let filePath = URL(fileURLWithPath: filePath.joined(separator: "/"))
+        let filePath = rootSdkDirectoryPath.appending(components: filePath)
         return FileManager.default.contents(atPath: filePath.path)
     }
     
