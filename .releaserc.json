@@ -23,7 +23,7 @@
             ]
         }],
         ["@semantic-release/git", {
-            "assets": ["*.podspec"],
+            "assets": ["*.podspec", "Source/**/*.generated.swift"],
             "message": "chore: update metadata for release ${nextRelease.version}"
         }],
         ["@semantic-release/github", {

@@ -7,16 +7,9 @@ import Foundation
  2. X number of threads all running the task runner's `runTask()` function can only run one at a time. (so, run runTask() in a sync way)
  3. The task runner's `runTask()` runs in a sync way (while the `PendingTask.runTask()` is async) where it does not return a result until the task has failed or succeeded. So, work in a blocking way.
  */
+// sourcery: InjectRegister = "PendingTasksRunner"
+// sourcery: InjectSingleton
 internal class PendingTasksRunner {
-    internal static var shared: PendingTasksRunner = PendingTasksRunner()
-    
-    internal static func reset() { // for testing
-        shared = PendingTasksRunner()
-        Scheduler.reset()
-        RunSinglePendingTaskRunner.reset()
-    }
-
-    private init() {}
 
     private var lastSuccessfulOrFailedTaskId: Double = 0
     private var failedTasksGroups: [String] = []
@@ -26,13 +19,13 @@ internal class PendingTasksRunner {
     // this function is very important to have it run in a synchronized way and to enforce that, I need to make sure it uses a DispatchQueue to run all of it's callers requests. So, I created this class to make sure I don't make the mistake of accidently calling this `runPendingTask(taskId)` function inside of the `PendingTasksRunner` without following my rule of *this function must run in a synchonized way!* (I already made this mistake....)
     fileprivate class RunSinglePendingTaskRunner {
         static var shared = RunSinglePendingTaskRunner()
+        
+        private var pendingTasksRunner: PendingTasksRunner {
+            DIGraph.shared.pendingTasksRunner
+        }
 
         private let runPendingTaskDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTask")
         private let runTaskDispatchGroup = DispatchGroup()
-    
-        internal static func reset() { // for testing            
-            shared = RunSinglePendingTaskRunner()
-        }
 
         private init() {}
 
@@ -73,14 +66,14 @@ internal class PendingTasksRunner {
                 return runTaskResult // This code should *not* be executed because of .leave() above.
             }
 
-            PendingTasksRunner.shared.currentlyRunningTask = taskToRun
+            pendingTasksRunner.currentlyRunningTask = taskToRun
 
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
             
             Wendy.shared.taskRunner?.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId, complete: { error in
                 let successful = error == nil
-                PendingTasksRunner.shared.currentlyRunningTask = nil
+                self.pendingTasksRunner.currentlyRunningTask = nil
 
                 if let error = error {
                     LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
@@ -157,8 +150,8 @@ internal class PendingTasksRunner {
     internal class Scheduler {
         static var shared = Scheduler()
         
-        internal static func reset() {
-            Self.shared = Scheduler()
+        private var pendingTasksRunner: PendingTasksRunner {
+            DIGraph.shared.pendingTasksRunner
         }
 
         fileprivate let runPendingTasksDispatchQueue = DispatchQueue(label: "com.levibostian.wendy.PendingTasksRunner.Scheduler.runPendingTasks")
@@ -176,7 +169,7 @@ internal class PendingTasksRunner {
         internal func scheduleRunAllTasks(filter: RunAllTasksFilter?, onComplete: @escaping (PendingTasksRunnerResult) -> Void) {
             runPendingTasksDispatchQueue.async {
                 LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : "").")
-                let result = PendingTasksRunner.shared.runAllTasks(filter: filter)
+                let result = self.pendingTasksRunner.runAllTasks(filter: filter)
                 onComplete(result)
             }
         }
@@ -184,7 +177,7 @@ internal class PendingTasksRunner {
         internal func scheduleRunAllTasksWait(filter: RunAllTasksFilter?) -> PendingTasksRunnerResult {
             return runPendingTasksDispatchQueue.sync { () -> PendingTasksRunnerResult in
                 LogUtil.d("Running all tasks in task runner \((filter != nil) ? " (with filter)" : "").")
-                return PendingTasksRunner.shared.runAllTasks(filter: filter)
+                return pendingTasksRunner.runAllTasks(filter: filter)
             }
         }
     }
