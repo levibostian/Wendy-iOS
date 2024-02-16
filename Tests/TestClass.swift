@@ -18,9 +18,9 @@ open class TestClass: XCTestCase {
         deleteAllFileSystemFiles()
         
         // Reset singletons
+        DIGraph.shared.reset()
         FileSystemQueueImpl.reset()
         FileSystemQueueWriter.reset()
-        PendingTasksRunner.reset()
         Wendy.reset()
         PendingTasksManager.reset()
         

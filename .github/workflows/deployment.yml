@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ios
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ./.github/actions/setup-semantic-release      
       - uses: cycjimmy/semantic-release-action@v4

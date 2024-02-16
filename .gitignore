@@ -2,6 +2,7 @@
 .swiftpm/
 *.xml
 *.xcresult/
+*.generated.swift
 
 reports/
 
