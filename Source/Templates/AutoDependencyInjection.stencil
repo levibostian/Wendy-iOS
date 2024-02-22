@@ -73,7 +73,6 @@ DIGraph().reset()
 extension DIGraph {
     // call in automated test suite to confirm that all dependnecies able to resolve and not cause runtime exceptions. 
     // internal scope so each module can provide their own version of the function with the same name. 
-    @available(iOSApplicationExtension, unavailable) // some properties could be unavailable to app extensions so this function must also. 
     internal func testDependenciesAbleToResolve() -> Int {
         var countDependenciesResolved = 0
 
@@ -96,18 +95,22 @@ extension DIGraph {
     // {{ class }} (singleton)
     {% call overrideGetterProperty class dep false true %}
     {% call addPropertyWrappers dep %}
-    {{ dep.accessLevel }} var shared{{ class }}: {{ class }} {
-        // Use a DispatchQueue to make singleton thread safe. You must create unique dispatchqueues instead of using 1 shared one or you will get a crash when trying 
-        // to call DispatchQueue.sync{} while already inside another DispatchQueue.sync{} call. 
-        return DispatchQueue(label: "DIGraph_{{class}}_singleton_access").sync {
-            let existingSingletonInstance = self.singletons[String(describing: {{ class }}.self)] as? {{ class }}
-            let instance = existingSingletonInstance ?? _get_{{ class|lowerFirstLetter }}()
-            self.singletons[String(describing: {{ class }}.self)] = instance
-            return instance    
+    private var shared{{ class }}: {{ class }} {
+        mutex.lock()
+        
+        if let existingSingleton = singletons[String(describing: {{ class }}.self)] as? {{ class }} {
+            mutex.unlock()
+            return existingSingleton
         }
+        
+        let newInstance = new{{ class }}
+        singletons[String(describing: {{ class }}.self)] = newInstance
+        mutex.unlock()
+
+        return newInstance
     }
     {% call addPropertyWrappers dep %}
-    private func _get_{{ class|lowerFirstLetter }}() -> {{ class }} {
+    private var new{{ class }}: {{ class }} {
         return {{ dep.name }}({% for initializer in dep.initializers %}{% if not initializer.isConvenienceInitializer %}{% for param in initializer.parameters %}{{ param.name }}: self.{{ param.typeName|lowerFirstLetter }}{% if not forloop.last%}, {% endif %}{% endfor %}{% endif %}{% endfor %})
     }
     {% else %}

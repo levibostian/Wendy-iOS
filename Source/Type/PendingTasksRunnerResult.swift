@@ -60,7 +60,7 @@ public extension PendingTasksRunnerResult {
     /**
      Get first [TaskRunResult] that was a failed attempt. Note: This failed attempt could have been a task that failed or one that skipped.
      */
-    public var firstFailedResult: TaskRunResult? {
+    var firstFailedResult: TaskRunResult? {
         return runResults.first(where: { runResult in
             switch runResult {
             case .failure, .skipped:
@@ -74,7 +74,7 @@ public extension PendingTasksRunnerResult {
     /**
      cancelled are OK. They count as successful. Skipped means that they need to be run again so, that's not successful.
      */
-    public var successful: Bool {
+    var successful: Bool {
         return firstFailedResult == nil
     }
 }

@@ -10,11 +10,13 @@ import Foundation
 public class DIGraph {
     
     public static let shared = DIGraph()
+    
+    let mutex = Mutex()
 
     private init() {}
 
     public var overrides: [String: Any] = [:]
-    public var singletons: [String: Any] = [:]
+    internal var singletons: [String: Any] = [:]
 
     /**
      Reset graph. Meant to be used in `tearDown()` of tests.

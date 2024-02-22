@@ -42,11 +42,11 @@ public class Wendy {
     }
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
-        let addedTask = PendingTasksManager.shared.add(tag: tag, dataId: dataId, groupId: groupId)
+        let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, dataId: dataId, groupId: groupId)
 
         WendyConfig.logNewTaskAdded(addedTask)
 
-        try runTaskAutomaticallyIfAbleTo(addedTask)
+        runTaskAutomaticallyIfAbleTo(addedTask)
 
         return addedTask.taskId!
     }
@@ -60,12 +60,13 @@ public class Wendy {
 
      Those make this function unique compared to `runTask()` because that function ignores WendyConfig.automaticallyRunTasks *and* if the task.manuallyRun property is set or not.
      */
+    @discardableResult
     internal func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) -> Bool {
         if !WendyConfig.automaticallyRunTasks {
             LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(task.describe())")
             return false
         }
-        if try !isTaskAbleToManuallyRun(task.taskId!) {
+        if !isTaskAbleToManuallyRun(task.taskId!) {
             LogUtil.d("Task is not able to manually run. Skipping execution of newly added task: \(task.describe())")
             return false
         }
@@ -77,7 +78,7 @@ public class Wendy {
     }
 
     public final func runTask(_ taskId: Double, onComplete: ((TaskRunResult) -> Void)?) {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
+        guard let pendingTask: PendingTask = DIGraph.shared.pendingTasksManager.getTaskByTaskId(taskId) else {
             onComplete?(TaskRunResult.cancelled)
             return
         }
@@ -92,7 +93,7 @@ public class Wendy {
     }
 
     public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
-        guard let pendingTask: PendingTask = PendingTasksManager.shared.getTaskByTaskId(taskId) else {
+        guard let pendingTask: PendingTask = DIGraph.shared.pendingTasksManager.getTaskByTaskId(taskId) else {
             return false
         }
 
@@ -136,7 +137,7 @@ public class Wendy {
     }
 
     public final func getAllTasks() -> [PendingTask] {
-        return PendingTasksManager.shared.getAllTasks()
+        return DIGraph.shared.pendingTasksManager.getAllTasks()
     }
 
     /**
@@ -156,7 +157,7 @@ public class Wendy {
     }
     
     public func addQueueReader(_ reader: QueueReader) {
-        PendingTasksManager.shared.addQueueReader(reader)
+        DIGraph.shared.pendingTasksManager.addQueueReader(reader)
     }
     
     struct InitializedData {
