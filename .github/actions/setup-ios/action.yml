@@ -19,9 +19,8 @@ runs:
       version: 3.x
       repo-token: ${{ inputs.repo-token }}
 
-  - name: Install development tool, sourcery 
-    run: brew install sourcery
-    shell: bash
+  - name: Install package manager, Mint
+    uses: irgaly/setup-mint@v1
 
   - name: Generate code to allow project to compile 
     run: task codegen 

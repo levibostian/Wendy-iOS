@@ -280,7 +280,7 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 * Install these development tools:
 
-[sourcery](https://github.com/krzysztofzablocki/Sourcery?tab=readme-ov-file#installation) used to generate boilerplate code. 
+[mint](https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing) used to run other development CLI commands such as linter/formatter. 
 [taskfile](https://taskfile.dev/installation/) an alternative to `Makefile` to run commands. 
 
 * Generate the boilerplate code, otherwise you will not be able to compile the code. 
