@@ -1,29 +1,20 @@
 import CoreData
 import Foundation
 
+// sourcery: InjectRegister = "PendingTasksManager"
+// sourcery: InjectSingleton
 internal class PendingTasksManager: QueueReader, QueueWriter {
-
-    internal static var shared: PendingTasksManager = PendingTasksManager()
     
-    private var queueWriter: FileSystemQueueWriter {
-        return FileSystemQueueWriter.shared
-    }
+    private let queueWriter: QueueWriter
     
-    private var queueReaders: [QueueReader] = []
+    internal var queueReaders: [QueueReader] = []
     
-    internal static func reset() {
-        shared = PendingTasksManager()
-    }
-    
-    internal static func initForTesting(queueReaders: [QueueReader]) {
-        shared = PendingTasksManager()
-        shared.queueReaders = queueReaders
-    }
-
-    // singleton constructor
-    private init() {
-        // Set the default, production readers and writers
-        queueReaders.append(FileSystemQueueReader())
+    init(queueWriter: QueueWriter, queueReader: QueueReader) {
+        self.queueWriter = queueWriter
+        
+        self.queueReaders = [
+            queueReader
+        ]
     }
 
     func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
@@ -42,6 +33,7 @@ internal class PendingTasksManager: QueueReader, QueueWriter {
 
     // Note: Make sure to keep the query at "delete this table item by ID _____".
     // Because of this scenario: The runner is running a task with ID 1. While the task is running a user decides to update that data. This results in having to run that PendingTask a 2nd time (if the running task is successful) to sync the newest changes. To assert this 2nd change, we take advantage of SQLite's unique constraint. On unique constraint collision we replace (update) the data in the database which results in all the PendingTask data being the same except for the ID being incremented. So, after the runner runs the task successfully and wants to delete the task here, it will not delete the task because the ID no longer exists. It has been incremented so the newest changes can be run.
+    @discardableResult
     func delete(taskId: Double) -> Bool {
         return queueWriter.delete(taskId: taskId)
     }

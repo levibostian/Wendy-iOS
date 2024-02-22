@@ -16,7 +16,7 @@ class PendingTasksManagerTest: TestClass {
     private var queueReader2: QueueReaderStub!
         
     private var pendingTasksManager: PendingTasksManager {
-        PendingTasksManager.shared
+        DIGraph.shared.pendingTasksManager
     }
         
         override func setUp() {
@@ -25,7 +25,7 @@ class PendingTasksManagerTest: TestClass {
             queueReader = QueueReaderStub()
             queueReader2 = QueueReaderStub()
             
-            PendingTasksManager.initForTesting(queueReaders: [queueReader, queueReader2])
+            pendingTasksManager.queueReaders = [queueReader, queueReader2]
         }
     
     // MARK: getAllTasks
