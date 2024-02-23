@@ -1,0 +1,131 @@
+// swiftlint:disable all
+
+import Foundation
+{% for importModule in argument.imports|split:"-" %}
+import {{ importModule }}
+{% endfor %}
+
+/**
+######################################################
+Documentation
+######################################################
+
+This automatically generated file you are viewing is a dependency injection graph for your app's source code.
+You may be wondering a couple of questions. 
+
+1. How did this file get generated? Answer --> https://github.com/levibostian/Sourcery-DI#how
+2. Why use this dependency injection graph instead of X other solution/tool? Answer --> https://github.com/levibostian/Sourcery-DI#why-use-this-project
+3. How do I add dependencies to this graph file? Follow one of the instructions below:
+* Add a non singleton class: https://github.com/levibostian/Sourcery-DI#add-a-non-singleton-class
+* Add a generic class: https://github.com/levibostian/Sourcery-DI#add-a-generic-class
+* Add a singleton class: https://github.com/levibostian/Sourcery-DI#add-a-singleton-class
+* Add a class from a 3rd party library/SDK: https://github.com/levibostian/Sourcery-DI#add-a-class-from-a-3rd-party
+* Add a `typealias` https://github.com/levibostian/Sourcery-DI#add-a-typealias
+
+4. How do I get dependencies from the graph in my code? 
+```
+// If you have a class like this:
+class OffRoadWheels {}
+
+class ViewController: UIViewController {
+    // Call the property getter to get your dependency from the graph: 
+    let wheels = DIGraph.getInstance(siteId: "").offRoadWheels
+    // note the name of the property is name of the class with the first letter lowercase. 
+}
+```
+
+5. How do I use this graph in my test suite? 
+```
+let mockOffRoadWheels = // make a mock of OffRoadWheels class 
+DIGraph().override(mockOffRoadWheels, OffRoadWheels.self) 
+```
+
+Then, when your test function finishes, reset the graph:
+```
+DIGraph().reset()
+```
+
+*/
+
+{# Used, for example, when you want to add @available(iOSApplicationExtension, unavailable) to a property #}
+{% macro addPropertyWrappers object %}{% for key in object.attributes %}{{ object.attributes[key][0] }}{% endfor %}{% endmacro %}
+
+{# Used to create the property getter to get the dependency from the graph #}
+{# Note: We use this for when an InjectCustom exists because custom requires the use of an extension to add the property to the graph. We don't want the developer to be responsible for returning an override for tests. This function exists as the 1 true way to get a dependency from the graph to be safe to use as it gets overrides. #}
+{% macro overrideGetterProperty class type isCustom isSingleton %}
+    {% call addPropertyWrappers type %}
+    {{ type.accessLevel }} var {{ class|lowerFirstLetter }}: {{ class }} {  
+        // First, see if there is an override for this instance.
+        if let overriddenInstance = overrides[String(describing: {{ class }}.self)] as? {{ class }} {
+            return overriddenInstance
+        }
+        // If no override, get the instance from the graph.
+        {% if isCustom %}
+        return self.custom{{ class }}
+        {% elif isSingleton %}
+        return self.shared{{ class }}
+        {% else %}
+        return self.new{{ class }}
+        {% endif %}    
+    }
+{% endmacro %}
+
+extension DIGraph {
+    // call in automated test suite to confirm that all dependnecies able to resolve and not cause runtime exceptions. 
+    // internal scope so each module can provide their own version of the function with the same name. 
+    internal func testDependenciesAbleToResolve() -> Int {
+        var countDependenciesResolved = 0
+
+    {% for dep in types.all where dep|annotated:"InjectRegister" %}
+    {% set class %}{{ dep.annotations["InjectRegister"] }}{% endset %}    
+        _ = self.{{ class|lowerFirstLetter }}
+        countDependenciesResolved += 1
+
+    {% endfor %}
+        return countDependenciesResolved    
+    }
+
+    {% for dep in types.all where dep|annotated:"InjectRegister" %}
+    {% set class %}{{ dep.annotations["InjectRegister"] }}{% endset %}
+    
+    {% if dep|annotated:"InjectCustom" %}
+    // {{ class }} (custom. property getter provided via extension)
+    {% call overrideGetterProperty class dep true false %}
+    {% elif dep|annotated:"InjectSingleton" %}
+    // {{ class }} (singleton)
+    {% call overrideGetterProperty class dep false true %}
+    {% call addPropertyWrappers dep %}
+    private var shared{{ class }}: {{ class }} {
+        mutex.lock()
+        
+        if let existingSingleton = singletons[String(describing: {{ class }}.self)] as? {{ class }} {
+            mutex.unlock()
+            return existingSingleton
+        }
+        
+        let newInstance = new{{ class }}
+        singletons[String(describing: {{ class }}.self)] = newInstance
+        mutex.unlock()
+
+        return newInstance
+    }
+    {% call addPropertyWrappers dep %}
+    private var new{{ class }}: {{ class }} {
+        return {{ dep.name }}({% for initializer in dep.initializers %}{% if not initializer.isConvenienceInitializer %}{% for param in initializer.parameters %}{{ param.name }}: self.{{ param.typeName|lowerFirstLetter }}{% if not forloop.last%}, {% endif %}{% endfor %}{% endif %}{% endfor %})
+    }
+    {% else %}
+    // {{ class }}
+    {% call overrideGetterProperty class dep false false %}
+    {% call addPropertyWrappers dep %}
+    private var new{{ class }}: {{ class }} {    
+        return {{ dep.name}}({% for initializer in dep.initializers %}{% if not initializer.isConvenienceInitializer %}{% for param in initializer.parameters %}{{ param.name }}: self.{{ param.typeName|lowerFirstLetter }}{% if not forloop.last%}, {% endif %}{% endfor %}{% endif %}{% endfor %})
+    }
+    {% endif %}
+    // Call this function to override the instance of {{ class }} in the graph.
+    internal func override{{ class }}(_ instance: {{ class }}) {
+        self.overrides[String(describing: instance)] = instance
+    }
+    {% endfor %} 
+}
+
+// swiftlint:enable all

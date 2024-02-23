@@ -272,14 +272,22 @@ Wendy-iOS is available under the MIT license. See the LICENSE file for more info
 
 ## Contribute
 
-Wendy is open for pull requests. Check out the [list of issues][13] for tasks I am planning on working on. Check them out if you wish to contribute in that way.
+Wendy is open for pull requests. 
 
 **Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][14] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
 
 Follow the steps below to compile the Wendy project on your machine for contributing!
 
-* Open up the `Example/Wendy.xcworkspace` in XCode.
-* Compile the project in XCode.
+* Install these development tools:
+
+[mint](https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing) used to run other development CLI commands such as linter/formatter. 
+[taskfile](https://taskfile.dev/installation/) an alternative to `Makefile` to run commands. 
+
+* Generate the boilerplate code, otherwise you will not be able to compile the code. 
+
+`task codegen`
+
+* Open up the `Package.swift` file in XCode. Once you are in Xcode, you can now compile the SDK or run tests. 
 
 # Credits
 

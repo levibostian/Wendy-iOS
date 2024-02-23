@@ -7,10 +7,14 @@
 
 import Foundation
 
+// sourcery: InjectRegister = "QueueReader"
+// sourcery: InjectSingleton
 public class FileSystemQueueReader: QueueReader {
     
-    private var queue: FileSystemQueue {
-        return FileSystemQueueImpl.shared
+    private let queue: FileSystemQueue
+    
+    init(queue: FileSystemQueue) {
+        self.queue = queue
     }
     
     public func getAllTasks() -> [PendingTask] {

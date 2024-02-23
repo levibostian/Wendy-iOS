@@ -11,17 +11,11 @@ import Foundation
 import XCTest
 
 class FileSystemQueueIntegrationTest: TestClass {
-    private var reader: FileSystemQueueReader!
-    private var writer: FileSystemQueueWriter {
-        return FileSystemQueueWriter.shared
+    private var reader: FileSystemQueueReader {
+        DIGraph.shared.queueReader as! FileSystemQueueReader
     }
-    
-    override func setUp() {
-        super.setUp()
-        
-        FileSystemQueueImpl.reset()
-
-        reader = FileSystemQueueReader()
+    private var writer: FileSystemQueueWriter {
+        DIGraph.shared.queueWriter as! FileSystemQueueWriter
     }
     
     // MARK: simple reading and writing
@@ -53,7 +47,7 @@ class FileSystemQueueIntegrationTest: TestClass {
     func test_givenAddTasks_givenClearMemory_expectLoadPreviouslyAddedTasks() {
         let _ = writer.add(tag: "foo", dataId: nil, groupId: nil)
         
-        FileSystemQueueImpl.reset()
+        resetDependencies()
         
         let actual = reader.getAllTasks()
         XCTAssertEqual(actual[0].taskId, 1)

@@ -7,23 +7,16 @@
 
 import Foundation
 
-// Note: This class is currently not being used in the codebase. After all filesystem code is written, it can be hooked up to the rest of Wendy to enable it.
-
 // A writer, that stores data in the form of files on the file system.
+// sourcery: InjectRegister = "QueueWriter"
+// sourcery: InjectSingleton
 public class FileSystemQueueWriter: QueueWriter {
-    
-    @Atomic public private(set) static var shared = FileSystemQueueWriter()
-    
-    internal static func reset() { // for tests
-        Self.shared = FileSystemQueueWriter()
-    }
-    
+        
     private let mutex = Mutex()
+    private let queue: FileSystemQueue
     
-    private init() {}
-
-    private var queue: FileSystemQueue {
-        return FileSystemQueueImpl.shared
+    init(queue: FileSystemQueue) {
+        self.queue = queue
     }
     
     public func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {

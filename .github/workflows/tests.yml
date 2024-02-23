@@ -13,10 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
-    - name: Install Task
-      uses: arduino/setup-task@v2
       with:
-        version: 3.x
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     
     - run: task build
@@ -26,10 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
-    - name: Install Task
-      uses: arduino/setup-task@v2
       with:
-        version: 3.x
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     
     - run: task test

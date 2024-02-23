@@ -16,21 +16,21 @@ internal protocol FileSystemQueue {
     func delete(_ taskId: Double)
 }
 
+// sourcery: InjectRegister = "FileSystemQueue"
+// sourcery: InjectSingleton
 internal class FileSystemQueueImpl: FileSystemQueue {
-    
-    internal static var shared = FileSystemQueueImpl()
-    
-    internal static func reset() { // for tests
-        Self.shared = FileSystemQueueImpl()
-    }
-    
-    private let fileStore: FileSystemStore = FileManagerFileSystemStore()
+        
+    private let fileStore: FileSystemStore
     private let queueFilePath: [String] = ["tasks_queue.json"]
     
     private let mutex = Mutex()
     
     private var hasLoadedCache = false
     private var cache: [PendingTask] = []
+    
+    init(fileStore: FileSystemStore) {
+        self.fileStore = fileStore
+    }
     
     func load() {
         mutex.lock()
