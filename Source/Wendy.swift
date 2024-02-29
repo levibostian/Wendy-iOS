@@ -8,8 +8,18 @@ public class Wendy {
     internal var taskRunner: WendyTaskRunner? {
         initializedData?.taskRunner
     }
+    
+    private var pendingTasksRunner: PendingTasksRunner {
+        DIGraph.shared.pendingTasksRunner
+    }
+    
+    private var taskBag: [Task<(), Never>] = []
 
     private init() {}
+    
+    deinit {
+        taskBag.forEach { $0.cancel() }
+    }
     
     internal static func reset() { // for testing
         Self.shared = Wendy()
@@ -22,23 +32,6 @@ public class Wendy {
         // TODO: load the queue cache so it's ready to use.
         // Disabled for now while the file system queue code is still being developed.
         // FileSystemQueueImpl.shared.load()
-    }
-
-    /**
-     Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
-
-     It will return back a `WendyUIBackgroundFetchResult`. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
-     */
-    public final func performBackgroundFetch() -> WendyUIBackgroundFetchResult {
-        if !WendyConfig.automaticallyRunTasks {
-            LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
-            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult.new(), backgroundFetchResult: .noData)
-        }
-
-        LogUtil.d("backgroundFetchRunTasks() called. Wendy configured to automatically run tasks. Running the background fetch job.")
-        let runAllTasksResult = PendingTasksRunner.Scheduler.shared.scheduleRunAllTasksWait(filter: nil)
-
-        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: runAllTasksResult.backgroundFetchResult)
     }
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
@@ -86,10 +79,12 @@ public class Wendy {
         if !isTaskAbleToManuallyRun(taskId) {
             Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
         }
+        
+        taskBag.append(Task {
+            let result = await pendingTasksRunner.runTask(taskId: taskId)
 
-        PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId) { result in
             onComplete?(result)
-        }
+        })
     }
 
     public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
@@ -131,9 +126,11 @@ public class Wendy {
 //    }
 
     public final func runTasks(filter: RunAllTasksFilter? = nil, onComplete: ((PendingTasksRunnerResult) -> Void)?) {
-        PendingTasksRunner.Scheduler.shared.scheduleRunAllTasks(filter: filter) { result in
+        taskBag.append(Task {
+            let result = await pendingTasksRunner.runAllTasks(filter: filter)
+            
             onComplete?(result)
-        }
+        })
     }
 
     public final func getAllTasks() -> [PendingTask] {
@@ -162,5 +159,11 @@ public class Wendy {
     
     struct InitializedData {
         let taskRunner: WendyTaskRunner
+    }
+}
+
+extension DIGraph {
+    var taskRunner: WendyTaskRunner? {
+        return Wendy.shared.taskRunner
     }
 }

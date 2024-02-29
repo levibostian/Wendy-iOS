@@ -6,7 +6,7 @@ import Foundation
 let package = Package(
     name: "Wendy",
     platforms: [
-        .iOS(.v11)
+        .iOS(.v13)
     ],
     products: [
         .library(name: "Wendy", targets: ["Wendy"])

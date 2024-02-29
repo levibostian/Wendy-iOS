@@ -196,6 +196,100 @@ class WendyIntegrationTests: TestClass {
         XCTAssertEqual(runTasksResults.numberTasksRun, 2)
     }
     
+    // Wendy has the ability to run a single task whenever you want. So if wendy is running 100 tasks, for example, you can run a single task and not have to wait for wendy to finish running the rest of the 100 tasks.
+    func test_runTask_givenAlreadyRunningAllTasks_expectBeAbleToRunSingleTaskInMiddleOfRunningAll() {
+        _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
+        _ = Wendy.shared.addTask(tag: "task2", dataId: "dataId")
+        _ = Wendy.shared.addTask(tag: "task3", dataId: "dataId")
+        
+        let expectToRunTask1 = expectation(description: "expect to run task 1")
+        let expectToRunTask2 = expectation(description: "expect to run task 2")
+        let expectToRunTask3 = expectation(description: "expect to run task 3")
+        let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
+        let expectToFinishRunningSingleTask = expectation(description: "expect to finish running single task")
+        
+        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _, onComplete in
+            
+            // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
+            if tagOfTaskWeAreRunning == "task1" {
+                Wendy.shared.runTask(3) { _ in
+                    expectToFinishRunningSingleTask.fulfill()
+                }
+            }
+            
+            if tagOfTaskWeAreRunning == "task1" {
+                expectToRunTask1.fulfill()
+            } else if tagOfTaskWeAreRunning == "task2" {
+                expectToRunTask2.fulfill()
+            } else if tagOfTaskWeAreRunning == "task3" {
+                expectToRunTask3.fulfill()
+            }
+            
+            onComplete(nil)
+        }
+        
+        Wendy.shared.runTasks { _ in
+            expectToFinishRuningAllTasks.fulfill()
+        }
+    
+        wait(for: [
+            expectToRunTask1,
+            expectToRunTask3,
+            expectToFinishRunningSingleTask,
+            expectToRunTask2,
+            expectToFinishRuningAllTasks
+        ], timeout: 1.0, enforceOrder: true)
+    }
+
+    func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() {
+        let expectToFinishRunningAllTasks = expectation(description: "expect to finish running all tasks")
+        let expectToIgnoreRequestToRunAllTasks = expectation(description: "expect to ignore request to run all tasks")
+        
+        _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
+        _ = Wendy.shared.addTask(tag: "task2", dataId: "dataId")
+        
+        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _, onComplete in
+            
+            // When we begin running all tasks, ask Wendy to run all tasks again. The request should be ignored so it should complete fast.
+            if tagOfTaskWeAreRunning == "task1" {
+                Wendy.shared.runTasks { _ in
+                    expectToIgnoreRequestToRunAllTasks.fulfill()
+                }
+            }
+            
+            onComplete(nil)
+        }
+        
+        Wendy.shared.runTasks { _ in
+            expectToFinishRunningAllTasks.fulfill()
+        }
+    
+        wait(for: [
+            expectToIgnoreRequestToRunAllTasks,
+            expectToFinishRunningAllTasks,
+        ], timeout: 1.0, enforceOrder: true)
+    }
+    
+    func test_runAllTasks_givenDeinitWendy_expectCancelRunningTasks() {
+        _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
+        
+        let expectToFinishRunningAllTasks = expectation(description: "expect to finish running all tasks")
+        
+        taskRunnerStub.runTaskClosure = { _, _, _ in
+            // never finish, since it will be canceled.
+        }
+        
+        Wendy.shared.runTasks { _ in
+            expectToFinishRunningAllTasks.fulfill()
+        }
+        
+        Wendy.reset() // deinit
+    
+        wait(for: [
+            expectToFinishRunningAllTasks
+        ], timeout: 1.0)
+    }
+    
     // MARK: clear
     
     func test_clearTasks_givenTasksAdded_expectAllCancelAndDelete() {
