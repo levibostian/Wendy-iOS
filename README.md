@@ -29,7 +29,6 @@ Wendy helps you with item #2. You define how the local storage is supposed to sy
 
 Wendy currently has the following functionality:
 
-* Wendy uses the iOS background fetch scheduler API to run tasks periodically to keep data in sync without using the user's battery too much.
 * Wendy is not opinionated in your network and data storage model. You may use whatever method you choose to sync data with it's remote storage and whatever method you choose to store data locally on the device. Wendy works with your workflow you already have. Store user data in Core Data locally and a Rails API for the cloud storage. Store user data in Realm locally and a Parse server for the cloud storage. Use just NSUserDefaults and GraphQL. Whatever you want, Wendy works with it.
 * Dynamically allow and disallow tasks to sync at runtime. Wendy works in a FIFO style with it's tasks. When Wendy is about to run a certain task, it always asks the task if it is able to run.
 * Group tasks together to enforce they all run (and succeed) in an exact order from start to finish.
@@ -165,23 +164,6 @@ extension View: PendingTaskStatusListener {
 
 It’s suggested to view the [Best practices doc][10] to learn more about making a great experience in your offline-first app. 
 
-# Setup Wendy to run periodically while app in background
-
-In XCode, follow these steps below to enable the background fetch capability for your app:
-
-![In XCode go to your project settings tab. Then the capabilities section. Turn on Background Modes and then check the box Background fetch][image-7]
-
-In your `AppDelegate`, you will now need to run Wendy from the background fetch function. Below is an example of that:
-
-```swift
-func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    let backgroundFetchResult = Wendy.shared.performBackgroundFetch()
-    completionHandler(backgroundFetchResult.backgroundFetchResult)
-}
-```
-
-The only requirement is to call `Wendy.shared.performBackgroundFetch()`. You may decide to ignore Wendy's result from this function is you wish and you need to run more in this function. If you decide to, Wendy does parse the background fetch result for you: `backgroundFetchResult.backgroundFetchResult`.
-
 ## Clear data
 
 If you have the scenario ever happen where, for example, the user of your app logs out of your app. The scenario where you usually delete all of the data on the device for your app. You can clear all of Wendy's data:
@@ -208,7 +190,6 @@ Here are some examples:
 
 ```swift
 PendingTasksRunnerResult.testing.result(from results: [TaskRunResult])
-WendyUIBackgroundFetchResult.testing.get(runnerResult: PendingTasksRunnerResult)
 ```
 
 ## Write integration tests around Wendy
@@ -264,7 +245,7 @@ WendyConfig.debug = true
 
 * Levi Bostian - [GitHub][12]
 
-![Levi Bostian image][image-8]
+![Levi Bostian image][image-7]
 
 ## License
 
@@ -274,24 +255,24 @@ Wendy-iOS is available under the MIT license. See the LICENSE file for more info
 
 Wendy is open for pull requests. 
 
-**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][14] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
+**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][13] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
 
 Follow the steps below to compile the Wendy project on your machine for contributing!
 
 * Install these development tools:
 
-[mint](https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing) used to run other development CLI commands such as linter/formatter. 
-[taskfile](https://taskfile.dev/installation/) an alternative to `Makefile` to run commands. 
+[mint][14] used to run other development CLI commands such as linter/formatter. 
+[taskfile][15] an alternative to `Makefile` to run commands. 
 
-* Generate the boilerplate code, otherwise you will not be able to compile the code. 
+* Generate the boilerplate code, otherwise you will not be able to compile the code.
 
 `task codegen`
 
-* Open up the `Package.swift` file in XCode. Once you are in Xcode, you can now compile the SDK or run tests. 
+* Open up the `Package.swift` file in XCode. Once you are in Xcode, you can now compile the SDK or run tests.
 
 # Credits
 
-Header photo by [Allef Vinicius][15] on [Unsplash][16]
+Header photo by [Allef Vinicius][16] on [Unsplash][17]
 
 [1]:	http://cocoapods.org/pods/Wendy
 [2]:	http://cocoapods.org/pods/Wendy
@@ -305,10 +286,11 @@ Header photo by [Allef Vinicius][15] on [Unsplash][16]
 [10]:	BEST_PRACTICES.md
 [11]:	https://levibostian.github.io/Wendy-Android/wendy/
 [12]:	https://github.com/levibostian
-[13]:	https://github.com/levibostian/wendy-ios/issues
-[14]:	https://github.com/levibostian/Wendy-iOS/issues/new
-[15]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
-[16]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+[13]:	https://github.com/levibostian/Wendy-iOS/issues/new
+[14]:	https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing
+[15]:	https://taskfile.dev/installation/
+[16]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+[17]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
 
 [image-1]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
 [image-2]:	https://img.shields.io/cocoapods/l/Wendy.svg?style=flat
@@ -316,5 +298,4 @@ Header photo by [Allef Vinicius][15] on [Unsplash][16]
 [image-4]:	https://img.shields.io/badge/Swift-5.0.x-orange.svg
 [image-5]:	misc/wendy_logo.jpg
 [image-6]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
-[image-7]:	misc/enable_background_fetch_xcode.png
-[image-8]:	https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250
+[image-7]:	https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250

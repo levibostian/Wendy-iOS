@@ -23,23 +23,6 @@ public class Wendy {
         // Disabled for now while the file system queue code is still being developed.
         // FileSystemQueueImpl.shared.load()
     }
-
-    /**
-     Convenient function to call in your AppDelegate's `application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void)` function for running a background fetch.
-
-     It will return back a `WendyUIBackgroundFetchResult`. You can take the `WendyUIBackgroundFetchResult`, pull out the `backgroundFetchResult` processed for you, and return that if you wish to `completionHandler`. Or return your own `UIBakgroundFetchResult` processed yourself from your app or from the Wendy `taskRunnerResult` in the `WendyUIBackgroundFetchResult`.
-     */
-    public final func performBackgroundFetch() -> WendyUIBackgroundFetchResult {
-        if !WendyConfig.automaticallyRunTasks {
-            LogUtil.d("Wendy configured to *not* automatically run tasks. Skipping execution of background fetch job.")
-            return WendyUIBackgroundFetchResult(taskRunnerResult: PendingTasksRunnerResult.new(), backgroundFetchResult: .noData)
-        }
-
-        LogUtil.d("backgroundFetchRunTasks() called. Wendy configured to automatically run tasks. Running the background fetch job.")
-        let runAllTasksResult = PendingTasksRunner.Scheduler.shared.scheduleRunAllTasksWait(filter: nil)
-
-        return WendyUIBackgroundFetchResult(taskRunnerResult: runAllTasksResult, backgroundFetchResult: runAllTasksResult.backgroundFetchResult)
-    }
     
     public final func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
         let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, dataId: dataId, groupId: groupId)
