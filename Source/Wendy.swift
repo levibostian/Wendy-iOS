@@ -8,8 +8,18 @@ public class Wendy {
     internal var taskRunner: WendyTaskRunner? {
         initializedData?.taskRunner
     }
+    
+    private var pendingTasksRunner: PendingTasksRunner {
+        DIGraph.shared.pendingTasksRunner
+    }
+    
+    private var taskBag: [Task<(), Never>] = []
 
     private init() {}
+    
+    deinit {
+        taskBag.forEach { $0.cancel() }
+    }
     
     internal static func reset() { // for testing
         Self.shared = Wendy()
@@ -69,10 +79,12 @@ public class Wendy {
         if !isTaskAbleToManuallyRun(taskId) {
             Fatal.preconditionFailure("Task is not able to manually run. Task: \(pendingTask.describe())")
         }
+        
+        taskBag.append(Task {
+            let result = await pendingTasksRunner.runTask(taskId: taskId)
 
-        PendingTasksRunner.Scheduler.shared.scheduleRunPendingTask(taskId) { result in
             onComplete?(result)
-        }
+        })
     }
 
     public final func isTaskAbleToManuallyRun(_ taskId: Double) -> Bool {
@@ -114,9 +126,11 @@ public class Wendy {
 //    }
 
     public final func runTasks(filter: RunAllTasksFilter? = nil, onComplete: ((PendingTasksRunnerResult) -> Void)?) {
-        PendingTasksRunner.Scheduler.shared.scheduleRunAllTasks(filter: filter) { result in
+        taskBag.append(Task {
+            let result = await pendingTasksRunner.runAllTasks(filter: filter)
+            
             onComplete?(result)
-        }
+        })
     }
 
     public final func getAllTasks() -> [PendingTask] {
@@ -145,5 +159,11 @@ public class Wendy {
     
     struct InitializedData {
         let taskRunner: WendyTaskRunner
+    }
+}
+
+extension DIGraph {
+    var taskRunner: WendyTaskRunner? {
+        return Wendy.shared.taskRunner
     }
 }
