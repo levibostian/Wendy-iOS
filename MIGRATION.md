@@ -107,6 +107,21 @@ Navigate over to [the README for a new, separate CocoaPod][5] to learn how to in
 
 When you install this plugin, all tasks added to Wendy in version 6 will still be written to the file system. This plugin will simply read tasks added when version \<= 5 was running in the app. 
 
+# v6 to v7 - Remove background fetch feature
+
+The breaking change that caused Wendy to go from v6 to v7 is the removal of the iOS background fetch feature. Meaning, this line of code in your `AppDelegate` no longer exists: 
+
+```swift
+func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    let backgroundFetchResult = Wendy.shared.performBackgroundFetch()
+    completionHandler(backgroundFetchResult.backgroundFetchResult)
+}
+```
+
+This feature was removed because it does not add a lot of value to the project. 
+
+If you want to periodically run Wendy in your app, it’s recommended to review up-to-date documentation for how to run background jobs on iOS and run Wendy in that job: `Wendy.shared. runTasks {...}`. 
+
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
 [3]:	BEST_PRACTICES.md#handle-errors-when-a-task-runs
