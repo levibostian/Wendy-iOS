@@ -8,14 +8,14 @@
 import Foundation
 @testable import Wendy
 
-class TaskRunnerStub: WendyTaskRunner {
+class TaskRunnerStub: WendyTaskRunnerConcurrency {
     
     @Atomic var resultsQueue: [Result<Void?, Error>] = []
-    var runTaskClosure: ((String, String?, @escaping (Error?) -> Void) -> Void)? = nil
+    var runTaskClosure: ((String, String?) async throws -> Void)? = nil
     
-    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
+    func runTask(tag: String, dataId: String?) async throws {
         if let runTaskClosure {
-            runTaskClosure(tag, dataId, complete)
+            try await runTaskClosure(tag, dataId)
             return
         }
         
@@ -23,11 +23,9 @@ class TaskRunnerStub: WendyTaskRunner {
         
         switch result {
             case .success:
-                complete(nil)
-                break
+                return
             case .failure(let error):
-                complete(error)
-                break
+                throw error
         }
     }
 }

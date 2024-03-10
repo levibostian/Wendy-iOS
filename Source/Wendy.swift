@@ -5,7 +5,7 @@ public class Wendy {
     
     private var initializedData: InitializedData? = nil // populated after setup() called.
         
-    internal var taskRunner: WendyTaskRunner? {
+    internal var taskRunner: WendyTaskRunnerConcurrency? {
         initializedData?.taskRunner
     }
     
@@ -26,6 +26,15 @@ public class Wendy {
     }
 
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
+        Wendy.shared.initializedData = InitializedData(taskRunner: LegayTaskRunnerAdapter(taskRunner: taskRunner))
+        WendyConfig.debug = debug
+        
+        // TODO: load the queue cache so it's ready to use.
+        // Disabled for now while the file system queue code is still being developed.
+        // FileSystemQueueImpl.shared.load()
+    }
+    
+    public class func setup(taskRunner: WendyTaskRunnerConcurrency, debug: Bool = false) {
         Wendy.shared.initializedData = InitializedData(taskRunner: taskRunner)
         WendyConfig.debug = debug
         
@@ -158,12 +167,12 @@ public class Wendy {
     }
     
     struct InitializedData {
-        let taskRunner: WendyTaskRunner
+        let taskRunner: WendyTaskRunnerConcurrency
     }
 }
 
 extension DIGraph {
-    var taskRunner: WendyTaskRunner? {
+    var taskRunner: WendyTaskRunnerConcurrency? {
         return Wendy.shared.taskRunner
     }
 }
