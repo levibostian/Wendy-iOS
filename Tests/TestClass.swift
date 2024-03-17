@@ -11,6 +11,7 @@ import XCTest
 
 open class TestClass: XCTestCase {
     
+    @MainActor
     open override func setUp() {
         super.setUp()
         

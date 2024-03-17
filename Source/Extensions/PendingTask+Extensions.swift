@@ -12,26 +12,14 @@ public extension PendingTask {
         return "taskId: \(taskIdString) dataId: \(dataIdString) groupId: \(groupIdString) createdAt: \(createdAtString)"
     }
 
+    @MainActor
     func addTaskStatusListenerForTask(listener: PendingTaskStatusListener) {
         if let taskId = self.taskId {
             WendyConfig.addTaskStatusListenerForTask(taskId, listener: listener)
         }
     }
 
-    func isAbleToManuallyRun() -> Bool {
-        let taskId = assertHasBeenAddedToWendy()
-        return Wendy.shared.isTaskAbleToManuallyRun(taskId)
-    }
-
     func hasBeenAddedToWendy() -> Bool {
         return taskId != nil
-    }
-
-    internal func assertHasBeenAddedToWendy() -> Double {
-        if !hasBeenAddedToWendy() {
-            Fatal.preconditionFailure("Cannot record error for your task because it has not been added to Wendy (aka: the task id has not been set yet)")
-        }
-
-        return taskId!
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct PendingTasksRunnerResult {
+public struct PendingTasksRunnerResult: Sendable {
     public let numberTasksRun: Int
     public let numberSuccessfulTasks: Int
     public let numberCancelledTasks: Int
