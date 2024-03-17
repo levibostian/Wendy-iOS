@@ -44,7 +44,31 @@ final public class Wendy: Sendable {
 
         LogUtil.logNewTaskAdded(addedTask)
 
+        runTaskAutomaticallyIfAbleTo(addedTask)
+
         return addedTask.taskId!
+    }
+    
+    /**
+         * Note: This function is for internal use only. There are no checks to make sure that it exists and stuff. It's assumed you know what you're doing.
+
+         This function exists for this scenario:
+         1. Only run depending on WendyConfig.automaticallyRunTasks.
+         2. If task is *able* to run.
+
+         Those make this function unique compared to `runTask()` because that function ignores WendyConfig.automaticallyRunTasks *and* if the task.manuallyRun property is set or not.
+         */
+        @discardableResult
+    internal func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) -> Bool {
+        if !WendyConfig.automaticallyRunTasks {
+            LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(task.describe())")
+            return false
+        }
+        
+        LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
+        runTask(task.taskId!, onComplete: nil)
+        
+        return true
     }
     
     public func runTask(_ taskId: Double) async -> TaskRunResult {
@@ -79,7 +103,7 @@ final public class Wendy: Sendable {
         }
     }
 
-    public func getAllTasks() -> [PendingTask] {
+    public final func getAllTasks() -> [PendingTask] {
         return DIGraph.shared.pendingTasksManager.getAllTasks()
     }
 
@@ -88,7 +112,7 @@ final public class Wendy: Sendable {
 
      Note: If a task is currently running when clear() is called, that running task will be finish executing but will not run again in the future as it has been cancelled.
      */
-    public func clear() {
+    public final func clear() {
         /// It's not possible to stop a dispatch queue of tasks so there is no way to stop the currently running task runner.
         /// This solution of using UserDefaults to set a threshold solves that problem while also leaving Wendy untouched to continue running as usual. If we deleted all data, as Android's Wendy does, we would have potential issues with tasks that are still in the queue but core data and userdefaults being deleted causing potential crashes and IDs being misaligned.
         PendingTasksUtil.setValidPendingTasksIdThreshold()

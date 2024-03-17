@@ -20,7 +20,7 @@ open class TestClass: XCTestCase {
         resetDependencies()
         
         // Prevent scheduling any runs automatically. Makes tests flaky.
-        Wendy.config.automaticallyRunTasks = false
+        WendyConfig.automaticallyRunTasks = false
     }
     
     public func resetDependencies() {
