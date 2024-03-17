@@ -81,7 +81,6 @@ class WendyIntegrationTests: TestClass {
     
     // MARK: listeners 
     
-    @MainActor
     func test_runnerListener_expectAllCallbacksCalled() async {
         let listener = TaskRunnerListenerStub()
         WendyConfig.addTaskRunnerListener(listener)
@@ -99,14 +98,13 @@ class WendyIntegrationTests: TestClass {
         XCTAssertEqual(listener.taskCompleteCallCount, 0)
         XCTAssertEqual(listener.taskSkippedCallCount, 0)
         XCTAssertEqual(listener.allTasksCompleteCallCount, 0)
-        let _ = await runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         XCTAssertEqual(listener.runningTaskCallCount, 2)
         XCTAssertEqual(listener.taskCompleteCallCount, 2)
         XCTAssertEqual(listener.taskSkippedCallCount, 0)
         XCTAssertEqual(listener.allTasksCompleteCallCount, 1)
     }
     
-    @MainActor
     func test_taskStatusListener_expectAllCallbacksCalled() async {
         let listener = PendingTaskStatusListenerStub()
         taskRunnerStub.resultsQueue = [
@@ -121,13 +119,13 @@ class WendyIntegrationTests: TestClass {
         XCTAssertNil(listener.completeTaskId)
         XCTAssertNil(listener.skippedTaskId)
         
-        let _ = await runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         
         XCTAssertEqual(listener.runningTaskId, 1)
         XCTAssertEqual(listener.completeTaskId, 1)
         XCTAssertEqual(listener.completeSuccessful, false)
         
-        let _ = await runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         
         XCTAssertEqual(listener.runningTaskId, 1)
         XCTAssertEqual(listener.completeTaskId, 1)
@@ -229,7 +227,7 @@ class WendyIntegrationTests: TestClass {
             expectToFinishRuningAllTasks.fulfill()
         }
     
-        wait(for: [
+        await fulfillment(of: [
             expectToRunTask1,
             expectToRunTask3,
             expectToFinishRunningSingleTask,

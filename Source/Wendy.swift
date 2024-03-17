@@ -3,6 +3,7 @@ import Foundation
 final public class Wendy: Sendable {
     
     public static let shared: Wendy = Wendy()
+    public static let config: WendyConfig = WendyConfig()
     
     private let initializedData: MutableSendable<InitializedData?> = MutableSendable(nil)
     
@@ -20,7 +21,6 @@ final public class Wendy: Sendable {
         Self.shared.initializedData.set(nil)
     }
 
-    @MainActor
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
         Wendy.shared.initializedData.set(InitializedData(taskRunner: LegayTaskRunnerAdapter(taskRunner: taskRunner)))
         WendyConfig.debug = debug
@@ -30,7 +30,6 @@ final public class Wendy: Sendable {
         // FileSystemQueueImpl.shared.load()
     }
     
-    @MainActor
     public class func setup(taskRunner: WendyTaskRunnerConcurrency, debug: Bool = false) {
         Wendy.shared.initializedData.set(InitializedData(taskRunner: taskRunner))
         WendyConfig.debug = debug

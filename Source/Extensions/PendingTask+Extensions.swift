@@ -12,7 +12,6 @@ public extension PendingTask {
         return "taskId: \(taskIdString) dataId: \(dataIdString) groupId: \(groupIdString) createdAt: \(createdAtString)"
     }
 
-    @MainActor
     func addTaskStatusListenerForTask(listener: PendingTaskStatusListener) {
         if let taskId = self.taskId {
             WendyConfig.addTaskStatusListenerForTask(taskId, listener: listener)

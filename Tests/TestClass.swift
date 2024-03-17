@@ -11,7 +11,6 @@ import XCTest
 
 open class TestClass: XCTestCase {
     
-    @MainActor
     open override func setUp() {
         super.setUp()
         
@@ -21,7 +20,7 @@ open class TestClass: XCTestCase {
         resetDependencies()
         
         // Prevent scheduling any runs automatically. Makes tests flaky.
-        WendyConfig.automaticallyRunTasks = false
+        Wendy.config.automaticallyRunTasks = false
     }
     
     public func resetDependencies() {
