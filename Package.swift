@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.8
 
 import PackageDescription
 import Foundation
@@ -20,7 +20,10 @@ let package = Package(
     targets: [ 
         .target(name: "Wendy",
                 dependencies: [],
-                path: "Source/"),
+                path: "Source/",
+                resources: [
+                    .process("PrivacyInfo.xcprivacy")
+                ]),
         .testTarget(name: "WendyTests",
                     dependencies: ["Wendy"],
                     path: "Tests/")
