@@ -12,6 +12,10 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
   s.summary          = 'Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.'
 
+  # Ensure developers won't hit CocoaPods/CocoaPods#11402 with the resource
+  # bundle for the privacy manifest.
+  s.cocoapods_version = '>= 1.12.0'
+
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
 #   * Try to keep it short, snappy and to the point.
@@ -29,6 +33,10 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Levi Bostian' => 'levi.bostian@gmail.com' }
   s.source           = { :git => 'https://github.com/levibostian/Wendy-iOS.git', :tag => s.version.to_s }
+  s.resource_bundle = {
+    "#{s.module_name}_Privacy" => "Source/PrivacyInfo.xcprivacy"
+  }
+
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
 
   s.ios.deployment_target = '13.0'
