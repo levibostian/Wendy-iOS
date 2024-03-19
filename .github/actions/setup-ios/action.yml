@@ -19,8 +19,13 @@ runs:
       version: 3.x
       repo-token: ${{ inputs.repo-token }}
 
+  # running setup-mint can fail if multiple CI jobs are running at once. All CI jobs try to access the cache at once. 
+  # Using the same cache saves a lot of time on the CI, so this is a workaround by retrying the action until it can grab the cache. 
   - name: Install package manager, Mint
-    uses: irgaly/setup-mint@v1
+    uses: Wandalen/wretry.action@v1
+    with:
+      action: irgaly/setup-mint@v1    
+      attempt_limit: 5
 
   - name: Generate code to allow project to compile 
     run: task codegen 
