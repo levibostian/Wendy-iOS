@@ -208,7 +208,7 @@ class WendyIntegrationTests: TestClass {
         let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
         let expectToFinishRunningSingleTask = expectation(description: "expect to finish running single task")
         
-        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _, onComplete in
+        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
             
             // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
             if tagOfTaskWeAreRunning == "task1" {
@@ -224,8 +224,6 @@ class WendyIntegrationTests: TestClass {
             } else if tagOfTaskWeAreRunning == "task3" {
                 expectToRunTask3.fulfill()
             }
-            
-            onComplete(nil)
         }
         
         Wendy.shared.runTasks { _ in
@@ -248,16 +246,13 @@ class WendyIntegrationTests: TestClass {
         _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
         _ = Wendy.shared.addTask(tag: "task2", dataId: "dataId")
         
-        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _, onComplete in
-            
+        taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
             // When we begin running all tasks, ask Wendy to run all tasks again. The request should be ignored so it should complete fast.
             if tagOfTaskWeAreRunning == "task1" {
                 Wendy.shared.runTasks { _ in
                     expectToIgnoreRequestToRunAllTasks.fulfill()
                 }
             }
-            
-            onComplete(nil)
         }
         
         Wendy.shared.runTasks { _ in
@@ -268,26 +263,6 @@ class WendyIntegrationTests: TestClass {
             expectToIgnoreRequestToRunAllTasks,
             expectToFinishRunningAllTasks,
         ], timeout: 1.0, enforceOrder: true)
-    }
-    
-    func test_runAllTasks_givenDeinitWendy_expectCancelRunningTasks() {
-        _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
-        
-        let expectToFinishRunningAllTasks = expectation(description: "expect to finish running all tasks")
-        
-        taskRunnerStub.runTaskClosure = { _, _, _ in
-            // never finish, since it will be canceled.
-        }
-        
-        Wendy.shared.runTasks { _ in
-            expectToFinishRunningAllTasks.fulfill()
-        }
-        
-        Wendy.reset() // deinit
-    
-        wait(for: [
-            expectToFinishRunningAllTasks
-        ], timeout: 1.0)
     }
     
     // MARK: clear

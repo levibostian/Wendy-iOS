@@ -79,6 +79,12 @@ class MyWendyTaskRunner: WendyTaskRunner {
     func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
     }
 }
+
+// Or, use the Swift Concurrency version: 
+class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
+    func runTask(tag: String, dataId: String?) async throws {
+    }
+}
 ```
 
 Wendy is now configured. It's time to use it!
