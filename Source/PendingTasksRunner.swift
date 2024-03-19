@@ -20,7 +20,7 @@ internal class PendingTasksRunner {
     
     private let pendingTasksManager: PendingTasksManager
     
-    private var taskRunner: WendyTaskRunner? {
+    private var taskRunner: WendyTaskRunnerConcurrency? {
         DIGraph.shared.taskRunner
     }
     
@@ -85,24 +85,26 @@ internal class PendingTasksRunner {
             WendyConfig.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
             
-            taskRunner.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId) { error in
-                let successful = error == nil
-                self.currentlyRunningTask = nil
-                
-                if let error = error {
-                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
-                    WendyConfig.logTaskComplete(taskToRun, successful: false, cancelled: false)
-                    runTaskResult = TaskRunResult.failure(error: error)
-                } else {
+            Task {
+                do {
+                    try await taskRunner.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId)
+                        
+                    self.currentlyRunningTask = nil
+                    
                     LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
                     LogUtil.d("Deleting task: \(taskToRun.describe()).")
                     self.pendingTasksManager.delete(taskId: taskId)
-                    WendyConfig.logTaskComplete(taskToRun, successful: successful, cancelled: false)
-                    runTaskResult = TaskRunResult.successful
+                    WendyConfig.logTaskComplete(taskToRun, successful: true, cancelled: false)
+                    
+                    self.runTaskSemaphore.signal()
+                    onComplete(.successful)
+                } catch (let error) {
+                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
+                    WendyConfig.logTaskComplete(taskToRun, successful: false, cancelled: false)
+                    
+                    self.runTaskSemaphore.signal()
+                    onComplete(.failure(error: error))
                 }
-                
-                self.runTaskSemaphore.signal()
-                onComplete(runTaskResult)
             }
         }
 
