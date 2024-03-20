@@ -12,10 +12,9 @@ internal protocol JsonAdapter {
     func fromData<T: Codable>(_ data: Data) -> T?
 }
 
+// sourcery: InjectRegister = "JsonAdapter"
 internal class JsonAdapterImpl: JsonAdapter {
-    
-    internal static let shared: JsonAdapter = JsonAdapterImpl()
-    
+        
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     
@@ -36,3 +35,4 @@ internal class JsonAdapterImpl: JsonAdapter {
     }
     
 }
+

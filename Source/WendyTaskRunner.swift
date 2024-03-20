@@ -14,7 +14,7 @@ public protocol WendyTaskRunnerConcurrency {
 }
 
 public protocol WendyTaskRunner {
-    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void)
+    func runTask(tag: String, dataId: String?, complete: @Sendable @escaping (Error?) -> Void)
 }
 
 // Adapter for us to just use WendyTaskRunnerConcurrency in the internal code rather then having to deal with 2 protocols.

@@ -24,8 +24,8 @@ tasks:
     cmds:
       - task: clean
       - task: codegen
-      - xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES build-for-testing | xcbeautify
-      - xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES test-without-building | xcbeautify
+      - set -o pipefail && xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES build-for-testing | xcbeautify
+      - set -o pipefail && xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 15' -derivedDataPath .build/derivedData -enableCodeCoverage YES test-without-building | xcbeautify
   
   # Resourced used to create this command:
   # https://github.com/michaelhenry/swifty-code-coverage/

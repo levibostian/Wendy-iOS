@@ -13,10 +13,6 @@ class WendyIntegrationTests: TestClass {
     
     private var taskRunnerStub: TaskRunnerStub!
     
-    private var wendy: Wendy {
-        Wendy.shared
-    }
-    
     override func setUp() {
         super.setUp()
         
@@ -28,63 +24,64 @@ class WendyIntegrationTests: TestClass {
     // MARK: adding tasks
     
     func test_addTasks_givenAddTasksWithSameArguments_expectEveryTaskUnique() {
-        let task1 = wendy.addTask(tag: "tag", dataId: "dataId")
-        let task2 = wendy.addTask(tag: "tag", dataId: "dataId")
+        let task1 = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
+        let task2 = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         
         XCTAssertNotEqual(task1, task2)
         
-        let taskGroup1 = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
-        let taskGroup2 = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let taskGroup1 = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let taskGroup2 = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
         
         XCTAssertNotEqual(taskGroup1, taskGroup2)
     }
     
     // MARK: run tasks
     
-    func test_runTasks_givenNoTasksAdded_expectRunNoTasks() {
-        XCTAssertEqual(runAllTasks().numberTasksRun, 0)
+    func test_runTasks_givenNoTasksAdded_expectRunNoTasks() async {
+        let actual = await runAllTasks().numberTasksRun
+        XCTAssertEqual(actual, 0)
     }
     
-    func test_runTasks_givenTaskSuccedds_expectDeleteTask() {
+    func test_runTasks_givenTaskSuccedds_expectDeleteTask() async {
         taskRunnerStub.resultsQueue = [
             .success(nil)
         ]
         
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         
-        let runTasksResults = runAllTasks()
+        let runTasksResults = await runAllTasks()
         
         XCTAssertEqual(runTasksResults.numberTasksRun, 1)
         XCTAssertEqual(runTasksResults.numberSuccessfulTasks, 1)
         XCTAssertEqual(runTasksResults.numberFailedTasks, 0)
         
         // Expect task deleted, after success.
-        let runTasks2ndTimeResults = runAllTasks()
+        let runTasks2ndTimeResults = await runAllTasks()
         XCTAssertEqual(runTasks2ndTimeResults.numberTasksRun, 0)
     }
     
-    func test_runTasks_givenTaskFails_expectDoNotDelete() {
+    func test_runTasks_givenTaskFails_expectDoNotDelete() async {
         taskRunnerStub.resultsQueue = [
             .failure(ErrorForTesting.foo),
             .failure(ErrorForTesting.foo)
         ]
         
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         
-        let runTasksResults = runAllTasks()
+        let runTasksResults = await runAllTasks()
         
         XCTAssertEqual(runTasksResults.numberTasksRun, 1)
         XCTAssertEqual(runTasksResults.numberSuccessfulTasks, 0)
         XCTAssertEqual(runTasksResults.numberFailedTasks, 1)
         
         // Expect task not deleted, after failure.
-        let runTasks2ndTimeResults = runAllTasks()
+        let runTasks2ndTimeResults = await runAllTasks()
         XCTAssertEqual(runTasks2ndTimeResults.numberTasksRun, 1)
     }
     
     // MARK: listeners 
     
-    func test_runnerListener_expectAllCallbacksCalled() {
+    func test_runnerListener_expectAllCallbacksCalled() async {
         let listener = TaskRunnerListenerStub()
         WendyConfig.addTaskRunnerListener(listener)
         taskRunnerStub.resultsQueue = [
@@ -93,42 +90,42 @@ class WendyIntegrationTests: TestClass {
         ]
 
         XCTAssertEqual(listener.newTaskAddedCallCount, 0)
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         XCTAssertEqual(listener.newTaskAddedCallCount, 2)
         
         XCTAssertEqual(listener.runningTaskCallCount, 0)
         XCTAssertEqual(listener.taskCompleteCallCount, 0)
         XCTAssertEqual(listener.taskSkippedCallCount, 0)
         XCTAssertEqual(listener.allTasksCompleteCallCount, 0)
-        let _ = runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         XCTAssertEqual(listener.runningTaskCallCount, 2)
         XCTAssertEqual(listener.taskCompleteCallCount, 2)
         XCTAssertEqual(listener.taskSkippedCallCount, 0)
         XCTAssertEqual(listener.allTasksCompleteCallCount, 1)
     }
     
-    func test_taskStatusListener_expectAllCallbacksCalled() {
+    func test_taskStatusListener_expectAllCallbacksCalled() async {
         let listener = PendingTaskStatusListenerStub()
         taskRunnerStub.resultsQueue = [
             .failure(ErrorForTesting.foo),
             .success(nil)
         ]
         
-        let addedTaskId = wendy.addTask(tag: "tag", dataId: "dataId")
+        let addedTaskId = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         WendyConfig.addTaskStatusListenerForTask(addedTaskId, listener: listener)
         
         XCTAssertNil(listener.runningTaskId)
         XCTAssertNil(listener.completeTaskId)
         XCTAssertNil(listener.skippedTaskId)
         
-        let _ = runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         
         XCTAssertEqual(listener.runningTaskId, 1)
         XCTAssertEqual(listener.completeTaskId, 1)
         XCTAssertEqual(listener.completeSuccessful, false)
         
-        let _ = runAllTasks()
+        let _ = await Wendy.shared.runTasks()
         
         XCTAssertEqual(listener.runningTaskId, 1)
         XCTAssertEqual(listener.completeTaskId, 1)
@@ -137,31 +134,31 @@ class WendyIntegrationTests: TestClass {
     
     // MARK: groups
     
-    func test_groups_givenTaskInGroupFails_expectRestOfGroupSkipped() {
+    func test_groups_givenTaskInGroupFails_expectRestOfGroupSkipped() async {
         taskRunnerStub.resultsQueue = [
             .failure(ErrorForTesting.foo)
         ]
         
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
         
-        let runTasksResults = runAllTasks()
+        let runTasksResults = await runAllTasks()
         
         XCTAssertEqual(runTasksResults.numberTasksRun, 1)
         XCTAssertEqual(runTasksResults.numberSuccessfulTasks, 0)
         XCTAssertEqual(runTasksResults.numberFailedTasks, 1)
     }
     
-    func test_groups_givenTasksInGroupSucceed_expectAllTasksInGroupRun() {
+    func test_groups_givenTasksInGroupSucceed_expectAllTasksInGroupRun() async {
         taskRunnerStub.resultsQueue = [
             .success(nil),
             .success(nil)
         ]
         
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId", groupId: "groupName")
         
-        let runTasksResults = runAllTasks()
+        let runTasksResults = await runAllTasks()
         
         XCTAssertEqual(runTasksResults.numberTasksRun, 2)
         XCTAssertEqual(runTasksResults.numberSuccessfulTasks, 2)
@@ -171,33 +168,33 @@ class WendyIntegrationTests: TestClass {
     
     // MARK: threading
     
-    func test_threading_givenAddTasksInDifferentThreads_expectAllGetAddedAndRun() {
+    func test_threading_givenAddTasksInDifferentThreads_expectAllGetAddedAndRun() async {
         let expectToAddTasks = expectation(description: "expect to add tasks")
         expectToAddTasks.expectedFulfillmentCount = 2
 
-        DispatchQueue(label: "a thread").async {
-            let _ = self.wendy.addTask(tag: "tag", dataId: "dataId")
+        Task {
+            let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
             expectToAddTasks.fulfill()
         }
         
-        DispatchQueue(label: "another thread").async {
-            let _ = self.wendy.addTask(tag: "tag", dataId: "dataId")
+        Task {
+            let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
             expectToAddTasks.fulfill()
         }
         
-        wait(for: [expectToAddTasks], timeout: 1.0)
+        await fulfillment(of: [expectToAddTasks], timeout: 1.0)
         
         taskRunnerStub.resultsQueue = [
             .success(nil),
             .success(nil)
         ]
         
-        let runTasksResults = self.runAllTasks()
+        let runTasksResults = await runAllTasks()
         XCTAssertEqual(runTasksResults.numberTasksRun, 2)
     }
     
     // Wendy has the ability to run a single task whenever you want. So if wendy is running 100 tasks, for example, you can run a single task and not have to wait for wendy to finish running the rest of the 100 tasks.
-    func test_runTask_givenAlreadyRunningAllTasks_expectBeAbleToRunSingleTaskInMiddleOfRunningAll() {
+    func test_runTask_givenAlreadyRunningAllTasks_expectBeAbleToRunSingleTaskInMiddleOfRunningAll() async {
         _ = Wendy.shared.addTask(tag: "task1", dataId: "dataId")
         _ = Wendy.shared.addTask(tag: "task2", dataId: "dataId")
         _ = Wendy.shared.addTask(tag: "task3", dataId: "dataId")
@@ -230,7 +227,7 @@ class WendyIntegrationTests: TestClass {
             expectToFinishRuningAllTasks.fulfill()
         }
     
-        wait(for: [
+        await fulfillment(of: [
             expectToRunTask1,
             expectToRunTask3,
             expectToFinishRunningSingleTask,
@@ -267,31 +264,21 @@ class WendyIntegrationTests: TestClass {
     
     // MARK: clear
     
-    func test_clearTasks_givenTasksAdded_expectAllCancelAndDelete() {
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
-        let _ = wendy.addTask(tag: "tag", dataId: "dataId")
+    func test_clearTasks_givenTasksAdded_expectAllCancelAndDelete() async {
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
+        let _ = Wendy.shared.addTask(tag: "tag", dataId: "dataId")
         
-        wendy.clear()
+        Wendy.shared.clear()
         
         sleep(1) // give wendy time to run all scheduled tasks that do the deleting.
-        let runTasksResults = runAllTasks()
+        let runTasksResults = await runAllTasks()
         XCTAssertEqual(runTasksResults.numberTasksRun, 0)
     }
 }
 
 extension WendyIntegrationTests {
     @discardableResult
-    func runAllTasks() -> PendingTasksRunnerResult {
-        let expectToRunAllTasks = expectation(description: "expect to run all tasks")
-        
-        var runResult: PendingTasksRunnerResult!
-        wendy.runTasks { result in
-            runResult = result
-            expectToRunAllTasks.fulfill()
-        }
-        
-        wait(for: [expectToRunAllTasks], timeout: 1.0)
-        
-        return runResult
+    func runAllTasks() async -> PendingTasksRunnerResult {
+        return await Wendy.shared.runTasks()
     }
 }

@@ -18,20 +18,7 @@ public extension PendingTask {
         }
     }
 
-    func isAbleToManuallyRun() -> Bool {
-        let taskId = assertHasBeenAddedToWendy()
-        return Wendy.shared.isTaskAbleToManuallyRun(taskId)
-    }
-
     func hasBeenAddedToWendy() -> Bool {
         return taskId != nil
-    }
-
-    internal func assertHasBeenAddedToWendy() -> Double {
-        if !hasBeenAddedToWendy() {
-            Fatal.preconditionFailure("Cannot record error for your task because it has not been added to Wendy (aka: the task id has not been set yet)")
-        }
-
-        return taskId!
     }
 }

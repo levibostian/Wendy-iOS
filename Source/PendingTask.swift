@@ -1,6 +1,6 @@
 import Foundation
 
-public struct PendingTask: Codable {
+public struct PendingTask: Codable, Sendable {
     public let tag: String
     public let taskId: Double? // populated later
     public let dataId: String?

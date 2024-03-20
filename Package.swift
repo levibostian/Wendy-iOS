@@ -16,10 +16,11 @@ let package = Package(
         // https://web.archive.org/web/20220525200227/https://www.timc.dev/posts/understanding-swift-packages/
         //
         // Update to exact version until wrapper SDKs become part of testing pipeline.        
+        .package(url: "https://github.com/groue/Semaphore.git", from: "0.0.8")
     ],
     targets: [ 
         .target(name: "Wendy",
-                dependencies: [],
+                dependencies: ["Semaphore"],
                 path: "Source/",
                 resources: [
                     .process("PrivacyInfo.xcprivacy")
@@ -29,3 +30,10 @@ let package = Package(
                     path: "Tests/")
     ]
 )
+
+// Enable swift concurrency to all targets in package
+for target in package.targets {
+  var settings = target.swiftSettings ?? []
+  settings.append(.enableExperimentalFeature("StrictConcurrency"))
+  target.swiftSettings = settings
+}
