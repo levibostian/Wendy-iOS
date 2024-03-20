@@ -3,6 +3,7 @@
 *.xml
 *.xcresult/
 *.generated.swift
+Package.resolved
 
 reports/
 
