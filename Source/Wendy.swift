@@ -44,6 +44,10 @@ final public class Wendy: Sendable {
         return addedTask.taskId!
     }
     
+    public func addTask<Tag: RawRepresentable>(tag: Tag, dataId: String?, groupId: String? = nil) -> Double where Tag.RawValue == String {
+        self.addTask(tag: tag.rawValue, dataId: dataId, groupId: groupId)
+    }
+    
     /**
          * Note: This function is for internal use only. There are no checks to make sure that it exists and stuff. It's assumed you know what you're doing.
 
