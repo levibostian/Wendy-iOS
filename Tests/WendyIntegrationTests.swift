@@ -35,6 +35,24 @@ class WendyIntegrationTests: TestClass {
         XCTAssertNotEqual(taskGroup1, taskGroup2)
     }
     
+    func test_addTasks_expectAddTasksAndRunTasksGivenEnumInsteadOfStrings() async {
+        enum AsyncTasks: String {
+            case foo
+        }
+        
+        let givenTag = AsyncTasks.foo
+        
+        let _ = Wendy.shared.addTask(tag: givenTag, dataId: "dataId")
+        
+        taskRunnerStub.runTaskClosure = { tag, dataId in
+            let actualTag = AsyncTasks(rawValue: tag)
+            
+            XCTAssertEqual(actualTag, givenTag)
+        }
+        
+        let _ = await runAllTasks()
+    }
+    
     // MARK: run tasks
     
     func test_runTasks_givenNoTasksAdded_expectRunNoTasks() async {

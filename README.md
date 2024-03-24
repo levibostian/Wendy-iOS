@@ -107,6 +107,13 @@ To tell Wendy that you have a piece of data that needs to sync with a network AP
 
 ```swift
 Wendy.shared.addTask(tag: "AddGroceryListItem", dataId: "<identifier-here>") 
+
+// Or, use an enum to avoid hard-coded strings: 
+enum AsyncTasks: String {
+  case addGroceryListItem
+}
+
+Wendy.shared.addTask(tag: AsyncTasks.addGroceryListItem, dataId: "<identifier-here>")
 ```
 
 * `tag` is the data type identifier. It’s common to use 1 `tag`  per network API endpoint. Here, we use `AddGroceryListItem` because the user added a new grocery store list item. 
@@ -132,6 +139,13 @@ class MyWendyTaskRunner: WendyTaskRunner {
          }
          break 
     }
+}
+
+// If you prefer to use enums instead of hard-coded strings, you can do that, too:
+func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
+  switch AsyncTask(rawValue: tag) {
+    case .addGroceryListItem:
+  }
 }
 ```
 
