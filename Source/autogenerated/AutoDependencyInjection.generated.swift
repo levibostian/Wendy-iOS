@@ -66,6 +66,9 @@ extension DIGraph {
         _ = self.queueWriter
         countDependenciesResolved += 1
 
+        _ = self.jsonAdapter
+        countDependenciesResolved += 1
+
         _ = self.pendingTasksManager
         countDependenciesResolved += 1
 
@@ -113,7 +116,7 @@ extension DIGraph {
         return newInstance
     }
     private var newFileSystemQueue: FileSystemQueue {
-        return FileSystemQueueImpl(fileStore: self.fileSystemStore)
+        return FileSystemQueueImpl(fileStore: self.fileSystemStore, jsonAdapter: self.jsonAdapter)
     }
     // Call this function to override the instance of FileSystemQueue in the graph.
     internal func overrideFileSystemQueue(_ instance: FileSystemQueue) {
@@ -175,6 +178,22 @@ extension DIGraph {
     internal func overrideQueueWriter(_ instance: QueueWriter) {
         self.overrides[String(describing: instance)] = instance
     }
+    // JsonAdapter
+    internal var jsonAdapter: JsonAdapter {  
+        // First, see if there is an override for this instance.
+        if let overriddenInstance = overrides[String(describing: JsonAdapter.self)] as? JsonAdapter {
+            return overriddenInstance
+        }
+        // If no override, get the instance from the graph.
+        return self.newJsonAdapter
+    }
+    private var newJsonAdapter: JsonAdapter {    
+        return JsonAdapterImpl()
+    }
+    // Call this function to override the instance of JsonAdapter in the graph.
+    internal func overrideJsonAdapter(_ instance: JsonAdapter) {
+        self.overrides[String(describing: instance)] = instance
+    }
     // PendingTasksManager (singleton)
     internal var pendingTasksManager: PendingTasksManager {  
         // First, see if there is an override for this instance.
@@ -204,7 +223,7 @@ extension DIGraph {
         self.overrides[String(describing: instance)] = instance
     }
     // PendingTasksRunner (singleton)
-    internal var pendingTasksRunner: PendingTasksRunner {  
+    public var pendingTasksRunner: PendingTasksRunner {  
         // First, see if there is an override for this instance.
         if let overriddenInstance = overrides[String(describing: PendingTasksRunner.self)] as? PendingTasksRunner {
             return overriddenInstance
