@@ -8,26 +8,47 @@
 import Foundation
 @testable import Wendy
 
-class TaskRunnerStub: WendyTaskRunner {
+final class TaskRunnerStub: WendyTaskRunner, Sendable {
     
-    @Atomic var resultsQueue: [Result<Void?, Error>] = []
-    var runTaskClosure: ((String, String?, @escaping (Error?) -> Void) -> Void)? = nil
+    let _resultsQueue: MutableSendable<[Result<Void?, Error>]> = MutableSendable([])
+    let _runTaskClosure: MutableSendable<((String, String?) async throws -> Void)?> = MutableSendable(nil)
     
-    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
-        if let runTaskClosure {
-            runTaskClosure(tag, dataId, complete)
-            return
-        }
-        
-        let result = resultsQueue.removeFirst()
-        
-        switch result {
-            case .success:
+    var resultsQueue: [Result<Void?, Error>] {
+        get { _resultsQueue.get() }
+        set { _resultsQueue.set(newValue) }
+    }
+    var runTaskClosure: ((String, String?) async throws -> Void)? {
+        get { _runTaskClosure.get() }
+        set { _runTaskClosure.set(newValue) }
+    }
+    
+    func runTask(tag: String, dataId: String?, complete: @Sendable @escaping (Error?) -> Void) {
+        Task {
+            do {
+                try await runTask(tag: tag, dataId: dataId)
                 complete(nil)
-                break
-            case .failure(let error):
+            } catch {
                 complete(error)
-                break
+            }
+        }
+    }
+    
+    private func runTask(tag: String, dataId: String?) async throws {
+        // there are 2 ways for stub to run a task.
+        
+        // First, check if there is a closure that implements the function body.
+        if let runTaskClosure {
+            try await runTaskClosure(tag, dataId)
+        } else {
+            // Otherwise, process the queue of return results.
+            let result = resultsQueue.removeFirst()
+            
+            switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    throw error
+            }
         }
     }
 }

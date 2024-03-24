@@ -25,7 +25,7 @@ class PendingTasksManagerTest: TestClass {
             queueReader = QueueReaderStub()
             queueReader2 = QueueReaderStub()
             
-            pendingTasksManager.queueReaders = [queueReader, queueReader2]
+            pendingTasksManager.queueReaders.set([queueReader, queueReader2])
         }
     
     // MARK: getAllTasks

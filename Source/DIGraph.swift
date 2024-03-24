@@ -7,22 +7,22 @@
 
 import Foundation
 
-public class DIGraph {
+final public class DIGraph: @unchecked Sendable {
     
     public static let shared = DIGraph()
-    
+
     let mutex = Mutex()
 
     private init() {}
-
-    public var overrides: [String: Any] = [:]
+    
+    internal var overrides: [String: Any] = [:]
     internal var singletons: [String: Any] = [:]
 
     /**
      Reset graph. Meant to be used in `tearDown()` of tests.
      */
     public func reset() {
-        overrides = [:]
-        singletons = [:]
+        overrides.removeAll()
+        singletons.removeAll()
     }
 }

@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'Wendy'
   s.version          = '7.0.0'
-  s.swift_version    = '5.0'
+  s.swift_version    = '5.10'
   s.summary          = 'Build offline first iOS mobile apps. Remove loading screens, perform tasks instantly.'
 
   # Ensure developers won't hit CocoaPods/CocoaPods#11402 with the resource
@@ -37,10 +37,8 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
     "#{s.module_name}_Privacy" => "Source/PrivacyInfo.xcprivacy"
   }
 
-  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
-
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.10' }
   s.ios.deployment_target = '13.0'
-
-  s.source_files = 'Source/**/*'
-
+  s.source_files = 'Source/**/*{.swift}'
+  s.dependency 'groue_Semaphore', '= 0.0.8-pod.1'
 end

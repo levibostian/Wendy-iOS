@@ -22,14 +22,16 @@ internal class FileSystemQueueImpl: FileSystemQueue {
         
     private let fileStore: FileSystemStore
     private let queueFilePath: [String] = ["tasks_queue.json"]
+    private let jsonAdapter: JsonAdapter
     
     private let mutex = Mutex()
     
     private var hasLoadedCache = false
     private var cache: [PendingTask] = []
     
-    init(fileStore: FileSystemStore) {
+    init(fileStore: FileSystemStore, jsonAdapter: JsonAdapter) {
         self.fileStore = fileStore
+        self.jsonAdapter = jsonAdapter
     }
     
     func load() {
@@ -47,7 +49,7 @@ internal class FileSystemQueueImpl: FileSystemQueue {
             return
         }
         
-        cache = JsonAdapterImpl.shared.fromData(queueData)!
+        cache = jsonAdapter.fromData(queueData)!
         hasLoadedCache = true
     }
     
@@ -64,7 +66,7 @@ internal class FileSystemQueueImpl: FileSystemQueue {
         load()
         cache.append(pendingTask)
         
-        fileStore.saveFile(JsonAdapterImpl.shared.toData(cache)!, filePath: queueFilePath)
+        fileStore.saveFile(jsonAdapter.toData(cache)!, filePath: queueFilePath)
     }
     
     func delete(_ taskId: Double) {
@@ -74,7 +76,7 @@ internal class FileSystemQueueImpl: FileSystemQueue {
         load()
         cache.removeAll { $0.taskId == taskId }
         
-        fileStore.saveFile(JsonAdapterImpl.shared.toData(cache)!, filePath: queueFilePath)
+        fileStore.saveFile(jsonAdapter.toData(cache)!, filePath: queueFilePath)
     }
     
     func delete(_ pendingTask: PendingTask) {

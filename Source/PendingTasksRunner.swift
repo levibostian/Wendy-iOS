@@ -1,4 +1,11 @@
 import Foundation
+import Semaphore
+
+public extension Wendy {
+    var currentlyRunningTask: PendingTask? {
+        DIGraph.shared.pendingTasksRunner.currentlyRunningTask.get()
+    }
+}
 
 /**
  Requirements of the task runner:
@@ -9,39 +16,22 @@ import Foundation
  */
 // sourcery: InjectRegister = "PendingTasksRunner"
 // sourcery: InjectSingleton
-internal class PendingTasksRunner {
-
-    private var lastSuccessfulOrFailedTaskId: Double = 0
-    private var failedTasksGroups: [String] = []
-    internal var currentlyRunningTask: PendingTask?
+public final class PendingTasksRunner: Sendable {
     
-    @Atomic private var isRunningAllTasks = false
-    private let lock = Mutex()
+    private let runAllTasksLock = RunAllTasksLock()
     
     private let pendingTasksManager: PendingTasksManager
     
-    private var taskRunner: WendyTaskRunner? {
+    public let currentlyRunningTask: MutableSendable<PendingTask?> = MutableSendable(nil)
+    
+    private var taskRunner: WendyTaskRunnerConcurrency? {
         DIGraph.shared.taskRunner
     }
     
-    private let runTaskSemaphore = DispatchSemaphore(value: 1)
+    private let runTaskSemaphore = AsyncSemaphore(value: 1)
     
     init(pendingTasksManager: PendingTasksManager) {
         self.pendingTasksManager = pendingTasksManager
-    }
-    
-    private func resetRunner() {
-        lastSuccessfulOrFailedTaskId = 0
-        failedTasksGroups = []
-        currentlyRunningTask = nil
-    }
-    
-    internal func runTask(taskId: Double) async -> TaskRunResult {
-        return await withCheckedContinuation { continuation in
-            runTask(taskId: taskId) { result in
-                continuation.resume(returning: result)
-            }
-        }
     }
 
         /**
@@ -51,13 +41,12 @@ internal class PendingTasksRunner {
          * Will only run 1 task at a time. Your request may need to wait in order for it to begin running. The function call will return after the wait period + time it took to run the task.
          * Runs the request in a background thread.
          */
-        internal func runTask(taskId: Double, onComplete: @escaping (TaskRunResult) -> Void) {
+    internal func runTask(taskId: Double) async -> TaskRunResult {
             guard let taskRunner else {
-                onComplete(.cancelled)
-                return
+                return .cancelled
             }
             
-            runTaskSemaphore.wait()
+            await runTaskSemaphore.wait()
         
             var runTaskResult: TaskRunResult!
 
@@ -65,45 +54,44 @@ internal class PendingTasksRunner {
                 runTaskResult = TaskRunResult.cancelled
 
                 runTaskSemaphore.signal()
-                onComplete(runTaskResult)
-                return
+                return runTaskResult
             }
 
             if !PendingTasksUtil.isTaskValid(taskId: taskId) {
                 LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
                 pendingTasksManager.delete(taskId: taskId)
                 runTaskResult = TaskRunResult.cancelled
-                WendyConfig.logTaskComplete(taskToRun, successful: true, cancelled: true)
+                LogUtil.logTaskComplete(taskToRun, successful: true, cancelled: true)
 
                 runTaskSemaphore.signal()
-                onComplete(runTaskResult)
-                return
+                return runTaskResult
             }
 
-            self.currentlyRunningTask = taskToRun
+        self.currentlyRunningTask.set(taskToRun)
 
-            WendyConfig.logTaskRunning(taskToRun)
+            LogUtil.logTaskRunning(taskToRun)
             LogUtil.d("Running task: \(taskToRun.describe())")
             
-            taskRunner.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId) { error in
-                let successful = error == nil
-                self.currentlyRunningTask = nil
-                
-                if let error = error {
-                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
-                    WendyConfig.logTaskComplete(taskToRun, successful: false, cancelled: false)
-                    runTaskResult = TaskRunResult.failure(error: error)
-                } else {
+                do {
+                    try await taskRunner.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId)
+                    
+                    self.currentlyRunningTask.set(nil)
+                    
                     LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
                     LogUtil.d("Deleting task: \(taskToRun.describe()).")
                     self.pendingTasksManager.delete(taskId: taskId)
-                    WendyConfig.logTaskComplete(taskToRun, successful: successful, cancelled: false)
-                    runTaskResult = TaskRunResult.successful
+                    LogUtil.logTaskComplete(taskToRun, successful: true, cancelled: false)
+                    
+                    self.runTaskSemaphore.signal()
+                    return .successful
+                } catch (let error) {
+                    self.currentlyRunningTask.set(nil)
+                    LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
+                    LogUtil.logTaskComplete(taskToRun, successful: false, cancelled: false)
+                    
+                    self.runTaskSemaphore.signal()
+                    return .failure(error: error)
                 }
-                
-                self.runTaskSemaphore.signal()
-                onComplete(runTaskResult)
-            }
         }
 
     /**
@@ -115,18 +103,14 @@ internal class PendingTasksRunner {
      * Only 1 runner is running at a time. If a runner is already running, this request will be ignored and returned instantly.
      */
     internal func runAllTasks(filter: RunAllTasksFilter?) async -> PendingTasksRunnerResult {
-        lock.lock() // protect access to variable that determines if we are running already.
-        
-        if isRunningAllTasks {
-            lock.unlock()
+        if await runAllTasksLock.requestToRunAllTasks() == false {
             return .new() // return a result that says that 0 tasks were executed. Which, is true.
         }
         
-        isRunningAllTasks = true
-        lock.unlock()
-        
         var nextTaskToRun: PendingTask?
         var runAllTasksResult = PendingTasksRunnerResult.new()
+        var lastSuccessfulOrFailedTaskId: Double = 0
+        var failedTasksGroups: [String] = []
         
         repeat {
             nextTaskToRun = pendingTasksManager.getNextTaskToRun(lastSuccessfulOrFailedTaskId, filter: filter)
@@ -136,7 +120,7 @@ internal class PendingTasksRunner {
             
             lastSuccessfulOrFailedTaskId = nextTaskToRun.taskId!
             if nextTaskToRun.groupId != nil && failedTasksGroups.contains(nextTaskToRun.groupId!) {
-                WendyConfig.logTaskSkipped(nextTaskToRun, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
+                LogUtil.logTaskSkipped(nextTaskToRun, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
                 LogUtil.d("Task: \(nextTaskToRun.describe()) belongs to a failing group of tasks. Skipping it.")
                 
                 continue
@@ -151,10 +135,27 @@ internal class PendingTasksRunner {
         } while nextTaskToRun != nil
 
         LogUtil.d("All done running tasks.")
-        WendyConfig.logAllTasksComplete()
-        resetRunner()
-        isRunningAllTasks = false
-                
+        LogUtil.logAllTasksComplete()
+        
+        await runAllTasksLock.unlock()
+        
         return runAllTasksResult
+    }
+    
+    actor RunAllTasksLock {
+        private var isRunningAllTasks = false
+        
+        func requestToRunAllTasks() async -> Bool {
+            if isRunningAllTasks {
+                return false
+            }
+            
+            isRunningAllTasks = true
+            return true
+        }
+        
+        func unlock() {
+            isRunningAllTasks = false
+        }
     }
 }
