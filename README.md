@@ -76,13 +76,13 @@ To finish initialization, we need to create a task runner subclass. Create a new
 import Wendy
 
 class MyWendyTaskRunner: WendyTaskRunner {
-    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
+    func runTask(tag: String, data: Data?, complete: @escaping (Error?) -> Void) {
     }
 }
 
 // Or, use the Swift Concurrency version: 
 class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
-    func runTask(tag: String, dataId: String?) async throws {
+    func runTask(tag: String, data: Data?) async throws {
     }
 }
 ```
@@ -106,18 +106,19 @@ Let’s get into each of these steps.
 To tell Wendy that you have a piece of data that needs to sync with a network API later, use `addTask`. Wendy will execute this task at a later time. 
 
 ```swift
-Wendy.shared.addTask(tag: "AddGroceryListItem", dataId: "<identifier-here>") 
+let groceryListItem = GroceryListItem(price: ..., name: ...) 
+Wendy.shared.addTask(tag: "AddGroceryListItem", data: groceryListItem) 
 
 // Or, use an enum to avoid hard-coded strings: 
 enum AsyncTasks: String {
   case addGroceryListItem
 }
 
-Wendy.shared.addTask(tag: AsyncTasks.addGroceryListItem, dataId: "<identifier-here>")
+Wendy.shared.addTask(tag: AsyncTasks.addGroceryListItem, data: ...)
 ```
 
 * `tag` is the data type identifier. It’s common to use 1 `tag`  per network API endpoint. Here, we use `AddGroceryListItem` because the user added a new grocery store list item. 
-* `dataId` - identifier that identifies the data. This is used to identify the data. In our example, identify the 1 grocery  store list item that got added by the user.
+* `data` - is an object that will be used later when you sync with your network API. This object include all that your HTTP request needs to perform a request. In our example, the data is the grocery item that was added. 
 
 #### Writing the network code to perform the sync
 
@@ -128,21 +129,23 @@ Let’s look at some example code that runs the grocery store list item.
 ```swift
 import Wendy
 
-class MyWendyTaskRunner: WendyTaskRunner {
-    func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
-  switch tag {
+class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
+    func runTask(tag: String, data: Data?) async throws {
+      switch tag {
         case "AddGroceryListItem":
-         // Add your network code below to perform the async network call. The code below is for example, only. Replace with your own network code. 
-         performApiCall(dataId) { httpRequestError in 
-		   // If httpRequestError is not nil, Wendy will retry running this task again in the future. Otherwise, Wendy will delete the task and not re-run it. 
-           complete(httpRequestError)
-         }
-         break 
+          // First, let's decode the 'data' parameter back into our object we added:
+          let groceryListItem: GroceryListItem = data!.wendyDecode()!
+
+         // Next, perform the HTTP call to sync your data with your network API. 
+         // Note: The code below is for example, only. You will need to add your own HTTP code. 
+
+		// If the API call throws, Wendy will retry running this task again in the future. Otherwise, Wendy will delete the task and not re-run it. 
+         try await performApiCall(data)
     }
 }
 
 // If you prefer to use enums instead of hard-coded strings, you can do that, too:
-func runTask(tag: String, dataId: String?, complete: @escaping (Error?) -> Void) {
+func runTask(tag: String, data: Data?) async throws {
   switch AsyncTask(rawValue: tag) {
     case .addGroceryListItem:
   }
