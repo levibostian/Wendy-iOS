@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol QueueWriter {
-    func add(tag: String, dataId: String?, groupId: String?) -> PendingTask
+    func add<Data: Codable>(tag: String, data: Data, groupId: String?) -> PendingTask
     func delete(taskId: Double) -> Bool
 }
 

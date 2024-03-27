@@ -73,7 +73,7 @@ public final class PendingTasksRunner: Sendable {
             LogUtil.d("Running task: \(taskToRun.describe())")
             
                 do {
-                    try await taskRunner.runTask(tag: taskToRun.tag, dataId: taskToRun.dataId)
+                    try await taskRunner.runTask(tag: taskToRun.tag, data: taskToRun.data)
                     
                     self.currentlyRunningTask.set(nil)
                     
