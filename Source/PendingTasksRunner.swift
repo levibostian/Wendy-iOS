@@ -16,7 +16,11 @@ public extension Wendy {
  */
 // sourcery: InjectRegister = "PendingTasksRunner"
 // sourcery: InjectSingleton
-public final class PendingTasksRunner: Sendable {
+public final actor PendingTasksRunner {
+    
+    static let shared = DIGraph.shared.pendingTasksRunner
+    
+    public var test: Int = 0
     
     private let runAllTasksLock = RunAllTasksLock()
     

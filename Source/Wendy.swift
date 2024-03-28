@@ -1,6 +1,6 @@
 import Foundation
 
-final public class Wendy: Sendable {
+final public class Wendy {
     
     public static let shared: Wendy = Wendy()
     public static let config: WendyConfig = WendyConfig()
@@ -15,7 +15,7 @@ final public class Wendy: Sendable {
         DIGraph.shared.pendingTasksRunner
     }
 
-    private init() {}
+    public init() {}
     
     internal static func reset() { // for testing
         Self.shared.initializedData.set(nil)
@@ -134,5 +134,24 @@ final public class Wendy: Sendable {
 extension DIGraph {
     var taskRunner: WendyTaskRunnerConcurrency? {
         return Wendy.shared.taskRunner
+    }
+}
+
+
+class NewWendy {
+    class func addTask(tag: String, dataId: String) -> Double {
+        return Wendy().addTask(tag: tag, dataId: dataId)
+    }
+    
+    class func runTasks(filter: RunAllTasksFilter? = nil) -> PendingTasksRunnerResult {
+        let foo = PendingTasksRunner.shared
+        
+        foo.test
+        
+        return await PendingTasksRunner.shared.runAllTasks(filter: filter)
+        
+//        let result = await pendingTasksRunner.runAllTasks(filter: filter)
+        
+//        return result
     }
 }
