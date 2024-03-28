@@ -13,14 +13,30 @@ runs:
     with:
       xcode-version: "15"
 
+  - name: Install package manager, Mint
+    run: brew install mint 
+    shell: bash
+
+  - name: Restore Mint cache, if exists 
+    uses: actions/cache@v3
+    with:
+      path: .mint
+      key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
+      restore-keys: |
+        ${{ runner.os }}-mint-
+  
+  - name: Install tools in Mintfile 
+    env:
+      MINT_PATH: .mint/lib
+      MINT_LINK_PATH: .mint/bin
+    run: mint bootstrap 
+    shell: bash
+
   - name: Install development tool, Taskfile
     uses: arduino/setup-task@v2
     with:
       version: 3.x
       repo-token: ${{ inputs.repo-token }}
-
-  - name: Install package manager, Mint
-    uses: irgaly/setup-mint@v1
 
   - name: Generate code to allow project to compile 
     run: task codegen 
