@@ -14,18 +14,20 @@ public class FileSystemQueueWriter: QueueWriter {
         
     private let mutex = Mutex()
     private let queue: FileSystemQueue
+    private let jsonAdapter: JsonAdapter
     
-    init(queue: FileSystemQueue) {
+    init(queue: FileSystemQueue, jsonAdapter: JsonAdapter) {
         self.queue = queue
+        self.jsonAdapter = jsonAdapter
     }
     
-    public func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
+    public func add<Data>(tag: String, data: Data, groupId: String?) -> PendingTask where Data : Decodable, Data : Encodable {
         mutex.lock()
         defer { mutex.unlock() }
         
         let newTaskId = PendingTasksUtil.getNextPendingTaskId() // same that the coredata store uses.
         let newCreatedAt = Date()
-        let newPendingTask = PendingTask(tag: tag, taskId: newTaskId, dataId: dataId, groupId: groupId, createdAt: newCreatedAt)
+        let newPendingTask = PendingTask(tag: tag, taskId: newTaskId, data: jsonAdapter.toData(data), groupId: groupId, createdAt: newCreatedAt)
         
         queue.add(newPendingTask)
         

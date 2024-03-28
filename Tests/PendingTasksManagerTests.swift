@@ -40,9 +40,9 @@ class PendingTasksManagerTest: TestClass {
     }
     
     func test_getAllTasks_expectTasksSorted() {
-        let givenOldestTask = PendingTask(tag: "foo", taskId: 1, dataId: nil, groupId: nil, createdAt: Date())
-        let givenMiddleTask = PendingTask(tag: "bar", taskId: 2, dataId: nil, groupId: nil, createdAt: Date().addingTimeInterval(1))
-        let givenNewestTask = PendingTask(tag: "baz", taskId: 3, dataId: nil, groupId: nil, createdAt: Date().addingTimeInterval(2))
+        let givenOldestTask = PendingTask(tag: "foo", taskId: 1, data: nil, groupId: nil, createdAt: Date())
+        let givenMiddleTask = PendingTask(tag: "bar", taskId: 2, data: nil, groupId: nil, createdAt: Date().addingTimeInterval(1))
+        let givenNewestTask = PendingTask(tag: "baz", taskId: 3, data: nil, groupId: nil, createdAt: Date().addingTimeInterval(2))
         
         queueReader.allTasks = [givenMiddleTask]
         queueReader2.allTasks = [givenNewestTask, givenOldestTask]
@@ -57,8 +57,8 @@ class PendingTasksManagerTest: TestClass {
     // MARK: getTaskByTaskId
     
     func test_getTaskByTaskId_givenTaskExists_expectTask() {
-        let givenTask = PendingTask(tag: "foo", taskId: 1, dataId: nil, groupId: nil, createdAt: Date())
-        let givenTaskWithDifferentId = PendingTask(tag: "foo", taskId: 2, dataId: nil, groupId: nil, createdAt: Date())
+        let givenTask = PendingTask(tag: "foo", taskId: 1, data: nil, groupId: nil, createdAt: Date())
+        let givenTaskWithDifferentId = PendingTask(tag: "foo", taskId: 2, data: nil, groupId: nil, createdAt: Date())
         
         queueReader.allTasks = [givenTask]
         queueReader2.allTasks = [givenTaskWithDifferentId]
@@ -69,8 +69,8 @@ class PendingTasksManagerTest: TestClass {
     }
     
     func test_getTaskByTaskId_givenTaskDoesNotExist_expectNil() {
-        queueReader.allTasks = [PendingTask(tag: "foo", taskId: 2, dataId: nil, groupId: nil, createdAt: Date())]
-        queueReader2.allTasks = [PendingTask(tag: "foo", taskId: 3, dataId: nil, groupId: nil, createdAt: Date())]
+        queueReader.allTasks = [PendingTask(tag: "foo", taskId: 2, data: nil, groupId: nil, createdAt: Date())]
+        queueReader2.allTasks = [PendingTask(tag: "foo", taskId: 3, data: nil, groupId: nil, createdAt: Date())]
         
         let actual = pendingTasksManager.getTaskByTaskId(1)
         
@@ -89,7 +89,7 @@ class PendingTasksManagerTest: TestClass {
     }
     
     func test_getNextTaskToRun_givenTaskInMultipleReaders_expectGetTask() {
-        let givenTask = PendingTask(tag: "foo", taskId: 1, dataId: nil, groupId: nil, createdAt: Date())
+        let givenTask = PendingTask(tag: "foo", taskId: 1, data: nil, groupId: nil, createdAt: Date())
         
         queueReader.allTasks = []
         queueReader2.allTasks = [givenTask]

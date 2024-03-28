@@ -27,13 +27,13 @@ class FileSystemQueueIntegrationTest: TestClass {
     }
     
     func test_getTaskById_givenNoTaskWithId_expectNil() {
-        let _ = writer.add(tag: "foo", dataId: nil, groupId: nil)
+        let _ = writer.add(tag: "foo", data: "", groupId: nil)
         XCTAssertNil(reader.getTaskByTaskId(2))
         XCTAssertNotNil(reader.getTaskByTaskId(1))
     }
     
     func test_givenDeleteTask_expectTaskGotDeleted() {
-        let _ = writer.add(tag: "foo", dataId: nil, groupId: nil)
+        let _ = writer.add(tag: "foo", data: "", groupId: nil)
         
         XCTAssertNotNil(reader.getTaskByTaskId(1))
         
@@ -45,7 +45,7 @@ class FileSystemQueueIntegrationTest: TestClass {
     // MARK: persist tasks to data store
     
     func test_givenAddTasks_givenClearMemory_expectLoadPreviouslyAddedTasks() {
-        let _ = writer.add(tag: "foo", dataId: nil, groupId: nil)
+        let _ = writer.add(tag: "foo", data: "", groupId: nil)
         
         resetDependencies()
         
