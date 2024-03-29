@@ -172,7 +172,7 @@ extension DIGraph {
         return newInstance
     }
     private var newQueueWriter: QueueWriter {
-        return FileSystemQueueWriter(queue: self.fileSystemQueue)
+        return FileSystemQueueWriter(queue: self.fileSystemQueue, jsonAdapter: self.jsonAdapter)
     }
     // Call this function to override the instance of QueueWriter in the graph.
     internal func overrideQueueWriter(_ instance: QueueWriter) {
