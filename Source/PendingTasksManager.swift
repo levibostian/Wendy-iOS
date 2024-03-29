@@ -17,8 +17,8 @@ internal final class PendingTasksManager: QueueReader, QueueWriter, Sendable {
         ])
     }
 
-    func add(tag: String, dataId: String?, groupId: String?) -> PendingTask {
-        return queueWriter.get().add(tag: tag, dataId: dataId, groupId: groupId)
+    func add<Data>(tag: String, data: Data, groupId: String?) -> PendingTask where Data : Decodable, Data : Encodable {
+        return queueWriter.get().add(tag: tag, data: data, groupId: groupId)
     }
 
     internal func getAllTasks() -> [PendingTask] {

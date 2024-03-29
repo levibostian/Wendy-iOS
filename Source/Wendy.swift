@@ -22,7 +22,7 @@ final public class Wendy: Sendable {
     }
 
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
-        Self.setup(taskRunner: LegayTaskRunnerAdapter(taskRunner: taskRunner), debug: debug)
+        Self.setup(taskRunner: LegacyTaskRunnerAdapter(taskRunner: taskRunner), debug: debug)
     }
     
     public class func setup(taskRunner: WendyTaskRunnerConcurrency, debug: Bool = false) {
@@ -34,8 +34,8 @@ final public class Wendy: Sendable {
         // FileSystemQueueImpl.shared.load()
     }
     
-    public func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
-        let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, dataId: dataId, groupId: groupId)
+    public func addTask<Data: Codable>(tag: String, data: Data?, groupId: String? = nil) -> Double {
+        let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, data: data, groupId: groupId)
 
         LogUtil.logNewTaskAdded(addedTask)
 
@@ -44,8 +44,8 @@ final public class Wendy: Sendable {
         return addedTask.taskId!
     }
     
-    public func addTask<Tag: RawRepresentable>(tag: Tag, dataId: String?, groupId: String? = nil) -> Double where Tag.RawValue == String {
-        self.addTask(tag: tag.rawValue, dataId: dataId, groupId: groupId)
+    public func addTask<Tag: RawRepresentable, Data: Codable>(tag: Tag, data: Data?, groupId: String? = nil) -> Double where Tag.RawValue == String {
+        self.addTask(tag: tag.rawValue, data: data, groupId: groupId)
     }
     
     /**
@@ -128,6 +128,19 @@ final public class Wendy: Sendable {
     
     struct InitializedData {
         let taskRunner: WendyTaskRunnerConcurrency
+    }
+}
+
+// Public API functions for backwards compatibility.
+public extension Wendy {
+    @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
+    func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
+        return self.addTask(tag: tag, data: dataId, groupId: groupId)
+    }
+    
+    @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
+    func addTask<Tag: RawRepresentable>(tag: Tag, dataId: String?, groupId: String? = nil) -> Double where Tag.RawValue == String {
+        self.addTask(tag: tag.rawValue, data: dataId, groupId: groupId)
     }
 }
 

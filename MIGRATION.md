@@ -122,6 +122,30 @@ This feature was removed because it does not add a lot of value to the project.
 
 If you want to periodically run Wendy in your app, it’s recommended to review up-to-date documentation for how to run background jobs on iOS and run Wendy in that job: `Wendy.shared. runTasks {...}`. 
 
+# v7 to v8 - Replace `dataId` with `data: Codable` in task runner
+
+The breaking change that caused Wendy to go from v7 to v8 is replacing the parameter `dataId: String?` with `data: Codable` in task runner subclasses. This change brings a lot of power to Wendy because you can now use objects instead of just Strings when you add tasks to Wendy. Less code for you to write later to perform your API calls! 
+
+To migrate to v8, you will want to make sure that your tasks added with v7 of Wendy will continue to run. Here is some code to help you continue to use `dataId: String` for your existing tasks: 
+
+```
+import Wendy
+
+class MyWendyTaskRunner: WendyTaskRunner {
+    // 1. Change parameter 'dataId: String?' to 'data: Data?'
+    func runTask(tag: String, data: Data?, complete: @escaping (Error?) -> Void) {
+      switch tag {
+        case "AddGroceryListItem":
+          // 2. Convert the 'Data' data type back into 'String', as you were using before: 
+          let dataId: String? = data?.wendyDecode()
+          // 3. Done! Use 'dataId' as you were before! 
+          ...
+    }
+}
+```
+
+Your task runner can use the new `Codable` feature, too. Use the `tag` to differentiate between tasks that were added in Wendy version \< 8 and tasks added in version \>= 8. See the README to learn how to use this new feature. 
+
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
 [3]:	BEST_PRACTICES.md#handle-errors-when-a-task-runs
