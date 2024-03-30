@@ -40,8 +40,8 @@ class WendyIntegrationTests: TestClass {
             case foo
         }
         
-        let _ = Wendy.shared.addTask(tag: "string-tag", dataId: "string-dataId")
-        let _ = Wendy.shared.addTask(tag: Tag.foo, dataId: "enum-dataId")
+        Wendy.shared.addTask(tag: "string-tag", dataId: "string-dataId")
+        Wendy.shared.addTask(tag: Tag.foo, dataId: "enum-dataId")
         
         taskRunnerStub.runTaskClosure = { tag, data in
             guard let dataId: String = data?.wendyDecode() else {
@@ -69,7 +69,7 @@ class WendyIntegrationTests: TestClass {
         
         let givenTag = AsyncTasks.foo
         
-        let _ = Wendy.shared.addTask(tag: givenTag, data: "dataId")
+        Wendy.shared.addTask(tag: givenTag, data: "dataId")
         
         taskRunnerStub.runTaskClosure = { tag, _ in
             let actualTag = AsyncTasks(rawValue: tag)
@@ -90,7 +90,7 @@ class WendyIntegrationTests: TestClass {
             }
         }
         
-        let _ = Wendy.shared.addTask(tag: "foo", data: CodableObject(foo: .random, nested: .init(bar: .random)))
+        Wendy.shared.addTask(tag: "foo", data: CodableObject(foo: .random, nested: .init(bar: .random)))
         
         taskRunnerStub.runTaskClosure = { tag, data in
             switch tag {
@@ -119,7 +119,7 @@ class WendyIntegrationTests: TestClass {
             .success(nil)
         ]
         
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
         
         let runTasksResults = await runAllTasks()
         
@@ -138,7 +138,7 @@ class WendyIntegrationTests: TestClass {
             .failure(ErrorForTesting.foo)
         ]
         
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
         
         let runTasksResults = await runAllTasks()
         
@@ -149,6 +149,76 @@ class WendyIntegrationTests: TestClass {
         // Expect task not deleted, after failure.
         let runTasks2ndTimeResults = await runAllTasks()
         XCTAssertEqual(runTasks2ndTimeResults.numberTasksRun, 1)
+    }
+    
+    // MARK: Find tasks, using query
+    
+    struct Animal: Codable {
+        let name: String
+        let doesHaveLegs: Bool
+        let doesHaveWings: Bool
+        let doesHaveFur: Bool
+    }
+    
+    let bird = Animal(name: "bird", doesHaveLegs: true, doesHaveWings: true, doesHaveFur: false)
+    let bear = Animal(name: "bear", doesHaveLegs: true, doesHaveWings: true, doesHaveFur: true)
+    
+    func test_findTasksContainingAll_givenQuery_expectOnlyFindTasksContainingAllQueryTerms() async {
+        Wendy.shared.addTask(
+            tag: .random,
+            data: bird)
+        let bearTaskId = Wendy.shared.addTask(
+            tag: .random,
+            data: bear)
+        
+        // Our query is specifically looking for animals with fur. The Animal *must* have fur.
+        // We expect to only get bear, even though the bird does have legs.
+        let actual = await Wendy.shared.findTasks(containingAll: ["doesHaveLegs": true, "doesHaveFur": true])
+        
+        XCTAssertEqual(actual, [bearTaskId])
+    }
+    
+    func test_findTasksContainingAll_givenLongQuery_expectNoTasksReturned() async {
+        Wendy.shared.addTask(
+            tag: .random,
+            data: bird)
+        Wendy.shared.addTask(
+            tag: .random,
+            data: bear)
+        
+        // The bear matches the query, except there is a query term that the bear data type does not define.
+        // Therefore, we expect to not match any animals.
+        let actual = await Wendy.shared.findTasks(containingAll: ["doesHaveLegs": true, "doesHaveFur": true, "doesHaveHorns": true])
+        
+        XCTAssertEqual(actual, [])
+    }
+    
+    func test_findTasksContainingAny_expectValueOfQueryTermToMatchTasks() async {
+        Wendy.shared.addTask(
+            tag: .random,
+            data: bird)
+        Wendy.shared.addTask(
+            tag: .random,
+            data: bear)
+    
+        // Test that the values in query are tested.
+        let actual = await Wendy.shared.findTasks(containingAny: ["doesHaveLegs": false])
+        
+        XCTAssertEqual(actual, [])
+    }
+   
+    func test_findTasksContainingAny_givenQuery_expectFindTasksContainingAnyQueryTerms() async {
+        let birdTaskId = Wendy.shared.addTask(
+            tag: .random,
+            data: bird)
+        let bearTaskId = Wendy.shared.addTask(
+            tag: .random,
+            data: bear)
+        
+        // Our query is not very specific. As long as you have legs or have fur, you will be matched. You do not need to have both.
+        let actual = await Wendy.shared.findTasks(containingAny: ["doesHaveLegs": true, "doesHaveFur": true])
+        
+        XCTAssertEqual(actual, [birdTaskId, bearTaskId])
     }
     
     // MARK: listeners 
@@ -162,8 +232,8 @@ class WendyIntegrationTests: TestClass {
         ]
 
         XCTAssertEqual(listener.newTaskAddedCallCount, 0)
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
         XCTAssertEqual(listener.newTaskAddedCallCount, 2)
         
         XCTAssertEqual(listener.runningTaskCallCount, 0)
@@ -211,8 +281,8 @@ class WendyIntegrationTests: TestClass {
             .failure(ErrorForTesting.foo)
         ]
         
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
+        Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
+        Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
         
         let runTasksResults = await runAllTasks()
         
@@ -227,8 +297,8 @@ class WendyIntegrationTests: TestClass {
             .success(nil)
         ]
         
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
+        Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
+        Wendy.shared.addTask(tag: "tag", data: "dataId", groupId: "groupName")
         
         let runTasksResults = await runAllTasks()
         
@@ -245,12 +315,12 @@ class WendyIntegrationTests: TestClass {
         expectToAddTasks.expectedFulfillmentCount = 2
 
         Task {
-            let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+            Wendy.shared.addTask(tag: "tag", data: "dataId")
             expectToAddTasks.fulfill()
         }
         
         Task {
-            let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+            Wendy.shared.addTask(tag: "tag", data: "dataId")
             expectToAddTasks.fulfill()
         }
         
@@ -337,8 +407,8 @@ class WendyIntegrationTests: TestClass {
     // MARK: clear
     
     func test_clearTasks_givenTasksAdded_expectAllCancelAndDelete() async {
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
-        let _ = Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
+        Wendy.shared.addTask(tag: "tag", data: "dataId")
         
         Wendy.shared.clear()
         
