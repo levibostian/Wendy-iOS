@@ -119,7 +119,8 @@ Let’s get into each of these steps.
 To tell Wendy that you have a piece of data that needs to sync with a network API later, use `addTask`. Wendy will execute this task at a later time. 
 
 ```swift
-let groceryListItem = GroceryListItem(price: ..., name: ...) 
+let groceryListItem = GroceryListItem(price: ..., name: ...)
+
 Wendy.shared.addTask(tag: "AddGroceryListItem", data: groceryListItem) 
 
 // Or, use an enum to avoid hard-coded strings: 
@@ -167,16 +168,25 @@ func runTask(tag: String, data: Data?) async throws {
 
 Done! You’re using Wendy 🎊! 
 
-# Event listeners
+# Status changes in UI
 
-Wendy tries to promote a positive user experience with offline-first mobile apps. One important step to this to communicating to your app user the status of their data. If a piece of data in the app has not yet synced successfully with the network API, your app should reflect this status in the UI. Using event listeners is one way to do that. 
+Wendy tries to promote a positive user experience with offline-first mobile apps. One important step to this to communicating to your app user the status of their data. If a piece of data in the app has not yet synced successfully with the network API, your app should reflect this status in the UI. Using event listeners is how you do that. 
 
-When you call `Wendy.shared.addTask()`, that function returns an ID back to you. That ID maps to the 1 task that you added to Wendy. With this ID, you can check the status of a task in Wendy. 
+Here is some code showing you how to add tasks and then attach listeners to it: 
 
 ```swift
-// Add a listener to Wendy for the task that got added. 
-// Note: Wendy keeps weak references to listeners. Keep a strong reference in your app. 
-WendyConfig.addTaskStatusListenerForTask(taskId, listener: self) 
+Wendy.shared.addTask(tag: "...", data: GroceryListItem(name: "onion", isProduce: true)
+Wendy.shared.addTask(tag: "...", data: GroceryListItem(name: "crackers", isProduce: false)
+
+// Now that we have added tasks to Wendy, we will ask Wendy to find some tasks for us and then we will attach a listener to 
+Wendy.shared.findTasks(containingAll: ["isProduce": true]).forEach { taskIds in 
+	// Add a listener to Wendy for the task that got added. 
+	// Note: Wendy keeps weak references to listeners. Keep a strong reference in your app. 
+	taskIds.forEach { taskId in 
+		WendyConfig.addTaskStatusListenerForTask(taskId, listener: self) 
+    }
+}
+// When you use .findTasks(), you may need to re-run it after you add new tasks to Wendy. findTasks() gives you the list of tasks *at the time that you call it*. 
 
 // Here is an example of making a UIKit View a listener of a Wendy 
 // The UI changes depending on the state of the sync. 
@@ -193,9 +203,12 @@ extension View: PendingTaskStatusListener {
     func skipped(taskId: Double, reason: ReasonPendingTaskSkipped) {
         self.text = "Skipped"
     }
-
 }
+```
 
+Besides listening for status changes of individual tasks, you can also listen to the entire queue of tasks and when the task running is running: 
+```swift
+WendyConfig.addTaskRunnerListener(listener: listener)
 ```
 
 It’s suggested to view the [Best practices doc][10] to learn more about making a great experience in your offline-first app. 

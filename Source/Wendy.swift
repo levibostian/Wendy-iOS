@@ -34,6 +34,7 @@ final public class Wendy: Sendable {
         // FileSystemQueueImpl.shared.load()
     }
     
+    @discardableResult
     public func addTask<Data: Codable>(tag: String, data: Data?, groupId: String? = nil) -> Double {
         let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, data: data, groupId: groupId)
 
@@ -44,8 +45,55 @@ final public class Wendy: Sendable {
         return addedTask.taskId!
     }
     
+    @discardableResult
     public func addTask<Tag: RawRepresentable, Data: Codable>(tag: Tag, data: Data?, groupId: String? = nil) -> Double where Tag.RawValue == String {
         self.addTask(tag: tag.rawValue, data: data, groupId: groupId)
+    }
+    
+    /// Returns list of task IDs that contain *all* of the key/value pairs passed in the query.
+    public func findTasks(containingAll query: [String: any Sendable & Hashable]) async -> [Double] {
+        // Creating a Task because the getAllTasks() is currently not async. Creating a new Task is to try and make this more performant in case this function called on main thread.
+        return await Task {
+            let allTasks = DIGraph.shared.pendingTasksManager.getAllTasks()
+            
+            return allTasks.filter { task in
+                let taskData = task.dataAsDictionary
+                
+                // For every element in query, the task must contain everything in it.
+                return query.allSatisfy { key, value in
+                    guard taskData.keys.contains(key) else { return false }
+                    
+                    let queryValue = AnyHashable(value)
+                    let taskValue = taskData[key]
+                    
+                    return queryValue == taskValue
+                }
+            }.map { $0.taskId! }
+        }.value
+    }
+    
+    /// Returns list of task IDs that contain *at least one* of the key/value pairs passed in the query.
+    public func findTasks(containingAny query: [String: any Sendable & Hashable]) async -> [Double] {
+        // Creating a Task because the getAllTasks() is currently not async. Creating a new Task is to try and make this more performant in case this function called on main thread.
+        return await Task {
+            let allTasks = DIGraph.shared.pendingTasksManager.getAllTasks()
+            
+            return allTasks.filter { task in
+                let taskData = task.dataAsDictionary
+                
+                // For every element in query, the task must contain everything in it.
+                let didFindAMatch = query.first(where: { key, value in
+                    guard taskData.keys.contains(key) else { return false }
+                    
+                    let queryValue = AnyHashable(value)
+                    let taskValue = taskData[key]
+                    
+                    return queryValue == taskValue
+                }) != nil
+                
+                return didFindAMatch
+            }.map { $0.taskId! }
+        }.value
     }
     
     /**
@@ -79,7 +127,7 @@ final public class Wendy: Sendable {
 
         return result
     }
-
+ 
     public func runTask(_ taskId: Double, onComplete: (@Sendable (TaskRunResult) -> Void)?) {
         Task {
             let result = await self.runTask(taskId)
@@ -88,6 +136,7 @@ final public class Wendy: Sendable {
         }
     }
     
+    @discardableResult
     public func runTasks(filter: RunAllTasksFilter? = nil) async -> PendingTasksRunnerResult {
         let result = await pendingTasksRunner.runAllTasks(filter: filter)
         
