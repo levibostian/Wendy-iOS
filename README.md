@@ -11,9 +11,22 @@ Remove the difficulty in making offline-first iOS apps. Sync your offline device
 
 Android developer? [Check out the Android version of Wendy!][4]
 
-## Announcements
+## Status
 
-If interested, see the [latest announcement][5] from maintainers discussing the latest set of changes coming to Wendy.
+Wendy is under active development with lots of changes happening. **Wendy is usable today and ready to install in your app**. No matter if you're using Wendy already or not, expect...
+
+* Frequent major version bumps (breaking changes) that may require code migrations in your code base. Luckily, each major version release contains up-to-date [migration documentation](https://github.com/levibostian/Wendy-iOS/blob/main/MIGRATION.md). 
+* Best practices documentation out-of-date, but planned. The public API is kept up-to-date (this README) but not much guidance on suggested ways to use the API. 
+
+The main focus at the moment is building and shipping major improvements to Wendy to give it the core feature-set to make it a no-brainer to use in an app. Then, the focus will transition over to less frequent major version bumps, best practice documentation, etc. 
+
+This project holds a special place in my heart. I've enjoyed working on it for years now. This project has a roadmap (sorry, not public at the moment) to make it one of your favorite SDKs. My ultimate goal is to give you joy through every interaction with Wendy. 
+
+My favorite part about writing code is hearing how others experience what I build. Send a message if you find Wendy interesting. I would love to hear it!
+
+- Levi 
+
+See the [latest announcement][5] to stay updated on the latest set of changes coming to Wendy.
 
 ## What is Wendy?
 
