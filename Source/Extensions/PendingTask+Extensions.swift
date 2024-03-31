@@ -21,4 +21,8 @@ public extension PendingTask {
     func hasBeenAddedToWendy() -> Bool {
         return taskId != nil
     }
+    
+    var dataAsDictionary: [String: AnyHashable] {
+        data?.asDictionary() ?? [:]
+    }
 }
