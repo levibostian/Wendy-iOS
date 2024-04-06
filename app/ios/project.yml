@@ -1,0 +1,18 @@
+name: App
+options:
+  bundleIdPrefix: earth.levi.wendy
+packages:
+  Wendy:
+    url: https://github.com/levibostian/Wendy-iOS.git
+    branch: latest # To verify that the latest changes are always compilable. Dont lock to a specific version. 
+targets:
+  App:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: Source
+    dependencies:      
+      - package: Wendy
+    settings:
+      GENERATE_INFOPLIST_FILE: YES
+      CODE_SIGNING_ALLOWED: NO

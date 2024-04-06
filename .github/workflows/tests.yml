@@ -35,3 +35,15 @@ jobs:
       env:
         # try and speedup the action by homebrew not having to do more then it needs when installing the coveralls tool 
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
+  
+  compile-apps:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-ios
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Compile iOS app 
+      working-directory: app/ios
+      run: task build 
