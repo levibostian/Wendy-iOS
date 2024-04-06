@@ -1,0 +1,15 @@
+# To run, you must install: https://taskfile.dev/installation/
+
+version: '3'
+
+tasks:
+  generate_xcode_project:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - mint run --mintfile ../../Mintfile xcodegen generate
+
+  build: # meant to be called in a subdirectory in app/ such as app/ios/
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds: 
+      - task: generate_xcode_project
+      - set -o pipefail && xcrun xcodebuild clean build -scheme App | xcbeautify
