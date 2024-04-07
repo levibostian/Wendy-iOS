@@ -1,0 +1,6 @@
+
+target :App do 
+  use_frameworks!
+
+  pod 'Wendy', :git => 'https://github.com/levibostian/Wendy-iOS.git', :branch => 'latest'
+end
