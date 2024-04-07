@@ -37,13 +37,20 @@ jobs:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
   
   compile-apps:
-    runs-on: macos-13
+    runs-on: macos-13    
+    strategy:
+      fail-fast: false # if one build fails, dont stop trying to finish the other. 
+      matrix:
+        os: ["ios"]
+        package-manager: ["cocoapods", "spm"]
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-ios
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Compile iOS app 
-      working-directory: app/ios
-      run: task build 
+    - name: Compile ${{ matrix.os }} app, using package manager ${{ matrix.package-manager }}
+      working-directory: app/${{ matrix.os }}
+      run: task app:build_${{ matrix.package-manager }}
+
+      

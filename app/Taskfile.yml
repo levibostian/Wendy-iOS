@@ -3,13 +3,44 @@
 version: '3'
 
 tasks:
-  generate_xcode_project:
-    dir: '{{.USER_WORKING_DIR}}'
+  xcodegen_clean:
+    internal: true 
     cmds:
-      - mint run --mintfile ../../Mintfile xcodegen generate
+      - rm -rf *.xcodeproj
+      - rm -rf *.xcworkspace  
 
-  build: # meant to be called in a subdirectory in app/ such as app/ios/
-    dir: '{{.USER_WORKING_DIR}}'
-    cmds: 
+  generate_xcode_project:
+    internal: true # meant to be called by one of the child tasks 
+    cmds:
+      - task: xcodegen_clean
+      - mint run --mintfile ../../Mintfile xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
+
+  generate_xcode_project_spm:
+    cmds:
       - task: generate_xcode_project
-      - set -o pipefail && xcrun xcodebuild clean build -scheme App | xcbeautify
+        vars:
+          XCODE_GEN_SPEC_FILENAME: project-spm.yml
+  
+  generate_xcode_project_cocoapods:
+    cmds:
+      - task: generate_xcode_project
+        vars:
+          XCODE_GEN_SPEC_FILENAME: project.yml
+      - pod install
+
+  build: 
+    internal: true # meant to be called by one of the child tasks
+    cmds: 
+      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App | xcbeautify
+
+  build_spm: # meant to be called in a subdirectory in app/ such as app/ios/
+    cmds: 
+      - task: generate_xcode_project_spm
+      - task: build
+
+  build_cocoapods: # meant to be called in a subdirectory in app/ such as app/ios/
+    cmds: 
+      - task: generate_xcode_project_cocoapods
+      - task: build
+        vars:
+          XCODEBUILD_ARGS: -workspace App.xcworkspace
