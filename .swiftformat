@@ -1,4 +1,4 @@
---exclude "Example/Pods"
+--exclude "app/ios/Pods"
 
 --binarygrouping none 
 --decimalgrouping none 
