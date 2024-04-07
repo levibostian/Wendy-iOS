@@ -20,7 +20,7 @@ runs:
       repo-token: ${{ inputs.repo-token }}
 
   - name: Install package manager, Mint
-    uses: levibostian/setup-mint@skip-cache-mintbin-SNAPSHOT
+    uses: irgaly/setup-mint@v1
 
   - name: Generate code to allow project to compile 
     run: task codegen 
