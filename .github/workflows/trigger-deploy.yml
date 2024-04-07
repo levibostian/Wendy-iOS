@@ -11,10 +11,10 @@ jobs:
       actions: write # be able to trigger another workflow 
       contents: write # to merge commits into latest branch 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
     - name: Merge main -> latest to trigger a deploy on latest 
-      uses: devmasx/merge-branch@v1.4.0
+      uses: devmasx/merge-branch@854d3ac71ed1e9deb668e0074781b81fdd6e771f # v1.4.0
       with:
         type: now
         from_branch: main
@@ -23,7 +23,7 @@ jobs:
     
     # We manually run here because github will not execute github actions as a result of commits being pushed to latest branch. 
     - name: Trigger deploy 
-      uses: aurelien-baudet/workflow-dispatch@v2
+      uses: aurelien-baudet/workflow-dispatch@93e95b157d791ae7f42aef8f8a0d3d723eba1c31 # v2
       id: deploy-action
       with:
         workflow: deployment.yml
