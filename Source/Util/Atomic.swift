@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Levi Bostian on 2/13/24.
-//
-
 import Foundation
 
 /**
@@ -37,39 +30,36 @@ public struct Atomic<DataType: Any> {
     }
 }
 
-
 public final class MutableSendable<DataType: Any>: @unchecked Sendable {
-    
     private var value: DataType
-    
+
     init(_ value: DataType) {
         self.value = value
     }
-    
+
     private let mutex = Mutex()
-    
+
     func get() -> DataType {
         mutex.lock()
-        
+
         let returnValue = value
-        
+
         mutex.unlock()
-        
+
         return returnValue
     }
-    
+
     func set(_ modifyBlock: (DataType) -> DataType) {
         mutex.lock()
         defer { mutex.unlock() }
-        
-        self.value = modifyBlock(value)
+
+        value = modifyBlock(value)
     }
-    
+
     func set(_ newValue: DataType) {
         mutex.lock()
         defer { mutex.unlock() }
-        
-        self.value = newValue
+
+        value = newValue
     }
-    
 }

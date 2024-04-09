@@ -2,10 +2,6 @@
 import XCTest
 
 class PendingTasksRunnerResultTest: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-
     func test_firstFailedResult_givenEmptyResults_expectNil() {
         let givenResults: [TaskRunResult] = []
         let runnerResult = PendingTasksRunnerResult.new(results: givenResults)

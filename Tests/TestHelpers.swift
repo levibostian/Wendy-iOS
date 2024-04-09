@@ -1,11 +1,3 @@
-//
-//  TestHelpers.swift
-//  Wendy_Tests
-//
-//  Created by Levi Bostian on 2/4/24.
-//  Copyright © 2024 CocoaPods. All rights reserved.
-//
-
 import Foundation
 import XCTest
 
@@ -26,7 +18,7 @@ extension XCTest {
             try? fileManager.removeItem(at: fileUrl)
         }
     }
-    
+
     func deleteKeyValueStore() {
         let userDefaults = UserDefaults.standard
         for key in userDefaults.dictionaryRepresentation().keys {

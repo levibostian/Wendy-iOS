@@ -6,7 +6,7 @@ public struct PendingTask: Codable, Sendable {
     public let data: Data?
     public let groupId: String?
     public let createdAt: Date? // populated later
-    
+
     public init(tag: String, taskId: Double?, data: Data?, groupId: String?, createdAt: Date?) {
         self.tag = tag
         self.taskId = taskId
