@@ -1,41 +1,36 @@
 import Foundation
 
-final public class Wendy: Sendable {
-    
-    public static let shared: Wendy = Wendy()
-    public static let config: WendyConfig = WendyConfig()
-    
+public final class Wendy: Sendable {
+    public static let shared: Wendy = .init()
+    public static let config: WendyConfig = .init()
+
     private let initializedData: MutableSendable<InitializedData?> = MutableSendable(nil)
-    
-    internal var taskRunner: WendyTaskRunnerConcurrency? {
+
+    var taskRunner: WendyTaskRunnerConcurrency? {
         initializedData.get()?.taskRunner
     }
-    
+
     private var pendingTasksRunner: PendingTasksRunner {
         DIGraph.shared.pendingTasksRunner
     }
 
     private init() {}
-    
-    internal static func reset() { // for testing
-        Self.shared.initializedData.set(nil)
+
+    static func reset() { // for testing
+        shared.initializedData.set(nil)
     }
 
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
-        Self.setup(taskRunner: LegacyTaskRunnerAdapter(taskRunner: taskRunner), debug: debug)
+        setup(taskRunner: LegacyTaskRunnerAdapter(taskRunner: taskRunner), debug: debug)
     }
-    
+
     public class func setup(taskRunner: WendyTaskRunnerConcurrency, debug: Bool = false) {
         Wendy.shared.initializedData.set(InitializedData(taskRunner: taskRunner))
         WendyConfig.debug = debug
-        
-        // TODO: load the queue cache so it's ready to use.
-        // Disabled for now while the file system queue code is still being developed.
-        // FileSystemQueueImpl.shared.load()
     }
-    
+
     @discardableResult
-    public func addTask<Data: Codable>(tag: String, data: Data?, groupId: String? = nil) -> Double {
+    public func addTask(tag: String, data: (some Codable)?, groupId: String? = nil) -> Double {
         let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, data: data, groupId: groupId)
 
         LogUtil.logNewTaskAdded(addedTask)
@@ -44,90 +39,90 @@ final public class Wendy: Sendable {
 
         return addedTask.taskId!
     }
-    
+
     @discardableResult
-    public func addTask<Tag: RawRepresentable, Data: Codable>(tag: Tag, data: Data?, groupId: String? = nil) -> Double where Tag.RawValue == String {
-        self.addTask(tag: tag.rawValue, data: data, groupId: groupId)
+    public func addTask<Tag: RawRepresentable>(tag: Tag, data: (some Codable)?, groupId: String? = nil) -> Double where Tag.RawValue == String {
+        addTask(tag: tag.rawValue, data: data, groupId: groupId)
     }
-    
+
     /// Returns list of task IDs that contain *all* of the key/value pairs passed in the query.
     public func findTasks(containingAll query: [String: any Sendable & Hashable]) async -> [Double] {
         // Creating a Task because the getAllTasks() is currently not async. Creating a new Task is to try and make this more performant in case this function called on main thread.
-        return await Task {
+        await Task {
             let allTasks = DIGraph.shared.pendingTasksManager.getAllTasks()
-            
+
             return allTasks.filter { task in
                 let taskData = task.dataAsDictionary
-                
+
                 // For every element in query, the task must contain everything in it.
                 return query.allSatisfy { key, value in
                     guard taskData.keys.contains(key) else { return false }
-                    
+
                     let queryValue = AnyHashable(value)
                     let taskValue = taskData[key]
-                    
+
                     return queryValue == taskValue
                 }
             }.map { $0.taskId! }
         }.value
     }
-    
+
     /// Returns list of task IDs that contain *at least one* of the key/value pairs passed in the query.
     public func findTasks(containingAny query: [String: any Sendable & Hashable]) async -> [Double] {
         // Creating a Task because the getAllTasks() is currently not async. Creating a new Task is to try and make this more performant in case this function called on main thread.
-        return await Task {
+        await Task {
             let allTasks = DIGraph.shared.pendingTasksManager.getAllTasks()
-            
+
             return allTasks.filter { task in
                 let taskData = task.dataAsDictionary
-                
+
                 // For every element in query, the task must contain everything in it.
                 let didFindAMatch = query.first(where: { key, value in
                     guard taskData.keys.contains(key) else { return false }
-                    
+
                     let queryValue = AnyHashable(value)
                     let taskValue = taskData[key]
-                    
+
                     return queryValue == taskValue
                 }) != nil
-                
+
                 return didFindAMatch
             }.map { $0.taskId! }
         }.value
     }
-    
+
     /**
-         * Note: This function is for internal use only. There are no checks to make sure that it exists and stuff. It's assumed you know what you're doing.
+     * Note: This function is for internal use only. There are no checks to make sure that it exists and stuff. It's assumed you know what you're doing.
 
-         This function exists for this scenario:
-         1. Only run depending on WendyConfig.automaticallyRunTasks.
-         2. If task is *able* to run.
+     This function exists for this scenario:
+     1. Only run depending on WendyConfig.automaticallyRunTasks.
+     2. If task is *able* to run.
 
-         Those make this function unique compared to `runTask()` because that function ignores WendyConfig.automaticallyRunTasks *and* if the task.manuallyRun property is set or not.
-         */
-        @discardableResult
-    internal func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) -> Bool {
+     Those make this function unique compared to `runTask()` because that function ignores WendyConfig.automaticallyRunTasks *and* if the task.manuallyRun property is set or not.
+     */
+    @discardableResult
+    func runTaskAutomaticallyIfAbleTo(_ task: PendingTask) -> Bool {
         if !WendyConfig.automaticallyRunTasks {
             LogUtil.d("Wendy configured to not automatically run tasks. Skipping execution of newly added task: \(task.describe())")
             return false
         }
-        
+
         LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
         runTask(task.taskId!, onComplete: nil)
-        
+
         return true
     }
-    
+
     public func runTask(_ taskId: Double) async -> TaskRunResult {
         guard let _ = DIGraph.shared.pendingTasksManager.getTaskByTaskId(taskId) else {
             return .cancelled
         }
-        
+
         let result = await pendingTasksRunner.runTask(taskId: taskId)
 
         return result
     }
- 
+
     public func runTask(_ taskId: Double, onComplete: (@Sendable (TaskRunResult) -> Void)?) {
         Task {
             let result = await self.runTask(taskId)
@@ -135,24 +130,24 @@ final public class Wendy: Sendable {
             onComplete?(result)
         }
     }
-    
+
     @discardableResult
     public func runTasks(filter: RunAllTasksFilter? = nil) async -> PendingTasksRunnerResult {
         let result = await pendingTasksRunner.runAllTasks(filter: filter)
-        
+
         return result
     }
 
     public func runTasks(filter: RunAllTasksFilter? = nil, onComplete: (@Sendable (PendingTasksRunnerResult) -> Void)?) {
         Task {
             let result = await self.runTasks(filter: filter)
-            
+
             onComplete?(result)
         }
     }
 
     public final func getAllTasks() -> [PendingTask] {
-        return DIGraph.shared.pendingTasksManager.getAllTasks()
+        DIGraph.shared.pendingTasksManager.getAllTasks()
     }
 
     /**
@@ -166,15 +161,15 @@ final public class Wendy: Sendable {
         PendingTasksUtil.setValidPendingTasksIdThreshold()
         LogUtil.d("Wendy tasks set as cancelled. Currently scheduled Wendy tasks will all skip running.")
         // Run all tasks (including manually run tasks) as they are all cancelled so it allows them all to be cleared fro the queue now and listeners can get notified.
-        getAllTasks().forEach { task in
-            self.runTask(task.taskId!, onComplete: nil)
+        for task in getAllTasks() {
+            runTask(task.taskId!, onComplete: nil)
         }
     }
-    
+
     public func addQueueReader(_ reader: QueueReader) {
         DIGraph.shared.pendingTasksManager.addQueueReader(reader)
     }
-    
+
     struct InitializedData {
         let taskRunner: WendyTaskRunnerConcurrency
     }
@@ -184,17 +179,17 @@ final public class Wendy: Sendable {
 public extension Wendy {
     @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
     func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
-        return self.addTask(tag: tag, data: dataId, groupId: groupId)
+        addTask(tag: tag, data: dataId, groupId: groupId)
     }
-    
+
     @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
     func addTask<Tag: RawRepresentable>(tag: Tag, dataId: String?, groupId: String? = nil) -> Double where Tag.RawValue == String {
-        self.addTask(tag: tag.rawValue, data: dataId, groupId: groupId)
+        addTask(tag: tag.rawValue, data: dataId, groupId: groupId)
     }
 }
 
 extension DIGraph {
     var taskRunner: WendyTaskRunnerConcurrency? {
-        return Wendy.shared.taskRunner
+        Wendy.shared.taskRunner
     }
 }

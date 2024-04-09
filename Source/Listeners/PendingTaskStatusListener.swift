@@ -6,6 +6,6 @@ public protocol PendingTaskStatusListener: AnyObject {
     func skipped(taskId: Double, reason: ReasonPendingTaskSkipped)
 }
 
-internal struct WeakReferencePendingTaskStatusListener {
+struct WeakReferencePendingTaskStatusListener {
     weak var listener: PendingTaskStatusListener?
 }

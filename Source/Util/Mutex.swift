@@ -1,10 +1,3 @@
-//
-//  Mutex.swift
-//  Wendy
-//
-//  Created by Levi Bostian on 1/27/24.
-//
-
 import Foundation
 
 public class Mutex {

@@ -39,3 +39,11 @@ tasks:
       - xcrun llvm-cov export {{.OPTIONS}} -format=lcov "{{.SOURCE}}" > .build/lcov.info
       - xcrun llvm-cov report {{.OPTIONS}} -use-color "{{.SOURCE}}" 
   
+  lint: 
+    cmds:
+      - mint run swiftlint lint --strict
+  
+  format: 
+    cmds:
+      - mint run swiftformat . 
+      - mint run swiftlint lint --fix 

@@ -1,35 +1,27 @@
-//
-//  JsonAdapter.swift
-//  Wendy
-//
-//  Created by Levi Bostian on 1/27/24.
-//
-
 import Foundation
 
-internal protocol JsonAdapter {
+protocol JsonAdapter {
     func toData(_ object: Codable?) -> Data?
     func fromData<T: Codable>(_ data: Data) -> T?
 }
 
 // sourcery: InjectRegister = "JsonAdapter"
-internal class JsonAdapterImpl: JsonAdapter {
-        
+class JsonAdapterImpl: JsonAdapter {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
-    
+
     func toData(_ object: Codable?) -> Data? {
-        guard let object = object else {
+        guard let object else {
             return nil
         }
-        
+
         do {
             return try encoder.encode(object)
         } catch {
             return nil
         }
     }
-    
+
     func fromData<T: Codable>(_ data: Data) -> T? {
         do {
             return try decoder.decode(T.self, from: data)
@@ -37,6 +29,4 @@ internal class JsonAdapterImpl: JsonAdapter {
             return nil
         }
     }
-    
 }
-

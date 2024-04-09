@@ -8,7 +8,7 @@ public struct PendingTasksRunnerResult: Sendable {
     public let numberSkippedTasks: Int
     public let runResults: [TaskRunResult]
 
-    internal static func new(results: [TaskRunResult]? = nil) -> PendingTasksRunnerResult {
+    static func new(results: [TaskRunResult]? = nil) -> PendingTasksRunnerResult {
         var runnerResult = PendingTasksRunnerResult(numberTasksRun: 0, numberSuccessfulTasks: 0, numberCancelledTasks: 0, numberFailedTasks: 0, numberSkippedTasks: 0, runResults: [])
 
         results?.forEach { result in
@@ -18,12 +18,12 @@ public struct PendingTasksRunnerResult: Sendable {
         return runnerResult
     }
 
-    internal func addResult(_ runResult: TaskRunResult) -> PendingTasksRunnerResult {
-        var numberSuccessfulTasks = self.numberSuccessfulTasks
-        var numberCancelledTasks = self.numberCancelledTasks
-        var numberFailedTasks = self.numberFailedTasks
-        var numberSkippedTasks = self.numberSkippedTasks
-        var runResults = self.runResults
+    func addResult(_ runResult: TaskRunResult) -> PendingTasksRunnerResult {
+        var numberSuccessfulTasks = numberSuccessfulTasks
+        var numberCancelledTasks = numberCancelledTasks
+        var numberFailedTasks = numberFailedTasks
+        var numberSkippedTasks = numberSkippedTasks
+        var runResults = runResults
 
         switch runResult {
         case .successful:
@@ -47,12 +47,12 @@ public extension PendingTasksRunnerResult {
      Get first [TaskRunResult] that was a failed attempt. Note: This failed attempt could have been a task that failed or one that skipped.
      */
     var firstFailedResult: TaskRunResult? {
-        return runResults.first(where: { runResult in
+        runResults.first(where: { runResult in
             switch runResult {
             case .failure, .skipped:
-                return true
+                true
             case .cancelled, .successful:
-                return false
+                false
             }
         })
     }
@@ -61,6 +61,6 @@ public extension PendingTasksRunnerResult {
      cancelled are OK. They count as successful. Skipped means that they need to be run again so, that's not successful.
      */
     var successful: Bool {
-        return firstFailedResult == nil
+        firstFailedResult == nil
     }
 }

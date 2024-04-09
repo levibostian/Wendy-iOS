@@ -13,15 +13,15 @@ public extension PendingTask {
     }
 
     func addTaskStatusListenerForTask(listener: PendingTaskStatusListener) {
-        if let taskId = self.taskId {
+        if let taskId {
             WendyConfig.addTaskStatusListenerForTask(taskId, listener: listener)
         }
     }
 
     func hasBeenAddedToWendy() -> Bool {
-        return taskId != nil
+        taskId != nil
     }
-    
+
     var dataAsDictionary: [String: AnyHashable] {
         data?.asDictionary() ?? [:]
     }
