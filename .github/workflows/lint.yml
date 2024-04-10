@@ -1,0 +1,16 @@
+on: [pull_request]
+
+jobs:
+  assert-formatted:
+    name: Assert that code has been linted and formatted before merging
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - uses: ./.github/actions/setup-ios
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run swiftformat. Fail if any errors. 
+        run: task format && git diff --exit-code
+      - name: Run swiftlint. Fail if any errors. 
+        run: task lint
