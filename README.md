@@ -312,6 +312,11 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 [mint][14] used to run other development CLI commands such as linter/formatter. 
 [taskfile][15] an alternative to `Makefile` to run commands. 
+[lefthook](https://github.com/evilmartians/lefthook/blob/HEAD/docs/install.md) for git hooks. 
+
+* Install git hooks: 
+
+`lefthook install`
 
 * Generate the boilerplate code, otherwise you will not be able to compile the code.
 
