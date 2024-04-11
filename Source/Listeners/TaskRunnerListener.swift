@@ -11,6 +11,6 @@ public protocol TaskRunnerListener: AnyObject {
     func allTasksComplete()
 }
 
-internal struct WeakReferenceTaskRunnerListener {
+struct WeakReferenceTaskRunnerListener {
     weak var listener: TaskRunnerListener!
 }
