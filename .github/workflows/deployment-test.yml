@@ -10,7 +10,7 @@ concurrency: # cancel previous workflow run if one exists.
 
 jobs:
   deployment:
-    runs-on: macos-13 # because cocoapods is already installed on these machines
+    runs-on: macos-14 # because cocoapods is already installed on these machines
     permissions:
       contents: write # to set permissions for semantic-release dry-run to pass 
     steps:
