@@ -1,7 +1,6 @@
 import Foundation
 
 // sourcery: InjectRegister = "QueueReader"
-// sourcery: InjectSingleton
 public class FileSystemQueueReader: QueueReader {
     private let queue: FileSystemQueue
 

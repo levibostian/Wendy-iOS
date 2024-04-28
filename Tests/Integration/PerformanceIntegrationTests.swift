@@ -47,10 +47,10 @@ class PerformanceIntegrationTests: TestClass {
         _ = Wendy.shared.addTask(tag: "task3", data: "dataId")
 
         let expectToRunTask1 = expectation(description: "expect to run task 1")
-        let expectToRunTask2 = expectation(description: "expect to run task 2")
         let expectToRunTask3 = expectation(description: "expect to run task 3")
-        let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
         let expectToFinishRunningSingleTask = expectation(description: "expect to finish running single task")
+        let expectToRunTask2 = expectation(description: "expect to run task 2")
+        let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
 
         taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
 

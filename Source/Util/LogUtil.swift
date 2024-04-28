@@ -16,13 +16,13 @@ class LogUtil {
 
 extension LogUtil {
     class func logNewTaskAdded(_ task: PendingTask) {
-        for weakRefListener in Wendy.config.taskRunnerListeners {
+        for weakRefListener in WendyConfig.taskRunnerListeners {
             weakRefListener.listener?.newTaskAdded(task)
         }
     }
 
     class func logTaskSkipped(_ task: PendingTask, reason: ReasonPendingTaskSkipped) {
-        for weakRefListener in Wendy.config.taskRunnerListeners {
+        for weakRefListener in WendyConfig.taskRunnerListeners {
             weakRefListener.listener?.taskSkipped(task, reason: reason)
         }
         for weakRefListener in WendyConfig.getTaskStatusListenerForTask(task.taskId!) {
@@ -33,7 +33,7 @@ extension LogUtil {
     class func logTaskComplete(_ task: PendingTask, successful: Bool, cancelled: Bool) {
         let successful = (successful || cancelled) // to make sure that cancelled marks succcessful as successful, always.
 
-        for weakRefListener in Wendy.config.taskRunnerListeners {
+        for weakRefListener in WendyConfig.taskRunnerListeners {
             weakRefListener.listener?.taskComplete(task, successful: successful, cancelled: cancelled)
         }
         for weakRefListener in WendyConfig.getTaskStatusListenerForTask(task.taskId!) {
@@ -42,7 +42,7 @@ extension LogUtil {
     }
 
     class func logTaskRunning(_ task: PendingTask) {
-        for weakRefListener in Wendy.config.taskRunnerListeners {
+        for weakRefListener in WendyConfig.taskRunnerListeners {
             weakRefListener.listener?.runningTask(task)
         }
         for weakRefListener in WendyConfig.getTaskStatusListenerForTask(task.taskId!) {
@@ -51,7 +51,7 @@ extension LogUtil {
     }
 
     class func logAllTasksComplete() {
-        for weakRefListener in Wendy.config.taskRunnerListeners {
+        for weakRefListener in WendyConfig.taskRunnerListeners {
             weakRefListener.listener?.allTasksComplete()
         }
     }

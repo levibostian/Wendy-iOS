@@ -1,0 +1,11 @@
+{% for type in types.implementing.AutoResettable %}
+extension {{ type.name }}: Resettable {
+    public mutating func reset() {
+        let newInstance = Self.init()
+        
+        {% for property in type.variables %}
+        {{ property.name }} = newInstance.{{ property.name }}
+        {% endfor %}
+    }
+}
+{% endfor %}

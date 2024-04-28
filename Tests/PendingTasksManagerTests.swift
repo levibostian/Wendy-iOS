@@ -16,7 +16,9 @@ class PendingTasksManagerTest: TestClass {
         queueReader = QueueReaderStub()
         queueReader2 = QueueReaderStub()
 
-        pendingTasksManager.queueReaders.set([queueReader, queueReader2])
+        PendingTasksManager.DataStore.shared.updateDataBlock { data in
+            data.queueReaders = [queueReader, queueReader2]
+        }
     }
 
     // MARK: getAllTasks
