@@ -17,7 +17,6 @@ open class TestClass: XCTestCase {
 
     public func resetDependencies() {
         DIGraph.shared.reset()
-        Wendy.reset()
     }
 }
 

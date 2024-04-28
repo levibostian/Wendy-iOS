@@ -1,31 +1,20 @@
 import Foundation
 
-public final class Wendy: Sendable {
+public final class Wendy: Sendable, Singleton {
     public static let shared: Wendy = .init()
-    public static let config: WendyConfig = .init()
 
-    private let initializedData: MutableSendable<InitializedData?> = MutableSendable(nil)
-
-    var taskRunner: WendyTaskRunnerConcurrency? {
-        initializedData.get()?.taskRunner
+    var taskRunner: WendyTaskRunner? {
+        dataStore.getDataSnapshot().taskRunner
     }
 
-    private var pendingTasksRunner: PendingTasksRunner {
-        DIGraph.shared.pendingTasksRunner
-    }
+    private var pendingTasksRunner: PendingTasksRunner { .shared }
 
     private init() {}
 
-    static func reset() { // for testing
-        shared.initializedData.set(nil)
-    }
+    public func reset() {}
 
     public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
-        setup(taskRunner: LegacyTaskRunnerAdapter(taskRunner: taskRunner), debug: debug)
-    }
-
-    public class func setup(taskRunner: WendyTaskRunnerConcurrency, debug: Bool = false) {
-        Wendy.shared.initializedData.set(InitializedData(taskRunner: taskRunner))
+        DataStore.shared.updateDataBlock { $0.taskRunner = taskRunner }
         WendyConfig.debug = debug
     }
 
@@ -170,8 +159,12 @@ public final class Wendy: Sendable {
         DIGraph.shared.pendingTasksManager.addQueueReader(reader)
     }
 
-    struct InitializedData {
-        let taskRunner: WendyTaskRunnerConcurrency
+    public struct InitializedData: AutoResettable {
+        var taskRunner: WendyTaskRunner?
+    }
+
+    final class DataStore: InMemoryDataStore<InitializedData>, Singleton {
+        static let shared = DataStore(data: .init())
     }
 }
 
@@ -189,7 +182,7 @@ public extension Wendy {
 }
 
 extension DIGraph {
-    var taskRunner: WendyTaskRunnerConcurrency? {
+    var taskRunner: WendyTaskRunner? {
         Wendy.shared.taskRunner
     }
 }

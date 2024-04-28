@@ -10,16 +10,10 @@ protocol FileSystemQueue {
 }
 
 // sourcery: InjectRegister = "FileSystemQueue"
-// sourcery: InjectSingleton
 class FileSystemQueueImpl: FileSystemQueue {
     private let fileStore: FileSystemStore
     private let queueFilePath: [String] = ["tasks_queue.json"]
     private let jsonAdapter: JsonAdapter
-
-    private let mutex = Mutex()
-
-    private var hasLoadedCache = false
-    private var cache: [PendingTask] = []
 
     init(fileStore: FileSystemStore, jsonAdapter: JsonAdapter) {
         self.fileStore = fileStore
@@ -27,48 +21,45 @@ class FileSystemQueueImpl: FileSystemQueue {
     }
 
     func load() {
-        mutex.lock()
-        defer { mutex.unlock() }
+        dataStore.updateDataBlock { data in
+            guard !data.hasLoadedCache else {
+                return
+            }
 
-        guard !hasLoadedCache else {
-            return
+            let queueData = self.fileStore.readFile(self.queueFilePath)
+            guard let queueData else {
+                // no queue file exists.
+                data.hasLoadedCache = true
+                return
+            }
+
+            data.cache = jsonAdapter.fromData(queueData)!
+            data.hasLoadedCache = true
         }
-
-        let queueData = fileStore.readFile(queueFilePath)
-        guard let queueData else {
-            // no queue file exists.
-            hasLoadedCache = true
-            return
-        }
-
-        cache = jsonAdapter.fromData(queueData)!
-        hasLoadedCache = true
     }
 
     var queue: [PendingTask] {
         load()
 
-        return cache
+        return dataStore.getDataSnapshot().cache
     }
 
     func add(_ pendingTask: PendingTask) {
-        mutex.lock()
-        defer { mutex.unlock() }
-
         load()
-        cache.append(pendingTask)
 
-        fileStore.saveFile(jsonAdapter.toData(cache)!, filePath: queueFilePath)
+        dataStore.updateDataBlock { data in
+            data.cache.append(pendingTask)
+            fileStore.saveFile(jsonAdapter.toData(data.cache)!, filePath: queueFilePath)
+        }
     }
 
     func delete(_ taskId: Double) {
-        mutex.lock()
-        defer { mutex.unlock() }
-
         load()
-        cache.removeAll { $0.taskId == taskId }
 
-        fileStore.saveFile(jsonAdapter.toData(cache)!, filePath: queueFilePath)
+        dataStore.updateDataBlock { data in
+            data.cache.removeAll { $0.taskId == taskId }
+            fileStore.saveFile(jsonAdapter.toData(data.cache)!, filePath: queueFilePath)
+        }
     }
 
     func delete(_ pendingTask: PendingTask) {
@@ -77,5 +68,14 @@ class FileSystemQueueImpl: FileSystemQueue {
         }
 
         delete(taskId)
+    }
+
+    public struct Data: AutoResettable {
+        var hasLoadedCache = false
+        var cache: [PendingTask] = []
+    }
+
+    final class DataStore: InMemoryDataStore<Data>, Singleton {
+        static let shared: DataStore = .init(data: .init())
     }
 }
