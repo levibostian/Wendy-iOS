@@ -3,7 +3,7 @@ import Semaphore
 
 public extension Wendy {
     var currentlyRunningTask: PendingTask? {
-        DIGraph.shared.pendingTasksRunner.currentlyRunningTask.get()
+        PendingTasksRunner.DataStore.shared.getDataSnapshot().currentlyRunningTask
     }
 }
 
@@ -15,23 +15,16 @@ public extension Wendy {
  3. The task runner's `runTask()` runs in a sync way (while the `PendingTask.runTask()` is async) where it does not return a result until the task has failed or succeeded. So, work in a blocking way.
  */
 // sourcery: InjectRegister = "PendingTasksRunner"
-// sourcery: InjectSingleton
-public final class PendingTasksRunner: Sendable {
+public final class PendingTasksRunner: Sendable, Singleton {
+    public static let shared = PendingTasksRunner()
+
+    private var pendingTasksManager: PendingTasksManager { inject.pendingTasksManager }
+    private var taskRunner: WendyTaskRunner? { inject.taskRunner }
+
     private let runAllTasksLock = RunAllTasksLock()
-
-    private let pendingTasksManager: PendingTasksManager
-
-    public let currentlyRunningTask: MutableSendable<PendingTask?> = MutableSendable(nil)
-
-    private var taskRunner: WendyTaskRunnerConcurrency? {
-        DIGraph.shared.taskRunner
-    }
-
     private let runTaskSemaphore = AsyncSemaphore(value: 1)
 
-    init(pendingTasksManager: PendingTasksManager) {
-        self.pendingTasksManager = pendingTasksManager
-    }
+    public func reset() {}
 
     /**
      Runs 1 task and returns the result.
@@ -66,7 +59,9 @@ public final class PendingTasksRunner: Sendable {
             return runTaskResult
         }
 
-        currentlyRunningTask.set(taskToRun)
+        dataStore.updateDataBlock { data in
+            data.currentlyRunningTask = taskToRun
+        }
 
         LogUtil.logTaskRunning(taskToRun)
         LogUtil.d("Running task: \(taskToRun.describe())")
@@ -74,7 +69,9 @@ public final class PendingTasksRunner: Sendable {
         do {
             try await taskRunner.runTask(tag: taskToRun.tag, data: taskToRun.data)
 
-            currentlyRunningTask.set(nil)
+            dataStore.updateDataBlock { data in
+                data.currentlyRunningTask = nil
+            }
 
             LogUtil.d("Task: \(taskToRun.describe()) ran successful.")
             LogUtil.d("Deleting task: \(taskToRun.describe()).")
@@ -84,7 +81,10 @@ public final class PendingTasksRunner: Sendable {
             runTaskSemaphore.signal()
             return .successful
         } catch {
-            currentlyRunningTask.set(nil)
+            dataStore.updateDataBlock { data in
+                data.currentlyRunningTask = nil
+            }
+
             LogUtil.d("Task: \(taskToRun.describe()) failed but will reschedule it. Skipping it.")
             LogUtil.logTaskComplete(taskToRun, successful: false, cancelled: false)
 
@@ -156,5 +156,13 @@ public final class PendingTasksRunner: Sendable {
         func unlock() {
             isRunningAllTasks = false
         }
+    }
+
+    public struct Data: AutoResettable {
+        var currentlyRunningTask: PendingTask?
+    }
+
+    final class DataStore: InMemoryDataStore<Data>, Singleton {
+        static let shared: DataStore = .init(data: .init())
     }
 }

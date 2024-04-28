@@ -1,0 +1,7 @@
+{% for type in types.inheriting.InMemoryDataStore %}
+{% if type.parentName != nil %}
+extension {{ type.parentName }} {
+    var dataStore: {{ type.name }} { .shared }
+}
+{% endif %}
+{% endfor %}
