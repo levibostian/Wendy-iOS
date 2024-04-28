@@ -27,33 +27,6 @@ class WendyIntegrationTests: TestClass {
         XCTAssertNotEqual(taskGroup1, taskGroup2)
     }
 
-    func test_addTasks_givenDeprecatedDataId_expectToAddAndRunTaskUsingDataId() async {
-        enum Tag: String {
-            case foo
-        }
-
-        Wendy.shared.addTask(tag: "string-tag", dataId: "string-dataId")
-        Wendy.shared.addTask(tag: Tag.foo, dataId: "enum-dataId")
-
-        taskRunnerStub.runTaskClosure = { tag, data in
-            guard let dataId: String = data?.wendyDecode() else {
-                XCTFail("Could not decode data")
-                return
-            }
-
-            switch tag {
-            case "string-tag":
-                XCTAssertEqual(dataId, "string-dataId")
-            case Tag.foo.rawValue:
-                XCTAssertEqual(dataId, "enum-dataId")
-            default:
-                XCTFail("Unexpected tag")
-            }
-        }
-
-        _ = await runAllTasks()
-    }
-
     func test_addTasks_expectAddTasksAndRunTasksGivenEnumInsteadOfStrings() async {
         enum AsyncTasks: String {
             case foo
@@ -298,7 +271,7 @@ class WendyIntegrationTests: TestClass {
         Wendy.shared.addTask(tag: "tag", data: "dataId")
         Wendy.shared.addTask(tag: "tag", data: "dataId")
 
-        Wendy.shared.clear()
+        await Wendy.shared.clear()
 
         sleep(1) // give wendy time to run all scheduled tasks that do the deleting.
         let runTasksResults = await runAllTasks()
