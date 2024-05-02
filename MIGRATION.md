@@ -128,7 +128,7 @@ The breaking change that caused Wendy to go from v7 to v8 is replacing the param
 
 To migrate to v8, you will want to make sure that your tasks added with v7 of Wendy will continue to run. Here is some code to help you continue to use `dataId: String` for your existing tasks: 
 
-```
+```swift
 import Wendy
 
 class MyWendyTaskRunner: WendyTaskRunner {
@@ -145,6 +145,57 @@ class MyWendyTaskRunner: WendyTaskRunner {
 ```
 
 Your task runner can use the new `Codable` feature, too. Use the `tag` to differentiate between tasks that were added in Wendy version \< 8 and tasks added in version \>= 8. See the README to learn how to use this new feature. 
+
+# v8 to v9 - Removing callbacks in favor of Swift concurrency  alternatives 
+As I have continued to learn more about Swift Concurrency, I have continuously tried to improve the codebase for upcoming Swift 6 support with complete Swift concurrency checking enabled on the codebase. 
+
+As part of these efforts, the codebase has moved away from callback functions to using `async/await` for all operations. This impacts your code in 2 ways: 
+
+1. Your `WendyTaskRunner` is now using `async/await` instead of a callback function: 
+```swift
+// Before: 
+class MyWendyTaskRunner: WendyTaskRunner {
+    func runTask(tag: String, data: Data?, complete: @escaping (Error?) -> Void) {
+       // ... do work...when done, call callback: 
+       complete()
+    }
+}
+
+// Now: 
+class MyWendyTaskRunner: WendyTaskRunner {
+    func runTask(tag: String, data: Data?) async throws {
+      // ...do work...when done, just return the function. 
+    }
+}
+```
+
+2. The public functions in `Wendy` that used a callback are now using `async/await`: 
+```swift
+// Before: 
+Wendy.shared.runTasks {}
+Wendy.shared.runTask("") {}
+Wendy.shared.clear()
+
+// Now: 
+await Wendy.shared.runTasks()
+await Wendy.shared.runTask("")
+await Wendy.shared.clear()
+```
+
+### Curious why this change was made?
+
+After enabling Swift Concurrency complete checking on the project, I had to make some changes to the code such as making callback functions `Sendable`: 
+
+```swift
+Wendy.shared.runTasks {
+  // This callback closure is Sendable. 
+  // So, all code referenced in this block must also 
+  // be Sendable...this could be annoying!  
+}
+```
+
+I would rather not make random parts of the public API `Sendable` as that could cause a lot of annoyance to the developer using Wendy. I think a better approach would be to use  `async/await`  functions instead. Not only this, but reading and writing code with `async/await` is arguably better anyway.
+
 
 [1]:	https://github.com/levibostian/Wendy-iOS/discussions/51
 [2]:	BEST_PRACTICES.md#after-i-add-a-task-to-wendy-what-updates-should-i-make-to-my-apps-local-data-storage
