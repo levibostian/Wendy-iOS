@@ -130,17 +130,15 @@ public final class Wendy: Sendable, Singleton {
 
      Note: If a task is currently running when clear() is called, that running task will be finish executing but will not run again in the future as it has been cancelled.
      */
-    public final func clear() {
+    public final func clear() async {
         /// It's not possible to stop a dispatch queue of tasks so there is no way to stop the currently running task runner.
         /// This solution of using UserDefaults to set a threshold solves that problem while also leaving Wendy untouched to continue running as usual. If we deleted all data, as Android's Wendy does, we would have potential issues with tasks that are still in the queue but core data and userdefaults being deleted causing potential crashes and IDs being misaligned.
         PendingTasksUtil.setValidPendingTasksIdThreshold()
         LogUtil.d("Wendy tasks set as cancelled. Currently scheduled Wendy tasks will all skip running.")
         // Run all tasks (including manually run tasks) as they are all cancelled so it allows them all to be cleared fro the queue now and listeners can get notified.
 
-        // clear() should be a synchronous function that returns instantly. So, just invalidate the tasks and the next time the queue runs, the tasks will get cancelled and deleted.
-//        for task in getAllTasks() {
-//            _ = await runTask(task.taskId!)
-//        }
+        // We want to make it so the next time the developer calls runTasks(), 0 tasks get run. To do that, you must run the queue to have all tasks deleted after they are marked as invalid.
+        await runTasks()
     }
 
     public func addQueueReader(_ reader: QueueReader) {

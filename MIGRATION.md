@@ -146,12 +146,12 @@ class MyWendyTaskRunner: WendyTaskRunner {
 
 Your task runner can use the new `Codable` feature, too. Use the `tag` to differentiate between tasks that were added in Wendy version \< 8 and tasks added in version \>= 8. See the README to learn how to use this new feature. 
 
-# v8 to v9 - Removing callbacks in favor of Swift concurrency  alternatives 
+# v8 to v9 - Removing callbacks in favor of Swift concurrency  alternatives
 As I have continued to learn more about Swift Concurrency, I have continuously tried to improve the codebase for upcoming Swift 6 support with complete Swift concurrency checking enabled on the codebase. 
 
 As part of these efforts, the codebase has moved away from callback functions to using `async/await` for all operations. This impacts your code in 2 ways: 
 
-1. Your `WendyTaskRunner` is now using `async/await` instead of a callback function: 
+1. Your `WendyTaskRunner` is now using `async/await` instead of a callback function:
 ```swift
 // Before: 
 class MyWendyTaskRunner: WendyTaskRunner {
@@ -169,15 +169,17 @@ class MyWendyTaskRunner: WendyTaskRunner {
 }
 ```
 
-2. The public functions in `Wendy` that used a callback are now using `async/await`: 
+2. The public functions in `Wendy` that used a callback are now using `async/await`:
 ```swift
 // Before: 
 Wendy.shared.runTasks {}
 Wendy.shared.runTask("") {}
+Wendy.shared.clear()
 
 // Now: 
 await Wendy.shared.runTasks()
 await Wendy.shared.runTask("")
+await Wendy.shared.clear()
 ```
 
 ### Curious why this change was made?

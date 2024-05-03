@@ -273,7 +273,6 @@ class WendyIntegrationTests: TestClass {
 
         await Wendy.shared.clear()
 
-        sleep(1) // give wendy time to run all scheduled tasks that do the deleting.
         let runTasksResults = await runAllTasks()
         XCTAssertEqual(runTasksResults.numberTasksRun, 0)
     }
