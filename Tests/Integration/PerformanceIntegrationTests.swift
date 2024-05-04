@@ -47,18 +47,24 @@ class PerformanceIntegrationTests: TestClass {
         _ = Wendy.shared.addTask(tag: "task3", data: "dataId")
 
         let expectToRunTask1 = expectation(description: "expect to run task 1")
-        let expectToRunTask2 = expectation(description: "expect to run task 2")
         let expectToRunTask3 = expectation(description: "expect to run task 3")
-        let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
         let expectToFinishRunningSingleTask = expectation(description: "expect to finish running single task")
+        let expectToRunTask2 = expectation(description: "expect to run task 2")
+        let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
 
         taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
 
             // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
             if tagOfTaskWeAreRunning == "task1" {
-                Wendy.shared.runTask(3) { _ in
+                // Start a new task so the closure can finish executing. Deadlock happens if we dont do this.
+                // To avoid flakiness, we need to increase changes of Task executing before the closure finishes and task 2 starts before task 3.
+                // We increase changes of Task executing by setting the priority high and yielding the closure's Task.
+                Task(priority: .high) {
+                    _ = await Wendy.shared.runTask(3)
                     expectToFinishRunningSingleTask.fulfill()
                 }
+
+                await Task.yield()
             }
 
             if tagOfTaskWeAreRunning == "task1" {
@@ -70,9 +76,8 @@ class PerformanceIntegrationTests: TestClass {
             }
         }
 
-        Wendy.shared.runTasks { _ in
-            expectToFinishRuningAllTasks.fulfill()
-        }
+        await Wendy.shared.runTasks()
+        expectToFinishRuningAllTasks.fulfill()
 
         await fulfillment(of: [
             expectToRunTask1,
@@ -83,7 +88,7 @@ class PerformanceIntegrationTests: TestClass {
         ], timeout: 1.0, enforceOrder: true)
     }
 
-    func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() {
+    func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() async {
         let expectToFinishRunningAllTasks = expectation(description: "expect to finish running all tasks")
         let expectToIgnoreRequestToRunAllTasks = expectation(description: "expect to ignore request to run all tasks")
 
@@ -93,17 +98,17 @@ class PerformanceIntegrationTests: TestClass {
         taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
             // When we begin running all tasks, ask Wendy to run all tasks again. The request should be ignored so it should complete fast.
             if tagOfTaskWeAreRunning == "task1" {
-                Wendy.shared.runTasks { _ in
+                Task {
+                    _ = await Wendy.shared.runTasks()
                     expectToIgnoreRequestToRunAllTasks.fulfill()
                 }
             }
         }
 
-        Wendy.shared.runTasks { _ in
-            expectToFinishRunningAllTasks.fulfill()
-        }
+        await Wendy.shared.runTasks()
+        expectToFinishRunningAllTasks.fulfill()
 
-        wait(for: [
+        await fulfillment(of: [
             expectToIgnoreRequestToRunAllTasks,
             expectToFinishRunningAllTasks
         ], timeout: 1.0, enforceOrder: true)

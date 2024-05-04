@@ -6,6 +6,12 @@ open class TestClass: XCTestCase {
     override open func setUp() {
         super.setUp()
 
+        performCommonSetup()
+    }
+}
+
+extension XCTestCase {
+    func performCommonSetup() {
         deleteKeyValueStore()
         deleteAllFileSystemFiles()
 
@@ -15,13 +21,11 @@ open class TestClass: XCTestCase {
         WendyConfig.automaticallyRunTasks = false
     }
 
-    public func resetDependencies() {
+    func resetDependencies() {
+        // reset all dependencies
         DIGraph.shared.reset()
-        Wendy.reset()
     }
-}
 
-extension TestClass {
     @discardableResult
     func runAllTasks() async -> PendingTasksRunnerResult {
         await Wendy.shared.runTasks()

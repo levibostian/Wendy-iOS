@@ -56,14 +56,14 @@ DIGraph().reset()
     {% call addPropertyWrappers type %}
     {{ type.accessLevel }} var {{ class|lowerFirstLetter }}: {{ class }} {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: {{ class }}.self)] as? {{ class }} {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        
+        if let overriddenInstance = existingOverrides.overrides[String(describing: {{ class }}.self)] as? {{ class }} {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
         {% if isCustom %}
         return self.custom{{ class }}
-        {% elif isSingleton %}
-        return self.shared{{ class }}
         {% else %}
         return self.new{{ class }}
         {% endif %}    
@@ -78,11 +78,24 @@ extension DIGraph {
 
     {% for dep in types.all where dep|annotated:"InjectRegister" %}
     {% set class %}{{ dep.annotations["InjectRegister"] }}{% endset %}    
+    {% if dep.implements.Singleton %}
+        _ = self.shared{{ class }}
+    {% else %}        
         _ = self.{{ class|lowerFirstLetter }}
+    {% endif %}
         countDependenciesResolved += 1
 
     {% endfor %}
         return countDependenciesResolved    
+    }
+
+    // Convenient function that resets the state of all singletons in the codebase. Use in tests. 
+    internal func resetSingletons() {
+        {% for dep in types.implementing.Singleton %}
+        {% if dep.name != "DIGraph" %}
+        {{ dep.name }}.shared.reset()
+        {% endif %}
+        {% endfor %}
     }
 
     {% for dep in types.all where dep|annotated:"InjectRegister" %}
@@ -91,27 +104,16 @@ extension DIGraph {
     {% if dep|annotated:"InjectCustom" %}
     // {{ class }} (custom. property getter provided via extension)
     {% call overrideGetterProperty class dep true false %}
-    {% elif dep|annotated:"InjectSingleton" %}
+    {% elif dep.implements.Singleton %}
     // {{ class }} (singleton)
-    {% call overrideGetterProperty class dep false true %}
-    {% call addPropertyWrappers dep %}
-    private var shared{{ class }}: {{ class }} {
-        mutex.lock()
-        
-        if let existingSingleton = singletons[String(describing: {{ class }}.self)] as? {{ class }} {
-            mutex.unlock()
-            return existingSingleton
+    // Singletons cannot be injected in the constructor of an object. A property getter is the preferred pattern to use to get a singleton instance in your class:
+    // `var foo: Foo { inject.sharedFoo }`
+    // This is to avoid bugs. If you inject in the constructor, you will not get the singleton instance, you will get a copy of the singleton instance.
+    {{ type.accessLevel }} var shared{{ class }}: {{ class }} {   
+        if let overriddenInstance = dataStore.getDataSnapshot().overrides[String(describing: {{ class }}.self)] as? {{ class }} {
+            return overriddenInstance
         }
-        
-        let newInstance = new{{ class }}
-        singletons[String(describing: {{ class }}.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    {% call addPropertyWrappers dep %}
-    private var new{{ class }}: {{ class }} {
-        return {{ dep.name }}({% for initializer in dep.initializers %}{% if not initializer.isConvenienceInitializer %}{% for param in initializer.parameters %}{{ param.name }}: self.{{ param.typeName|lowerFirstLetter }}{% if not forloop.last%}, {% endif %}{% endfor %}{% endif %}{% endfor %})
+        return {{ class }}.shared
     }
     {% else %}
     // {{ class }}
@@ -123,7 +125,9 @@ extension DIGraph {
     {% endif %}
     // Call this function to override the instance of {{ class }} in the graph.
     internal func override{{ class }}(_ instance: {{ class }}) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
     {% endfor %} 
 }

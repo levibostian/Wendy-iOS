@@ -15,7 +15,7 @@ Android developer? [Check out the Android version of Wendy!][4]
 
 Wendy is under active development with lots of changes happening. **Wendy is usable today and ready to install in your app**. No matter if you're using Wendy already or not, expect...
 
-* Frequent major version bumps (breaking changes) that may require code migrations in your code base. Luckily, each major version release contains up-to-date [migration documentation](https://github.com/levibostian/Wendy-iOS/blob/main/MIGRATION.md). 
+* Frequent major version bumps (breaking changes) that may require code migrations in your code base. Luckily, each major version release contains up-to-date [migration documentation][5]. 
 * Best practices documentation out-of-date, but planned. The public API is kept up-to-date (this README) but not much guidance on suggested ways to use the API. 
 
 The main focus at the moment is building and shipping major improvements to Wendy to give it the core feature-set to make it a no-brainer to use in an app. Then, the focus will transition over to less frequent major version bumps, best practice documentation, etc. 
@@ -24,9 +24,9 @@ This project holds a special place in my heart. I've enjoyed working on it for y
 
 My favorite part about writing code is hearing how others experience what I build. Send a message if you find Wendy interesting. I would love to hear it!
 
-- Levi 
+- Levi
 
-See the [latest announcement][5] to stay updated on the latest set of changes coming to Wendy.
+See the [latest announcement][6] to stay updated on the latest set of changes coming to Wendy.
 
 ## What is Wendy?
 
@@ -48,13 +48,13 @@ Wendy currently has the following functionality:
 
 # Install
 
-Wendy-iOS is available through [CocoaPods][6]. To install it, simply add the following line to your Podfile:
+Wendy-iOS is available through [CocoaPods][7]. To install it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'Wendy', '~> version-here'
 ```
 
-(replace `version-here` with [![Version][image-6]][7])
+(replace `version-here` with [![Version][image-6]][8])
 
 # Getting started
 
@@ -89,12 +89,6 @@ To finish initialization, we need to create a task runner subclass. Create a new
 import Wendy
 
 class MyWendyTaskRunner: WendyTaskRunner {
-    func runTask(tag: String, data: Data?, complete: @escaping (Error?) -> Void) {
-    }
-}
-
-// Or, use the Swift Concurrency version: 
-class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
     func runTask(tag: String, data: Data?) async throws {
     }
 }
@@ -109,8 +103,8 @@ Now that the SDK is initialized, it’s time to sync some data to our network AP
 In our Grocery List app example, we want to allow users to create new grocery items. Every time that a user creates a new grocery list item, we don't want to show them a progress bar saying, "Saving grocery list item..." while we perform an API call. We want to be able to *instantly* save that grocery list item and sync it with the cloud storage later so our user can get on with their life (can't you just see your App Store reviews going up, up, up right now? ⭐⭐⭐⭐⭐).
 
 There are 2 steps to setting up Wendy for syncing data. 
-1. [Adding tasks to Wendy][8]
-2. [Writing the network code to perform the sync][9]
+1. [Adding tasks to Wendy][9]
+2. [Writing the network code to perform the sync][10]
 
 Let’s get into each of these steps. 
 
@@ -143,7 +137,7 @@ Let’s look at some example code that runs the grocery store list item.
 ```swift
 import Wendy
 
-class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
+class MyWendyTaskRunner: WendyTaskRunner {
     func runTask(tag: String, data: Data?) async throws {
       switch tag {
         case "AddGroceryListItem":
@@ -211,7 +205,7 @@ Besides listening for status changes of individual tasks, you can also listen to
 WendyConfig.addTaskRunnerListener(listener: listener)
 ```
 
-It’s suggested to view the [Best practices doc][10] to learn more about making a great experience in your offline-first app. 
+It’s suggested to view the [Best practices doc][11] to learn more about making a great experience in your offline-first app. 
 
 ## Clear data
 
@@ -247,10 +241,6 @@ Coming soon!
 
 You may be able to do this already, but it has not been tested. A good place to start would be clear Wendy before each test and use it like normal. See where that takes you. Report issues as you encounter them. 
 
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the `Example/` directory first. Then, open XCode and run the project.
-
 ## Documentation
 
 Wendy currently *does not* have full code documentation. It is planned to have full documentation generated via jazzy in the near future.
@@ -258,7 +248,7 @@ Wendy currently *does not* have full code documentation. It is planned to have f
 Until then, the best thing to do is:
 
 * Read this README on how to get started.
-* Wendy-Android has [full documentation created for it][11]. If you are wondering how a specific function works, you may be able to learn there. *Warning: Wendy-Android and Wendy-iOS are kept up to date between one another as soon as possible. When a bug is fixed on one, the other gets the same bug fixed on it as well. However, it may take a day or two for this sync to happen by the contributors. With that in mind, the documentation might be a tad bit off between the libraries.*
+* Wendy-Android has [full documentation created for it][12]. If you are wondering how a specific function works, you may be able to learn there. *Warning: Wendy-Android and Wendy-iOS are kept up to date between one another as soon as possible. When a bug is fixed on one, the other gets the same bug fixed on it as well. However, it may take a day or two for this sync to happen by the contributors. With that in mind, the documentation might be a tad bit off between the libraries.*
 
 ## Configure Wendy
 
@@ -292,7 +282,7 @@ WendyConfig.debug = true
 
 ## Maintainers
 
-* Levi Bostian - [GitHub][12]
+* Levi Bostian - [GitHub][13]
 
 ![Levi Bostian image][image-7]
 
@@ -304,17 +294,17 @@ Wendy-iOS is available under the MIT license. See the LICENSE file for more info
 
 Wendy is open for pull requests. 
 
-**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][13] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
+**Want to add features to Wendy?** Before you decide to take a bunch of time and add functionality to the library, please, [create an issue][14] stating what you wish to add. This might save you some time in case your purpose does not fit well in the use cases of Wendy.
 
 Follow the steps below to compile the Wendy project on your machine for contributing!
 
 * Install these development tools:
 
-[mint][14] used to run other development CLI commands such as linter/formatter. 
-[taskfile][15] an alternative to `Makefile` to run commands. 
-[lefthook](https://github.com/evilmartians/lefthook/blob/HEAD/docs/install.md) for git hooks. 
+[mint][15] used to run other development CLI commands such as linter/formatter. 
+[taskfile][16] an alternative to `Makefile` to run commands. 
+[lefthook][17] for git hooks. 
 
-* Install git hooks: 
+* Install git hooks:
 
 `lefthook install`
 
@@ -326,25 +316,27 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 # Credits
 
-Header photo by [Allef Vinicius][16] on [Unsplash][17]
+Header photo by [Allef Vinicius][18] on [Unsplash][19]
 
 [1]:	http://cocoapods.org/pods/Wendy
 [2]:	http://cocoapods.org/pods/Wendy
 [3]:	http://cocoapods.org/pods/Wendy
 [4]:	https://github.com/levibostian/wendy-android
-[5]:	https://github.com/levibostian/Wendy-iOS/discussions/categories/announcements
-[6]:	http://cocoapods.org
-[7]:	http://cocoapods.org/pods/Wendy
-[8]:	#adding-tasks-to-wendy
-[9]:	#writing-the-network-code-to-perform-the-sync
-[10]:	BEST_PRACTICES.md
-[11]:	https://levibostian.github.io/Wendy-Android/wendy/
-[12]:	https://github.com/levibostian
-[13]:	https://github.com/levibostian/Wendy-iOS/issues/new
-[14]:	https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing
-[15]:	https://taskfile.dev/installation/
-[16]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
-[17]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+[5]:	https://github.com/levibostian/Wendy-iOS/blob/main/MIGRATION.md
+[6]:	https://github.com/levibostian/Wendy-iOS/discussions/categories/announcements
+[7]:	http://cocoapods.org
+[8]:	http://cocoapods.org/pods/Wendy
+[9]:	#adding-tasks-to-wendy
+[10]:	#writing-the-network-code-to-perform-the-sync
+[11]:	BEST_PRACTICES.md
+[12]:	https://levibostian.github.io/Wendy-Android/wendy/
+[13]:	https://github.com/levibostian
+[14]:	https://github.com/levibostian/Wendy-iOS/issues/new
+[15]:	https://github.com/yonaskolb/Mint?tab=readme-ov-file#installing
+[16]:	https://taskfile.dev/installation/
+[17]:	https://github.com/evilmartians/lefthook/blob/HEAD/docs/install.md
+[18]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
+[19]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
 
 [image-1]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
 [image-2]:	https://img.shields.io/cocoapods/l/Wendy.svg?style=flat
