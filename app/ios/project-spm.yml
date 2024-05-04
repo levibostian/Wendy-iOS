@@ -3,8 +3,8 @@ include:
 
 packages:
   Wendy:
-    url: https://github.com/levibostian/Wendy-iOS.git
-    branch: latest # To verify that the latest changes are always compilable. Dont lock to a specific version. 
+    url: https://github.com/levibostian/Wendy-iOS.git 
+    path: ../../
 targets:
   App:
     dependencies:      
