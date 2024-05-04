@@ -40,23 +40,24 @@ public final class PendingTasksRunner: Sendable, Singleton {
 
         await runTaskSemaphore.wait()
 
-        var runTaskResult: TaskRunResult!
+        // Allow the runner to be cancelled between executing tasks.
+        if Task.isCancelled {
+            runTaskSemaphore.signal()
+            return .cancelled
+        }
 
         guard let taskToRun = pendingTasksManager.getTaskByTaskId(taskId) else {
-            runTaskResult = TaskRunResult.cancelled
-
             runTaskSemaphore.signal()
-            return runTaskResult
+            return .cancelled
         }
 
         if !PendingTasksUtil.isTaskValid(taskId: taskId) {
             LogUtil.d("Task: \(taskToRun.describe()) is cancelled. Deleting the task.")
             pendingTasksManager.delete(taskId: taskId)
-            runTaskResult = TaskRunResult.cancelled
             LogUtil.logTaskComplete(taskToRun, successful: true, cancelled: true)
 
             runTaskSemaphore.signal()
-            return runTaskResult
+            return .cancelled
         }
 
         dataStore.updateDataBlock { data in
