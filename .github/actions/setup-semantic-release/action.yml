@@ -9,10 +9,11 @@ runs:
     with:
       node-version: 'lts/*'
 
+  # Using conventional v7 to fix bug https://github.com/semantic-release/release-notes-generator/issues/633
   - name: Install semantic-release plugins that we need for deployment of this project 
     run: >
-      npm install 
-      conventional-changelog-conventionalcommits 
+      npm install       
+      conventional-changelog-conventionalcommits@7
       @semantic-release/github 
       @semantic-release/git 
       semantic-release-recovery@beta
