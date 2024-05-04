@@ -56,10 +56,15 @@ class PerformanceIntegrationTests: TestClass {
 
             // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
             if tagOfTaskWeAreRunning == "task1" {
-                Task {
+                // Start a new task so the closure can finish executing. Deadlock happens if we dont do this.
+                // To avoid flakiness, we need to increase changes of Task executing before the closure finishes and task 2 starts before task 3.
+                // We increase changes of Task executing by setting the priority high and yielding the closure's Task.
+                Task(priority: .high) {
                     _ = await Wendy.shared.runTask(3)
                     expectToFinishRunningSingleTask.fulfill()
                 }
+
+                await Task.yield()
             }
 
             if tagOfTaskWeAreRunning == "task1" {
