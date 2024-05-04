@@ -1,4 +1,4 @@
-// Generated using Sourcery 2.1.7 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.2.3 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable all
 
@@ -72,16 +72,30 @@ extension DIGraph {
         _ = self.pendingTasksManager
         countDependenciesResolved += 1
 
-        _ = self.pendingTasksRunner
+        _ = self.sharedPendingTasksRunner
         countDependenciesResolved += 1
 
         return countDependenciesResolved    
     }
 
+    // Convenient function that resets the state of all singletons in the codebase. Use in tests. 
+    internal func resetSingletons() {
+        DIGraph.DataStore.shared.reset()
+        FileSystemQueueImpl.DataStore.shared.reset()
+        Mutex.Store.shared.reset()
+        PendingTasksManager.DataStore.shared.reset()
+        PendingTasksRunner.shared.reset()
+        PendingTasksRunner.DataStore.shared.reset()
+        Wendy.shared.reset()
+        Wendy.DataStore.shared.reset()
+        WendyConfig.DataStore.shared.reset()
+    }
+
     // FileSystemStore
     internal var fileSystemStore: FileSystemStore {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: FileSystemStore.self)] as? FileSystemStore {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: FileSystemStore.self)] as? FileSystemStore {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
@@ -92,96 +106,72 @@ extension DIGraph {
     }
     // Call this function to override the instance of FileSystemStore in the graph.
     internal func overrideFileSystemStore(_ instance: FileSystemStore) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
-    // FileSystemQueue (singleton)
+    // FileSystemQueue
     internal var fileSystemQueue: FileSystemQueue {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: FileSystemQueue.self)] as? FileSystemQueue {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: FileSystemQueue.self)] as? FileSystemQueue {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
-        return self.sharedFileSystemQueue
+        return self.newFileSystemQueue
     }
-    private var sharedFileSystemQueue: FileSystemQueue {
-        mutex.lock()
-        if let existingSingleton = singletons[String(describing: FileSystemQueue.self)] as? FileSystemQueue {
-            mutex.unlock()
-            return existingSingleton
-        }
-        let newInstance = newFileSystemQueue
-        singletons[String(describing: FileSystemQueue.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    private var newFileSystemQueue: FileSystemQueue {
+    private var newFileSystemQueue: FileSystemQueue {    
         return FileSystemQueueImpl(fileStore: self.fileSystemStore, jsonAdapter: self.jsonAdapter)
     }
     // Call this function to override the instance of FileSystemQueue in the graph.
     internal func overrideFileSystemQueue(_ instance: FileSystemQueue) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
-    // QueueReader (singleton)
+    // QueueReader
     public var queueReader: QueueReader {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: QueueReader.self)] as? QueueReader {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: QueueReader.self)] as? QueueReader {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
-        return self.sharedQueueReader
+        return self.newQueueReader
     }
-    private var sharedQueueReader: QueueReader {
-        mutex.lock()
-        if let existingSingleton = singletons[String(describing: QueueReader.self)] as? QueueReader {
-            mutex.unlock()
-            return existingSingleton
-        }
-        let newInstance = newQueueReader
-        singletons[String(describing: QueueReader.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    private var newQueueReader: QueueReader {
+    private var newQueueReader: QueueReader {    
         return FileSystemQueueReader(queue: self.fileSystemQueue)
     }
     // Call this function to override the instance of QueueReader in the graph.
     internal func overrideQueueReader(_ instance: QueueReader) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
-    // QueueWriter (singleton)
+    // QueueWriter
     public var queueWriter: QueueWriter {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: QueueWriter.self)] as? QueueWriter {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: QueueWriter.self)] as? QueueWriter {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
-        return self.sharedQueueWriter
+        return self.newQueueWriter
     }
-    private var sharedQueueWriter: QueueWriter {
-        mutex.lock()
-        if let existingSingleton = singletons[String(describing: QueueWriter.self)] as? QueueWriter {
-            mutex.unlock()
-            return existingSingleton
-        }
-        let newInstance = newQueueWriter
-        singletons[String(describing: QueueWriter.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    private var newQueueWriter: QueueWriter {
+    private var newQueueWriter: QueueWriter {    
         return FileSystemQueueWriter(queue: self.fileSystemQueue, jsonAdapter: self.jsonAdapter)
     }
     // Call this function to override the instance of QueueWriter in the graph.
     internal func overrideQueueWriter(_ instance: QueueWriter) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
     // JsonAdapter
     internal var jsonAdapter: JsonAdapter {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: JsonAdapter.self)] as? JsonAdapter {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: JsonAdapter.self)] as? JsonAdapter {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
@@ -192,63 +182,44 @@ extension DIGraph {
     }
     // Call this function to override the instance of JsonAdapter in the graph.
     internal func overrideJsonAdapter(_ instance: JsonAdapter) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
-    // PendingTasksManager (singleton)
+    // PendingTasksManager
     internal var pendingTasksManager: PendingTasksManager {  
         // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: PendingTasksManager.self)] as? PendingTasksManager {
+        let existingOverrides = self.dataStore.getDataSnapshot()
+        if let overriddenInstance = existingOverrides.overrides[String(describing: PendingTasksManager.self)] as? PendingTasksManager {
             return overriddenInstance
         }
         // If no override, get the instance from the graph.
-        return self.sharedPendingTasksManager
+        return self.newPendingTasksManager
     }
-    private var sharedPendingTasksManager: PendingTasksManager {
-        mutex.lock()
-        if let existingSingleton = singletons[String(describing: PendingTasksManager.self)] as? PendingTasksManager {
-            mutex.unlock()
-            return existingSingleton
-        }
-        let newInstance = newPendingTasksManager
-        singletons[String(describing: PendingTasksManager.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    private var newPendingTasksManager: PendingTasksManager {
-        return PendingTasksManager(queueWriter: self.queueWriter, queueReader: self.queueReader)
+    private var newPendingTasksManager: PendingTasksManager {    
+        return PendingTasksManager(queueWriter: self.queueWriter)
     }
     // Call this function to override the instance of PendingTasksManager in the graph.
     internal func overridePendingTasksManager(_ instance: PendingTasksManager) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
     // PendingTasksRunner (singleton)
-    public var pendingTasksRunner: PendingTasksRunner {  
-        // First, see if there is an override for this instance.
-        if let overriddenInstance = overrides[String(describing: PendingTasksRunner.self)] as? PendingTasksRunner {
+    // Singletons cannot be injected in the constructor of an object. A property getter is the preferred pattern to use to get a singleton instance in your class:
+    // `var foo: Foo { inject.sharedFoo }`
+    // This is to avoid bugs. If you inject in the constructor, you will not get the singleton instance, you will get a copy of the singleton instance.
+     var sharedPendingTasksRunner: PendingTasksRunner {   
+        if let overriddenInstance = dataStore.getDataSnapshot().overrides[String(describing: PendingTasksRunner.self)] as? PendingTasksRunner {
             return overriddenInstance
         }
-        // If no override, get the instance from the graph.
-        return self.sharedPendingTasksRunner
-    }
-    private var sharedPendingTasksRunner: PendingTasksRunner {
-        mutex.lock()
-        if let existingSingleton = singletons[String(describing: PendingTasksRunner.self)] as? PendingTasksRunner {
-            mutex.unlock()
-            return existingSingleton
-        }
-        let newInstance = newPendingTasksRunner
-        singletons[String(describing: PendingTasksRunner.self)] = newInstance
-        mutex.unlock()
-
-        return newInstance
-    }
-    private var newPendingTasksRunner: PendingTasksRunner {
-        return PendingTasksRunner(pendingTasksManager: self.pendingTasksManager)
+        return PendingTasksRunner.shared
     }
     // Call this function to override the instance of PendingTasksRunner in the graph.
     internal func overridePendingTasksRunner(_ instance: PendingTasksRunner) {
-        self.overrides[String(describing: instance)] = instance
+        self.dataStore.updateDataBlock { data in
+            data.overrides[String(describing: instance)] = instance
+        }
     }
 }
 
