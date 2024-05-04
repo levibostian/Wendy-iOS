@@ -56,7 +56,8 @@ class PerformanceIntegrationTests: TestClass {
 
             // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
             if tagOfTaskWeAreRunning == "task1" {
-                Wendy.shared.runTask(3) { _ in
+                Task {
+                    _ = await Wendy.shared.runTask(3)
                     expectToFinishRunningSingleTask.fulfill()
                 }
             }
@@ -70,9 +71,8 @@ class PerformanceIntegrationTests: TestClass {
             }
         }
 
-        Wendy.shared.runTasks { _ in
-            expectToFinishRuningAllTasks.fulfill()
-        }
+        await Wendy.shared.runTasks()
+        expectToFinishRuningAllTasks.fulfill()
 
         await fulfillment(of: [
             expectToRunTask1,
@@ -83,7 +83,7 @@ class PerformanceIntegrationTests: TestClass {
         ], timeout: 1.0, enforceOrder: true)
     }
 
-    func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() {
+    func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() async {
         let expectToFinishRunningAllTasks = expectation(description: "expect to finish running all tasks")
         let expectToIgnoreRequestToRunAllTasks = expectation(description: "expect to ignore request to run all tasks")
 
@@ -93,17 +93,17 @@ class PerformanceIntegrationTests: TestClass {
         taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
             // When we begin running all tasks, ask Wendy to run all tasks again. The request should be ignored so it should complete fast.
             if tagOfTaskWeAreRunning == "task1" {
-                Wendy.shared.runTasks { _ in
+                Task {
+                    _ = await Wendy.shared.runTasks()
                     expectToIgnoreRequestToRunAllTasks.fulfill()
                 }
             }
         }
 
-        Wendy.shared.runTasks { _ in
-            expectToFinishRunningAllTasks.fulfill()
-        }
+        await Wendy.shared.runTasks()
+        expectToFinishRunningAllTasks.fulfill()
 
-        wait(for: [
+        await fulfillment(of: [
             expectToIgnoreRequestToRunAllTasks,
             expectToFinishRunningAllTasks
         ], timeout: 1.0, enforceOrder: true)

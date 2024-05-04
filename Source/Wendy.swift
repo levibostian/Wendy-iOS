@@ -97,7 +97,9 @@ public final class Wendy: Sendable, Singleton {
         }
 
         LogUtil.d("Wendy is configured to automatically run tasks. Wendy will now attempt to run newly added task: \(task.describe())")
-        runTask(task.taskId!, onComplete: nil)
+        Task {
+            _ = await runTask(task.taskId!)
+        }
 
         return true
     }
@@ -112,27 +114,11 @@ public final class Wendy: Sendable, Singleton {
         return result
     }
 
-    public func runTask(_ taskId: Double, onComplete: (@Sendable (TaskRunResult) -> Void)?) {
-        Task {
-            let result = await self.runTask(taskId)
-
-            onComplete?(result)
-        }
-    }
-
     @discardableResult
     public func runTasks(filter: RunAllTasksFilter? = nil) async -> PendingTasksRunnerResult {
         let result = await pendingTasksRunner.runAllTasks(filter: filter)
 
         return result
-    }
-
-    public func runTasks(filter: RunAllTasksFilter? = nil, onComplete: (@Sendable (PendingTasksRunnerResult) -> Void)?) {
-        Task {
-            let result = await self.runTasks(filter: filter)
-
-            onComplete?(result)
-        }
     }
 
     public final func getAllTasks() -> [PendingTask] {
@@ -144,15 +130,15 @@ public final class Wendy: Sendable, Singleton {
 
      Note: If a task is currently running when clear() is called, that running task will be finish executing but will not run again in the future as it has been cancelled.
      */
-    public final func clear() {
+    public final func clear() async {
         /// It's not possible to stop a dispatch queue of tasks so there is no way to stop the currently running task runner.
         /// This solution of using UserDefaults to set a threshold solves that problem while also leaving Wendy untouched to continue running as usual. If we deleted all data, as Android's Wendy does, we would have potential issues with tasks that are still in the queue but core data and userdefaults being deleted causing potential crashes and IDs being misaligned.
         PendingTasksUtil.setValidPendingTasksIdThreshold()
         LogUtil.d("Wendy tasks set as cancelled. Currently scheduled Wendy tasks will all skip running.")
         // Run all tasks (including manually run tasks) as they are all cancelled so it allows them all to be cleared fro the queue now and listeners can get notified.
-        for task in getAllTasks() {
-            runTask(task.taskId!, onComplete: nil)
-        }
+
+        // We want to make it so the next time the developer calls runTasks(), 0 tasks get run. To do that, you must run the queue to have all tasks deleted after they are marked as invalid.
+        await runTasks()
     }
 
     public func addQueueReader(_ reader: QueueReader) {
@@ -165,19 +151,6 @@ public final class Wendy: Sendable, Singleton {
 
     final class DataStore: InMemoryDataStore<InitializedData>, Singleton {
         static let shared = DataStore(data: .init())
-    }
-}
-
-// Public API functions for backwards compatibility.
-public extension Wendy {
-    @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
-    func addTask(tag: String, dataId: String?, groupId: String? = nil) -> Double {
-        addTask(tag: tag, data: dataId, groupId: groupId)
-    }
-
-    @available(*, deprecated, message: "Use addTask(tag:data:groupId:) instead.")
-    func addTask<Tag: RawRepresentable>(tag: Tag, dataId: String?, groupId: String? = nil) -> Double where Tag.RawValue == String {
-        addTask(tag: tag.rawValue, data: dataId, groupId: groupId)
     }
 }
 
