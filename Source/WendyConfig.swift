@@ -31,11 +31,11 @@ public final class WendyConfig {
         set { setConfig { $0.taskStatusListeners = newValue } }
     }
 
-    class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
+    public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
         setConfig { $0.taskRunnerListeners.append(WeakReferenceTaskRunnerListener(listener: listener)) }
     }
 
-    class func addTaskStatusListenerForTask(_ taskId: Double, listener: PendingTaskStatusListener) {
+    public class func addTaskStatusListenerForTask(_ taskId: Double, listener: PendingTaskStatusListener) {
         setConfig { $0.taskStatusListeners.append(TaskStatusListener(taskId: taskId, weakRefListener: WeakReferencePendingTaskStatusListener(listener: listener))) }
 
         // The task runner could be running this task right now and because it takes a while potentially to run a task, I need to notify the listener here. This should be the only use case to handle here, running of a task.
