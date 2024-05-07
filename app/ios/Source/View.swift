@@ -41,7 +41,9 @@ struct ContentView: View {
             Wendy.shared.addTask(tag: WendyTasks.addGroceryListItem, data: GroceryStoreItem(price: 4, name: "Bologna"))
             Wendy.shared.addTask(tag: WendyTasks.addGroceryListItem, data: GroceryStoreItem(price: 3, name: "American cheese"))
 
-            Wendy.shared.runTasks(onComplete: nil)
+            Task {
+                await Wendy.shared.runTasks()
+            }
         }
 
         func newTaskAdded(_ task: PendingTask) {}
