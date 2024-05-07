@@ -1,7 +1,7 @@
 import Foundation
 import Wendy
 
-public class MyWendyTaskRunner: WendyTaskRunnerConcurrency {
+public class MyWendyTaskRunner: WendyTaskRunner {
     public func runTask(tag: String, data: Data?) async throws {
         // Sleep for 2 seconds to simulate a network request
         try await Task.sleep(nanoseconds: 500000000)
