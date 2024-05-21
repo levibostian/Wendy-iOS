@@ -1,6 +1,6 @@
 import Foundation
 
-public final class WendyConfig {
+public enum WendyConfig {
     static var logTag: String {
         get { getConfig.logTag }
         set { setConfig { $0.logTag = newValue } }
@@ -31,11 +31,11 @@ public final class WendyConfig {
         set { setConfig { $0.taskStatusListeners = newValue } }
     }
 
-    public class func addTaskRunnerListener(_ listener: TaskRunnerListener) {
+    public static func addTaskRunnerListener(_ listener: TaskRunnerListener) {
         setConfig { $0.taskRunnerListeners.append(WeakReferenceTaskRunnerListener(listener: listener)) }
     }
 
-    public class func addTaskStatusListenerForTask(_ taskId: Double, listener: PendingTaskStatusListener) {
+    public static func addTaskStatusListenerForTask(_ taskId: Double, listener: PendingTaskStatusListener) {
         setConfig { $0.taskStatusListeners.append(TaskStatusListener(taskId: taskId, weakRefListener: WeakReferencePendingTaskStatusListener(listener: listener))) }
 
         // The task runner could be running this task right now and because it takes a while potentially to run a task, I need to notify the listener here. This should be the only use case to handle here, running of a task.
@@ -44,7 +44,7 @@ public final class WendyConfig {
         }
     }
 
-    class func getTaskStatusListenerForTask(_ taskId: Double) -> [WeakReferencePendingTaskStatusListener] {
+    static func getTaskStatusListenerForTask(_ taskId: Double) -> [WeakReferencePendingTaskStatusListener] {
         getConfig.taskStatusListeners.filter { listener -> Bool in
             listener.taskId == taskId
         }.map { taskStatusListener -> WeakReferencePendingTaskStatusListener in
