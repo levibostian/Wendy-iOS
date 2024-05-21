@@ -13,7 +13,7 @@ public final class Wendy: Sendable, Singleton {
 
     public func reset() {}
 
-    public class func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
+    public static func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
         DataStore.shared.updateDataBlock { $0.taskRunner = taskRunner }
         WendyConfig.debug = debug
     }
