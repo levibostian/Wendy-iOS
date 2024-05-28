@@ -18,6 +18,13 @@ public final class Wendy: Sendable, Singleton {
         WendyConfig.debug = debug
     }
 
+    /**
+     Add a new task to Wendy to run later.
+
+     Wendy maintains a FIFO queue data structure of tasks. This newly added task will be added to the queue.
+
+     Wendy guarantees that tasks are saved when added. To do this, Wendy writes the task to persistant device memory synchronously on the calling thread.
+     */
     @discardableResult
     public func addTask(tag: String, data: (some Codable)?, groupId: String? = nil) -> Double {
         let addedTask = DIGraph.shared.pendingTasksManager.add(tag: tag, data: data, groupId: groupId)
@@ -104,6 +111,13 @@ public final class Wendy: Sendable, Singleton {
         return true
     }
 
+    /**
+     Given a Wendy task id (the return value of `addTask`), run the task.
+
+     Wendy runs only 1 task at a time. If a task is already running when this function is called, Wendy will wait for the other task to finish, run this given task, then return.
+
+     The codebase is trying to move away from task ids. It's suggested to use `runTasks(filter:)` instead.
+     */
     public func runTask(_ taskId: Double) async -> TaskRunResult {
         guard let _ = DIGraph.shared.pendingTasksManager.getTaskByTaskId(taskId) else {
             return .cancelled
@@ -114,6 +128,13 @@ public final class Wendy: Sendable, Singleton {
         return result
     }
 
+    /**
+     Runs all tasks that have been added to Wendy.
+
+     Wendy maintains a FIFO queue of added tasks. When this function is called, Wendy will run each task in the queue, 1 task at a time.
+
+     To be more efficient, if Wendy is already running all tasks, this function call will return when that existing run is complete.
+     */
     @discardableResult
     public func runTasks(filter: RunAllTasksFilter? = nil) async -> PendingTasksRunnerResult {
         let result = await pendingTasksRunner.runAllTasks(filter: filter)
