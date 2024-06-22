@@ -13,7 +13,7 @@ runs:
   - name: Install semantic-release plugins that we need for deployment of this project 
     run: >
       npm install       
-      conventional-changelog-conventionalcommits@7
+      conventional-changelog-conventionalcommits
       @semantic-release/github 
       @semantic-release/git 
       semantic-release-recovery@beta
