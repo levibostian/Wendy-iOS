@@ -15,7 +15,7 @@ let package = Package(name: "Wendy",
                           // https://web.archive.org/web/20220525200227/https://www.timc.dev/posts/understanding-swift-packages/
                           //
                           // Update to exact version until wrapper SDKs become part of testing pipeline.
-                          .package(url: "https://github.com/groue/Semaphore.git", from: "0.0.8")
+                          .package(url: "https://github.com/groue/Semaphore.git", from: "0.1.0")
                       ],
                       targets: [
                           .target(name: "Wendy",
