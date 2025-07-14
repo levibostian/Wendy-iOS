@@ -40,13 +40,13 @@ final class PendingTasksManager: QueueReader, QueueWriter {
         }.first
     }
 
-    public func addQueueReader(_ queueReader: QueueReader) {
+    func addQueueReader(_ queueReader: QueueReader) {
         dataStore.updateDataBlock { data in
             data.queueReaders.append(queueReader)
         }
     }
 
-    public struct Data: AutoResettable {
+    struct Data: AutoResettable {
         var queueReaders: [QueueReader] = [DIGraph.shared.queueReader]
     }
 

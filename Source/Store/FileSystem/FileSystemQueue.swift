@@ -70,7 +70,7 @@ class FileSystemQueueImpl: FileSystemQueue {
         delete(taskId)
     }
 
-    public struct Data: AutoResettable {
+    struct Data: AutoResettable {
         var hasLoadedCache = false
         var cache: [PendingTask] = []
     }

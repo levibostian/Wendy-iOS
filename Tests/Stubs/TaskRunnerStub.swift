@@ -5,7 +5,7 @@ final class TaskRunnerStub: WendyTaskRunner {
     var resultsQueue: [Result<Void?, Error>] = []
     var runTaskClosure: ((String, Data?) async throws -> Void)?
 
-    public func runTask(tag: String, data: Data?) async throws {
+    func runTask(tag: String, data: Data?) async throws {
         // there are 2 ways for stub to run a task.
 
         // First, check if there is a closure that implements the function body.
