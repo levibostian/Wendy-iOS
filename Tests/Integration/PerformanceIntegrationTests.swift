@@ -53,7 +53,6 @@ class PerformanceIntegrationTests: TestClass {
         let expectToFinishRuningAllTasks = expectation(description: "expect to finish running all tasks")
 
         taskRunnerStub.runTaskClosure = { tagOfTaskWeAreRunning, _ in
-
             // When we begin running all tasks, ask Wendy to run task 3, which means it would run it before task 2.
             if tagOfTaskWeAreRunning == "task1" {
                 // Start a new task so the closure can finish executing. Deadlock happens if we dont do this.
