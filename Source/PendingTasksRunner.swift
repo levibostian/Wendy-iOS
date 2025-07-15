@@ -23,6 +23,7 @@ public final class PendingTasksRunner: Sendable, Singleton {
 
     private let runAllTasksLock = RunAllTasksLock()
     private let runTaskSemaphore = AsyncSemaphore(value: WendyConfig.semaphoreValue)
+    private let runningGroups = RunningGroups()
 
     public func reset() {}
 
@@ -94,52 +95,193 @@ public final class PendingTasksRunner: Sendable, Singleton {
         }
     }
 
-    /**
-     Runs all tasks, allowing a filter to skip running some tasks.
+    /// Actor to manage scheduling state for group and ungrouped tasks in a concurrency-safe way.
+    final actor Scheduler {
+        typealias GroupID = String
+        typealias TaskIndex = Int
+        private var groupNextIndex = [GroupID: Int]()
+        private var ungroupedNextIndex = 0
+        private var scheduled = Set<TaskIndex>()
+        let groupTasks: [GroupID: [TaskIndex]]
+        let ungroupedTasks: [TaskIndex]
+        init(groupTasks: [GroupID: [TaskIndex]], ungroupedTasks: [TaskIndex]) {
+            self.groupTasks = groupTasks
+            self.ungroupedTasks = ungroupedTasks
+        }
+        /// Returns the next unscheduled task index for a group, or nil if done.
+        func nextGroupTaskIndex(_ groupId: GroupID) -> TaskIndex? {
+            let idx = groupNextIndex[groupId, default: 0]
+            guard let tasks = groupTasks[groupId], idx < tasks.count else { return nil }
+            return tasks[idx]
+        }
+        /// Advances the group index after a task completes.
+        func advanceGroup(_ groupId: GroupID) {
+            groupNextIndex[groupId, default: 0] += 1
+        }
+        /// Returns the next unscheduled ungrouped task index, or nil if done.
+        func nextUngroupedTaskIndex() -> TaskIndex? {
+            guard ungroupedNextIndex < ungroupedTasks.count else { return nil }
+            return ungroupedTasks[ungroupedNextIndex]
+        }
+        /// Advances the ungrouped index after a task completes.
+        func advanceUngrouped() {
+            ungroupedNextIndex += 1
+        }
+        /// Marks a task index as scheduled.
+        func markScheduled(_ idx: TaskIndex) {
+            scheduled.insert(idx)
+        }
+        /// Returns true if a task index has already been scheduled.
+        func isScheduled(_ idx: TaskIndex) -> Bool {
+            scheduled.contains(idx)
+        }
+    }
 
-     Guarantees:
-     * Runs on a background thread.
-     * Runs all tasks in a serial way, in order.
-     * Only 1 runner is running at a time. If a runner is already running, this request will be ignored and returned instantly.
-     */
+    /// Gathers all tasks to run, in order, applying the filter.
+    private func gatherTasks(filter: RunAllTasksFilter?) -> [PendingTask] {
+        var lastSuccessfulOrFailedTaskId: Double = 0
+        var allTasks: [PendingTask] = []
+        while let nextTask = pendingTasksManager.getNextTaskToRun(lastSuccessfulOrFailedTaskId, filter: filter) {
+            lastSuccessfulOrFailedTaskId = nextTask.taskId!
+            allTasks.append(nextTask)
+        }
+        return allTasks
+    }
+
+    /// Builds group and ungrouped task indices from the list of tasks.
+    private func buildTaskIndices(tasks: [PendingTask]) -> ([Scheduler.GroupID: [Scheduler.TaskIndex]], [Scheduler.TaskIndex]) {
+        let groupTasks = tasks.enumerated().reduce(into: [Scheduler.GroupID: [Scheduler.TaskIndex]]()) { dict, pair in
+            let (idx, task) = pair
+            if let groupId = task.groupId {
+                dict[groupId, default: []].append(idx)
+            }
+        }
+        let ungroupedTasks = tasks.enumerated().compactMap { (idx, task) in task.groupId == nil ? idx : nil }
+        return (groupTasks, ungroupedTasks)
+    }
+
+    /// Schedules and runs all tasks using the provided indices and scheduler.
+    private func scheduleAndRunTasks(
+        allTasks: [PendingTask],
+        groupTasks: [Scheduler.GroupID: [Scheduler.TaskIndex]],
+        ungroupedTasks: [Scheduler.TaskIndex],
+        scheduler: Scheduler,
+        state: TaskSchedulerState,
+        semaphore: AsyncSemaphore,
+        failedTasksGroups: FailedGroups,
+        runAllTasksResultBox: RunAllTasksResultBox
+    ) async {
+        await withTaskGroup(of: (Scheduler.GroupID?, Scheduler.TaskIndex?).self) { group in
+            // Schedule the first task for each group
+            for groupId in groupTasks.keys {
+                if let idx = await scheduler.nextGroupTaskIndex(groupId) {
+                    await scheduler.markScheduled(idx)
+                    group.addTask { (groupId, idx) }
+                }
+            }
+            // Schedule the first ungrouped tasks up to the semaphore limit
+            for _ in 0..<min(WendyConfig.semaphoreValue, ungroupedTasks.count) {
+                if let idx = await scheduler.nextUngroupedTaskIndex() {
+                    await scheduler.markScheduled(idx)
+                    group.addTask { (nil, idx) }
+                }
+            }
+
+            // As each task completes, schedule the next eligible one
+            for await (groupId, idx) in group {
+                guard let idx = idx else { continue }
+                await semaphore.wait()
+                let task = await state.getTask(at: idx)
+                let (_, result) = await self.runGroupAwareTask(task, failedTasksGroups: failedTasksGroups)
+                await runAllTasksResultBox.addResult(result)
+                if let groupId = task.groupId, case .failure = result {
+                    await failedTasksGroups.insert(groupId)
+                }
+                if let groupId = task.groupId, case .skipped = result {
+                    LogUtil.logTaskSkipped(task, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
+                    LogUtil.d("Task: \(task.describe()) belongs to a failing group of tasks. Skipping it.")
+                }
+                if let groupId = task.groupId, !(await failedTasksGroups.contains(groupId)) {
+                    await scheduler.advanceGroup(groupId)
+                    if let nextIdx = await scheduler.nextGroupTaskIndex(groupId) {
+                        await scheduler.markScheduled(nextIdx)
+                        group.addTask { (groupId, nextIdx) }
+                    }
+                } else if groupId == nil {
+                    await scheduler.advanceUngrouped()
+                    if let nextIdx = await scheduler.nextUngroupedTaskIndex() {
+                        await scheduler.markScheduled(nextIdx)
+                        group.addTask { (nil, nextIdx) }
+                    }
+                }
+                semaphore.signal()
+            }
+        }
+    }
+
+    /// Runs all tasks, allowing a filter to skip running some tasks.
+    /// - Guarantees:
+    ///   * Runs on a background thread.
+    ///   * Runs all tasks in a serial or parallel way, preserving group order.
+    ///   * Only 1 runner is running at a time. If a runner is already running, this request will be ignored and returned instantly.
     func runAllTasks(filter: RunAllTasksFilter?) async -> PendingTasksRunnerResult {
         if await runAllTasksLock.requestToRunAllTasks() == false {
-            return .new() // return a result that says that 0 tasks were executed. Which, is true.
+            return .new()
         }
 
-        var nextTaskToRun: PendingTask?
-        var runAllTasksResult = PendingTasksRunnerResult.new()
-        var lastSuccessfulOrFailedTaskId: Double = 0
-        var failedTasksGroups: [String] = []
+        let runAllTasksResultBox = RunAllTasksResultBox(PendingTasksRunnerResult.new())
+        let failedTasksGroups = FailedGroups()
+        let allTasks = gatherTasks(filter: filter)
+        let (groupTasks, ungroupedTasks) = buildTaskIndices(tasks: allTasks)
+        let state = TaskSchedulerState(allTasks: allTasks, groupTasks: groupTasks, ungroupedTasks: ungroupedTasks)
+        let semaphore = AsyncSemaphore(value: WendyConfig.semaphoreValue)
+        let scheduler = Scheduler(groupTasks: groupTasks, ungroupedTasks: ungroupedTasks)
 
-        repeat {
-            nextTaskToRun = pendingTasksManager.getNextTaskToRun(lastSuccessfulOrFailedTaskId, filter: filter)
-            guard let nextTaskToRun else {
-                break
-            }
-
-            lastSuccessfulOrFailedTaskId = nextTaskToRun.taskId!
-            if nextTaskToRun.groupId != nil, failedTasksGroups.contains(nextTaskToRun.groupId!) {
-                LogUtil.logTaskSkipped(nextTaskToRun, reason: ReasonPendingTaskSkipped.partOfFailedGroup)
-                LogUtil.d("Task: \(nextTaskToRun.describe()) belongs to a failing group of tasks. Skipping it.")
-
-                continue
-            }
-
-            let jobRunResult = await runTask(taskId: nextTaskToRun.taskId!)
-            runAllTasksResult = runAllTasksResult.addResult(jobRunResult)
-
-            if case .failure = jobRunResult, let taskGroupId = nextTaskToRun.groupId {
-                failedTasksGroups.append(taskGroupId)
-            }
-        } while nextTaskToRun != nil
+        await scheduleAndRunTasks(
+            allTasks: allTasks,
+            groupTasks: groupTasks,
+            ungroupedTasks: ungroupedTasks,
+            scheduler: scheduler,
+            state: state,
+            semaphore: semaphore,
+            failedTasksGroups: failedTasksGroups,
+            runAllTasksResultBox: runAllTasksResultBox
+        )
 
         LogUtil.d("All done running tasks.")
         LogUtil.logAllTasksComplete()
 
         await runAllTasksLock.unlock()
 
-        return runAllTasksResult
+        return await runAllTasksResultBox.get()
+    }
+
+    private func runGroupAwareTask(_ task: PendingTask, failedTasksGroups: FailedGroups) async -> (PendingTask, TaskRunResult) {
+        let groupId = task.groupId
+        if let groupId = groupId {
+            // Check if group is already failed before running
+            if await failedTasksGroups.contains(groupId) {
+                return (task, .skipped(reason: .partOfFailedGroup))
+            }
+            while await runningGroups.contains(groupId) {
+                try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+            }
+            await runningGroups.insert(groupId)
+        }
+        var result: TaskRunResult
+        if let groupId = groupId, await failedTasksGroups.contains(groupId) {
+            result = .skipped(reason: .partOfFailedGroup)
+        } else {
+            result = await runTask(taskId: task.taskId!)
+        }
+        // If the task failed, mark the group as failed before releasing the group lock
+        if let groupId = groupId, case .failure = result {
+            await failedTasksGroups.insert(groupId)
+        }
+        if let groupId = groupId {
+            Task { await runningGroups.remove(groupId) }
+        }
+        return (task, result)
     }
 
     actor RunAllTasksLock {
@@ -157,6 +299,49 @@ public final class PendingTasksRunner: Sendable, Singleton {
         func unlock() {
             isRunningAllTasks = false
         }
+    }
+
+    actor RunningGroups {
+        private var groups = Set<String>()
+        func contains(_ group: String) -> Bool { groups.contains(group) }
+        func insert(_ group: String) { groups.insert(group) }
+        func remove(_ group: String) { groups.remove(group) }
+    }
+
+    actor FailedGroups {
+        private var groups = Set<String>()
+        func contains(_ group: String) -> Bool { groups.contains(group) }
+        func insert(_ group: String) { groups.insert(group) }
+    }
+
+    actor RunAllTasksResultBox {
+        var value: PendingTasksRunnerResult
+        init(_ initial: PendingTasksRunnerResult) { self.value = initial }
+        func addResult(_ result: TaskRunResult) {
+            value = value.addResult(result)
+        }
+        func get() -> PendingTasksRunnerResult { value }
+    }
+
+    actor TaskSchedulerState {
+        var groupNextIndex = [String: Int]()
+        var ungroupedNextIndex = 0
+        var scheduled = Set<Int>()
+        let allTasks: [PendingTask]
+        let groupTasks: [String: [Int]]
+        let ungroupedTasks: [Int]
+        init(allTasks: [PendingTask], groupTasks: [String: [Int]], ungroupedTasks: [Int]) {
+            self.allTasks = allTasks
+            self.groupTasks = groupTasks
+            self.ungroupedTasks = ungroupedTasks
+        }
+        func getTask(at idx: Int) -> PendingTask { allTasks[idx] }
+        func isScheduled(_ idx: Int) -> Bool { scheduled.contains(idx) }
+        func markScheduled(_ idx: Int) { scheduled.insert(idx) }
+        func getGroupNextIndex(_ groupId: String) -> Int { groupNextIndex[groupId, default: 0] }
+        func incrementGroupNextIndex(_ groupId: String) { groupNextIndex[groupId, default: 0] += 1 }
+        func getUngroupedNextIndex() -> Int { ungroupedNextIndex }
+        func incrementUngroupedNextIndex() { ungroupedNextIndex += 1 }
     }
 
     public struct Data: AutoResettable {
