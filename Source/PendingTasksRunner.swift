@@ -22,7 +22,7 @@ public final class PendingTasksRunner: Sendable, Singleton {
     private var taskRunner: WendyTaskRunner? { inject.taskRunner }
 
     private let runAllTasksLock = RunAllTasksLock()
-    private let runTaskSemaphore = AsyncSemaphore(value: 1)
+    private let runTaskSemaphore = AsyncSemaphore(value: WendyConfig.semaphoreValue)
 
     public func reset() {}
 
