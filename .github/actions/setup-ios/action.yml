@@ -22,7 +22,7 @@ runs:
       repo-token: ${{ inputs.repo-token }}
 
   - name: Install package manager, Mint
-    uses: irgaly/setup-mint@2c1bb00ba290382666a79b4ece08381641aebeeb # v1
+    uses: irgaly/setup-mint@d61b6ece0c0f5486ea8a17de6026e8da5468af60 # v1
 
   - name: Generate code to allow project to compile 
     run: task codegen 
