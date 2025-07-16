@@ -13,7 +13,13 @@ public final class Wendy: Sendable, Singleton {
 
     public func reset() {}
 
-    public static func setup(taskRunner: WendyTaskRunner, debug: Bool = false) {
+    /// Sets up Wendy with the provided task runner and configuration options.
+    /// - Parameters:
+    ///   - taskRunner: The task runner to use for executing tasks.
+    ///   - debug: Enable debug logging. Defaults to false.
+    ///   - semaphoreValue: The maximum number of concurrent tasks allowed. Defaults to 1.
+    public static func setup(taskRunner: WendyTaskRunner, debug: Bool = false, semaphoreValue: Int = 1) {
+        WendyConfig.semaphoreValue = semaphoreValue
         DataStore.shared.updateDataBlock { $0.taskRunner = taskRunner }
         WendyConfig.debug = debug
     }
