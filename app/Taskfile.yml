@@ -13,7 +13,7 @@ tasks:
     internal: true # meant to be called by one of the child tasks 
     cmds:
       - task: xcodegen_clean
-      - mint run --mintfile ../../Mintfile xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
+      - ../../.nest/bin/xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
 
   generate_xcode_project_spm:
     cmds:
