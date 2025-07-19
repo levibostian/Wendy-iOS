@@ -13,7 +13,7 @@ tasks:
     internal: true # meant to be called by one of the child tasks 
     cmds:
       - task: xcodegen_clean
-      - mint run --mintfile ../../Mintfile xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
+      - ../../.nest/bin/xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
 
   generate_xcode_project_spm:
     cmds:
@@ -25,7 +25,12 @@ tasks:
     cmds:
       - task: generate_xcode_project
         vars:
-          XCODE_GEN_SPEC_FILENAME: project.yml
+          XCODE_GEN_SPEC_FILENAME: project.yml      
+      # workaround to get pod install to work. 
+      # cocoapods doesn't have support for objectVersion 70 which xcodegen generates.
+      # https://github.com/CocoaPods/CocoaPods/issues/12671
+      # https://github.com/CocoaPods/CocoaPods/issues/12735
+      - sed -i.bak 's/objectVersion = 70;/objectVersion = 77;/' App.xcodeproj/project.pbxproj && rm -f App.xcodeproj/project.pbxproj.bak
       - pod install
 
   build: 

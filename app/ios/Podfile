@@ -1,3 +1,5 @@
+# the version matches the Wendy.podspec ios version. 
+platform :ios, '13.0'
 
 target :App do 
   use_frameworks!
