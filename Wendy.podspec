@@ -40,5 +40,5 @@ Wendy is a FIFO task runner. You give it tasks, one by one, it persists those ta
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.10' }
   s.ios.deployment_target = '13.0'
   s.source_files = 'Source/**/*{.swift}'
-  s.dependency 'groue_Semaphore', '= 0.0.8-pod.1'
+  s.dependency 'groue_Semaphore', '= 0.1.0-pod.1'
 end
