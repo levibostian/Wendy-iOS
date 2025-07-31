@@ -16,7 +16,7 @@ tasks:
   # After this task runs, you will be able to run all CLI tools in the .nest/bin directory.
   install_dev_tools:
     cmds:
-      - ./scripts/generate-nestfile.sh
+      - curl -fsSL https://github.com/levibostian/Mintfile2nestfile/blob/HEAD/mintfile2nestfile.sh?raw=true | bash
       - ~/.nest/bin/nest bootstrap nestfile.yaml
 
   build:
