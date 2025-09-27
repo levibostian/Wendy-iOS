@@ -9,7 +9,7 @@ concurrency: # cancel previous workflow run if one exists.
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-ios
@@ -19,7 +19,7 @@ jobs:
     - run: task build
 
   run-tests:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     - uses: ./.github/actions/setup-ios
@@ -37,7 +37,7 @@ jobs:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
   
   compile-apps:
-    runs-on: macos-14    
+    runs-on: macos-15    
     strategy:
       fail-fast: false # if one build fails, dont stop trying to finish the other. 
       matrix:
