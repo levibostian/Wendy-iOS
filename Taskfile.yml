@@ -23,8 +23,8 @@ tasks:
     cmds:
       - task: clean 
       - task: codegen
-      - pod lib lint --allow-warnings
-      - set -o pipefail && xcrun xcodebuild -skipMacroValidation -skipPackagePluginValidation build -scheme Wendy -destination generic/platform=ios | xcbeautify
+      - pod lib lint --allow-warnings --platforms=ios
+      - set -o pipefail && xcrun xcodebuild -skipMacroValidation -skipPackagePluginValidation build -scheme Wendy -destination 'generic/platform=iOS' | xcbeautify
 
   # to create command, get fastlane scan to run all tests, then you can copy the command it creates and run it directly. This is a small speed improvement. 
   test:
