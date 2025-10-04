@@ -36,7 +36,7 @@ tasks:
   build: 
     internal: true # meant to be called by one of the child tasks
     cmds: 
-      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App | xcbeautify
+      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App -destination 'generic/platform=iOS' | xcbeautify
 
   build_spm: # meant to be called in a subdirectory in app/ such as app/ios/
     cmds: 
