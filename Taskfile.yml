@@ -2,6 +2,10 @@
 
 version: '3'
 
+vars:
+  # pick a destination based on what is available in the machine: https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md 
+  XCODEBUILD_DESTINATION: 'platform=iOS Simulator,name=iPhone 17,OS=26.1.1'
+
 tasks:
   clean:
     cmds:
@@ -21,18 +25,18 @@ tasks:
 
   build:
     cmds:
-      - task: clean 
+      - task: clean
       - task: codegen
       - pod lib lint --allow-warnings
-      - set -o pipefail && xcrun xcodebuild -skipMacroValidation -skipPackagePluginValidation build -scheme Wendy -destination generic/platform=ios | xcbeautify
+      - set -o pipefail && xcrun xcodebuild -skipMacroValidation -skipPackagePluginValidation build -scheme Wendy -destination {{.XCODEBUILD_DESTINATION}} | xcbeautify
 
-  # to create command, get fastlane scan to run all tests, then you can copy the command it creates and run it directly. This is a small speed improvement. 
+  # to create command, get fastlane scan to run all tests, then you can copy the command it creates and run it directly. This is a small speed improvement.
   test:
     cmds:
       - task: clean
       - task: codegen
-      - set -o pipefail && xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' -derivedDataPath .build/derivedData -enableCodeCoverage YES build-for-testing | xcbeautify
-      - set -o pipefail && xcodebuild -scheme Wendy -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' -derivedDataPath .build/derivedData -enableCodeCoverage YES test-without-building | xcbeautify
+      - set -o pipefail && xcodebuild -scheme Wendy -destination {{.XCODEBUILD_DESTINATION}} -derivedDataPath .build/derivedData -enableCodeCoverage YES build-for-testing | xcbeautify
+      - set -o pipefail && xcodebuild -scheme Wendy -destination {{.XCODEBUILD_DESTINATION}} -derivedDataPath .build/derivedData -enableCodeCoverage YES test-without-building | xcbeautify
   
   # Resourced used to create this command:
   # https://github.com/michaelhenry/swifty-code-coverage/

@@ -33,10 +33,10 @@ tasks:
       - sed -i.bak 's/objectVersion = 70;/objectVersion = 77;/' App.xcodeproj/project.pbxproj && rm -f App.xcodeproj/project.pbxproj.bak
       - pod install
 
-  build: 
+  build:
     internal: true # meant to be called by one of the child tasks
-    cmds: 
-      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App | xcbeautify
+    cmds:
+      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App -destination {{.XCODEBUILD_DESTINATION}} | xcbeautify
 
   build_spm: # meant to be called in a subdirectory in app/ such as app/ios/
     cmds: 
