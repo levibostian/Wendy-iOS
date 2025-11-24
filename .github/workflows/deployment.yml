@@ -4,7 +4,7 @@ on:
   
 jobs:
   deploy:
-    runs-on: macos-15
+    runs-on: macos-latest
     permissions:
       contents: write # to make a git tag       
     steps:

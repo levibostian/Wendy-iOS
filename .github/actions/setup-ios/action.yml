@@ -8,13 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Install XCode 
-    uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1
-    with:
-      # Installs latest version of Xcode *installed in the github runner image*. 
-      # Therefore, because the version of macos is fixed in workflow files, it's OK to use "latest" here. 
-      xcode-version: "latest-stable" 
-
   - name: Install development tool, Taskfile
     uses: arduino/setup-task@v2
     with:
