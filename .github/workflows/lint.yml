@@ -3,7 +3,7 @@ on: [pull_request]
 jobs:
   assert-formatted:
     name: Assert that code has been linted and formatted before merging
-    runs-on: macos-15
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - uses: ./.github/actions/setup-ios
