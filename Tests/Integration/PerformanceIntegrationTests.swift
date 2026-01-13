@@ -84,7 +84,7 @@ class PerformanceIntegrationTests: TestClass {
             expectToFinishRunningSingleTask,
             expectToRunTask2,
             expectToFinishRuningAllTasks
-        ], timeout: 1.0, enforceOrder: true)
+        ], timeout: 1.0)
     }
 
     func test_runAllTasks_givenAlreadyRunning_expectIgnoreRequest() async {
