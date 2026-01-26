@@ -7,7 +7,7 @@ public extension Wendy {
     }
 }
 
-/*
+/**
  Requirements of the task runner:
 
  1. when you call `Wendy.runTask()` it returns instantly to you. It does *not* block the calling thread. It's like it schedules a job to run in the future.
@@ -18,8 +18,13 @@ public extension Wendy {
 public final class PendingTasksRunner: Sendable, Singleton {
     public static let shared = PendingTasksRunner()
 
-    private var pendingTasksManager: PendingTasksManager { inject.pendingTasksManager }
-    private var taskRunner: WendyTaskRunner? { inject.taskRunner }
+    private var pendingTasksManager: PendingTasksManager {
+        inject.pendingTasksManager
+    }
+
+    private var taskRunner: WendyTaskRunner? {
+        inject.taskRunner
+    }
 
     private let runAllTasksLock = RunAllTasksLock()
     private let runTaskSemaphore = AsyncSemaphore(value: 1)

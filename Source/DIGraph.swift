@@ -1,6 +1,6 @@
 import Foundation
 
-/*
+/**
  Dependency Injection Graph.
 
  Features:
@@ -41,7 +41,9 @@ public final class DIGraph: Sendable, Singleton {
  var foo: Foo { inject.foo }
  ```
  */
-var inject: DIGraph { DIGraph.shared }
+var inject: DIGraph {
+    DIGraph.shared
+}
 
 /**
  A protocol indicating that you can reset the instance back to it's original state as if the instance was just constructed.

@@ -3,7 +3,7 @@ import Foundation
 class PendingTasksUtil {
     private static let prefix = "pendingTasks_"
     private static let pendingTasksNextPendingTaskIdKey = "\(prefix)pendingTasksNextPendingTaskIdKey"
-    // Tasks with id >= validPendingTasksIdThreshold are valid. < are invalid.
+    /// Tasks with id >= validPendingTasksIdThreshold are valid. < are invalid.
     private static let validPendingTasksIdThresholdKey = "\(prefix)validPendingTasksIdThresholdKey"
 
     private static var currentPendingTaskId: Double {

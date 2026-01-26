@@ -1,6 +1,6 @@
 import Foundation
 
-// A data structure that both the queue writer and queue readers use together. It's a cache of the queue that is stored on the file system.
+/// A data structure that both the queue writer and queue readers use together. It's a cache of the queue that is stored on the file system.
 protocol FileSystemQueue {
     var queue: [PendingTask] { get }
     func load() // can be called at anytime to read the queue from file system and store in-memory for speed

@@ -1,6 +1,6 @@
 import Foundation
 
-/*
+/**
  Boilerplate code to create a Sendable in-memory data store.
 
     Usage:

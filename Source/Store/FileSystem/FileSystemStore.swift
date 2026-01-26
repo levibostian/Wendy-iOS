@@ -1,17 +1,17 @@
 import Foundation
 
-// Abstraction around iOS FileManager framework to allow mocking and easier to use API.
+/// Abstraction around iOS FileManager framework to allow mocking and easier to use API.
 protocol FileSystemStore {
-    // filePath array will be joined into a string where each array item is a directory. Last item in array is the file name.
+    /// filePath array will be joined into a string where each array item is a directory. Last item in array is the file name.
     @discardableResult
     func saveFile(_ data: Data, filePath: [String]) -> Bool
-    // Returns nil if file does not exist.
+    /// Returns nil if file does not exist.
     func readFile(_ filePath: [String]) -> Data?
 }
 
 // sourcery: InjectRegister = "FileSystemStore"
 class FileManagerFileSystemStore: FileSystemStore {
-    // This class makes sure that all files created in SDK are in the same directory
+    /// This class makes sure that all files created in SDK are in the same directory
     private lazy var rootSdkDirectoryPath: URL = {
         let rootAppDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         return rootAppDirectory.appendingPathComponent("wendy", isDirectory: false)

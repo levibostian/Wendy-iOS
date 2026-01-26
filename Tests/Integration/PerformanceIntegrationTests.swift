@@ -40,7 +40,7 @@ class PerformanceIntegrationTests: TestClass {
         XCTAssertEqual(runTasksResults.numberTasksRun, 2)
     }
 
-    // Wendy has the ability to run a single task whenever you want. So if wendy is running 100 tasks, for example, you can run a single task and not have to wait for wendy to finish running the rest of the 100 tasks.
+    /// Wendy has the ability to run a single task whenever you want. So if wendy is running 100 tasks, for example, you can run a single task and not have to wait for wendy to finish running the rest of the 100 tasks.
     func test_runTask_givenAlreadyRunningAllTasks_expectBeAbleToRunSingleTaskInMiddleOfRunningAll() async {
         _ = Wendy.shared.addTask(tag: "task1", data: "dataId")
         _ = Wendy.shared.addTask(tag: "task2", data: "dataId")

@@ -1,6 +1,6 @@
 import Foundation
 
-/*
+/**
  A convenient data type to easily keep track of Swift async Tasks and be able to cancel them all when the class is deinitialized.
 
  - Create instance: let taskBag: TaskBag = []

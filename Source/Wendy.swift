@@ -7,7 +7,9 @@ public final class Wendy: Sendable, Singleton {
         dataStore.getDataSnapshot().taskRunner
     }
 
-    private var pendingTasksRunner: PendingTasksRunner { .shared }
+    private var pendingTasksRunner: PendingTasksRunner {
+        .shared
+    }
 
     private init() {}
 
@@ -73,7 +75,7 @@ public final class Wendy: Sendable, Singleton {
                 let taskData = task.dataAsDictionary
 
                 // For every element in query, the task must contain everything in it.
-                let didFindAMatch = query.first(where: { key, value in
+                return query.first(where: { key, value in
                     guard taskData.keys.contains(key) else { return false }
 
                     let queryValue = AnyHashable(value)
@@ -81,8 +83,6 @@ public final class Wendy: Sendable, Singleton {
 
                     return queryValue == taskValue
                 }) != nil
-
-                return didFindAMatch
             }.map { $0.taskId! }
         }.value
     }
@@ -123,9 +123,7 @@ public final class Wendy: Sendable, Singleton {
             return .cancelled
         }
 
-        let result = await pendingTasksRunner.runTask(taskId: taskId)
-
-        return result
+        return await pendingTasksRunner.runTask(taskId: taskId)
     }
 
     /**
@@ -137,9 +135,7 @@ public final class Wendy: Sendable, Singleton {
      */
     @discardableResult
     public func runTasks(filter: RunAllTasksFilter? = nil) async -> PendingTasksRunnerResult {
-        let result = await pendingTasksRunner.runAllTasks(filter: filter)
-
-        return result
+        await pendingTasksRunner.runAllTasks(filter: filter)
     }
 
     public final func getAllTasks() -> [PendingTask] {
@@ -152,8 +148,8 @@ public final class Wendy: Sendable, Singleton {
      Note: If a task is currently running when clear() is called, that running task will be finish executing but will not run again in the future as it has been cancelled.
      */
     public final func clear() async {
-        /// It's not possible to stop a dispatch queue of tasks so there is no way to stop the currently running task runner.
-        /// This solution of using UserDefaults to set a threshold solves that problem while also leaving Wendy untouched to continue running as usual. If we deleted all data, as Android's Wendy does, we would have potential issues with tasks that are still in the queue but core data and userdefaults being deleted causing potential crashes and IDs being misaligned.
+        // It's not possible to stop a dispatch queue of tasks so there is no way to stop the currently running task runner.
+        // This solution of using UserDefaults to set a threshold solves that problem while also leaving Wendy untouched to continue running as usual. If we deleted all data, as Android's Wendy does, we would have potential issues with tasks that are still in the queue but core data and userdefaults being deleted causing potential crashes and IDs being misaligned.
         PendingTasksUtil.setValidPendingTasksIdThreshold()
         LogUtil.d("Wendy tasks set as cancelled. Currently scheduled Wendy tasks will all skip running.")
         // Run all tasks (including manually run tasks) as they are all cancelled so it allows them all to be cleared fro the queue now and listeners can get notified.
