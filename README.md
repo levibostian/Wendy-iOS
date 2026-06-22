@@ -1,8 +1,3 @@
-[![Version][image-1]][1]
-[![License][image-2]][2]
-[![Platform][image-3]][3]
-![Swift 5.0.x][image-4]
-
 # Wendy
 
 Remove the difficulty in making offline-first iOS apps. Sync your offline device storage with remote cloud storage easily. When building offline-first mobile apps, there are *lots* of use cases to think about. Wendy takes care of handling them all for you!
@@ -48,13 +43,15 @@ Wendy currently has the following functionality:
 
 # Install
 
-Wendy-iOS is available through [CocoaPods][7]. To install it, simply add the following line to your Podfile:
+Wendy-iOS supports Swift Package Manager. Add Wendy to your project via Xcode's "Add Package Dependency" or add it to your `Package.swift`:
 
-```ruby
-pod 'Wendy', '~> version-here'
+```swift
+dependencies: [
+    .package(url: "https://github.com/levibostian/Wendy-iOS.git", from: "version-here")
+]
 ```
 
-(replace `version-here` with [![Version][image-6]][8])
+Check the [releases page](https://github.com/levibostian/Wendy-iOS/releases) for the latest version.
 
 # Getting started
 
@@ -300,7 +297,7 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 * Install these development tools:
 
-[nest][15] used to run other development CLI commands such as linter/formatter. 
+[mise][15] used to manage and run development CLI commands such as linter/formatter. 
 [taskfile][16] an alternative to `Makefile` to run commands. 
 [lefthook][17] for git hooks. 
 
@@ -320,30 +317,24 @@ After you install these CLIs, run `task install_dev_tools` to install the develo
 
 Header photo by [Allef Vinicius][18] on [Unsplash][19]
 
-[1]:	http://cocoapods.org/pods/Wendy
-[2]:	http://cocoapods.org/pods/Wendy
-[3]:	http://cocoapods.org/pods/Wendy
 [4]:	https://github.com/levibostian/wendy-android
 [5]:	https://github.com/levibostian/Wendy-iOS/blob/main/MIGRATION.md
 [6]:	https://github.com/levibostian/Wendy-iOS/discussions/categories/announcements
-[7]:	http://cocoapods.org
-[8]:	http://cocoapods.org/pods/Wendy
+
 [9]:	#adding-tasks-to-wendy
 [10]:	#writing-the-network-code-to-perform-the-sync
 [11]:	BEST_PRACTICES.md
 [12]:	https://levibostian.github.io/Wendy-Android/wendy/
 [13]:	https://github.com/levibostian
 [14]:	https://github.com/levibostian/Wendy-iOS/issues/new
-[15]:	https://github.com/mtj0928/nest#installation
+[15]:	https://mise.jdx.dev/getting-started.html
 [16]:	https://taskfile.dev/installation/
 [17]:	https://github.com/evilmartians/lefthook/blob/HEAD/docs/install.md
 [18]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
 [19]:	https://unsplash.com/search/photos/red-head?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
 
-[image-1]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
-[image-2]:	https://img.shields.io/cocoapods/l/Wendy.svg?style=flat
-[image-3]:	https://img.shields.io/cocoapods/p/Wendy.svg?style=flat
+
 [image-4]:	https://img.shields.io/badge/Swift-5.0.x-orange.svg
 [image-5]:	misc/wendy_logo.jpg
-[image-6]:	https://img.shields.io/cocoapods/v/Wendy.svg?style=flat
+
 [image-7]:	https://gravatar.com/avatar/22355580305146b21508c74ff6b44bc5?s=250
