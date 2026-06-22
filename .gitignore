@@ -4,8 +4,6 @@
 *.xcresult/
 *.generated.swift
 Package.resolved
-.nest/
-nestfile.yaml
 
 reports/
 

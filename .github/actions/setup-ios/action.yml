@@ -14,14 +14,9 @@ runs:
       version: 3.x
       repo-token: ${{ inputs.repo-token }}
 
-  - name: Install package manager tool, Nest
-    run: curl -s https://raw.githubusercontent.com/mtj0928/nest/main/Scripts/install.sh | bash
-    shell: bash
-  
-  - name: Install development tools with Nest
-    run: task install_dev_tools
-    shell: bash
-
+  - name: Install CLI tools via mise
+    uses: jdx/mise-action@v2
+    
   - name: Generate code to allow project to compile 
     run: task codegen 
     shell: bash

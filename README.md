@@ -297,7 +297,7 @@ Follow the steps below to compile the Wendy project on your machine for contribu
 
 * Install these development tools:
 
-[nest][15] used to run other development CLI commands such as linter/formatter. 
+[mise][15] used to manage and run development CLI commands such as linter/formatter. 
 [taskfile][16] an alternative to `Makefile` to run commands. 
 [lefthook][17] for git hooks. 
 
@@ -327,7 +327,7 @@ Header photo by [Allef Vinicius][18] on [Unsplash][19]
 [12]:	https://levibostian.github.io/Wendy-Android/wendy/
 [13]:	https://github.com/levibostian
 [14]:	https://github.com/levibostian/Wendy-iOS/issues/new
-[15]:	https://github.com/mtj0928/nest#installation
+[15]:	https://mise.jdx.dev/getting-started.html
 [16]:	https://taskfile.dev/installation/
 [17]:	https://github.com/evilmartians/lefthook/blob/HEAD/docs/install.md
 [18]:	https://unsplash.com/photos/FPDGV38N2mo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText
