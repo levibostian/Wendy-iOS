@@ -13,7 +13,7 @@ tasks:
     internal: true # meant to be called by one of the child tasks 
     cmds:
       - task: xcodegen_clean
-      - ../../.nest/bin/xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
+      - xcodegen generate --spec {{.XCODE_GEN_SPEC_FILENAME}}        
 
   generate_xcode_project_spm:
     cmds:
@@ -21,31 +21,12 @@ tasks:
         vars:
           XCODE_GEN_SPEC_FILENAME: project-spm.yml
   
-  generate_xcode_project_cocoapods:
-    cmds:
-      - task: generate_xcode_project
-        vars:
-          XCODE_GEN_SPEC_FILENAME: project.yml      
-      # workaround to get pod install to work. 
-      # cocoapods doesn't have support for objectVersion 70 which xcodegen generates.
-      # https://github.com/CocoaPods/CocoaPods/issues/12671
-      # https://github.com/CocoaPods/CocoaPods/issues/12735
-      - sed -i.bak 's/objectVersion = 70;/objectVersion = 77;/' App.xcodeproj/project.pbxproj && rm -f App.xcodeproj/project.pbxproj.bak
-      - pod install
-
   build: 
     internal: true # meant to be called by one of the child tasks
     cmds:
-      - set -o pipefail && xcrun xcodebuild clean build {{.XCODEBUILD_ARGS}} -scheme App -destination 'generic/platform=iOS Simulator' | xcbeautify
+      - task: generate_xcode_project_spm
+      - set -o pipefail && xcrun xcodebuild clean build -scheme App -destination 'generic/platform=iOS Simulator' | xcbeautify
 
   build_spm: # meant to be called in a subdirectory in app/ such as app/ios/
     cmds: 
-      - task: generate_xcode_project_spm
       - task: build
-
-  build_cocoapods: # meant to be called in a subdirectory in app/ such as app/ios/
-    cmds: 
-      - task: generate_xcode_project_cocoapods
-      - task: build
-        vars:
-          XCODEBUILD_ARGS: -workspace App.xcworkspace
