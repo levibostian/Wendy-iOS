@@ -7,23 +7,9 @@
         ["@semantic-release/release-notes-generator", {
             "preset": "conventionalcommits"
         }],
-        ["semantic-release-recovery", {
-            "plugins": [
-                ["semantic-release-precheck", {
-                    "is_it_deployed": {
-                        "package_manager": "cocoapods",
-                        "package_name": "Wendy"
-                    },
-                    "deploy_plugin": 
-                        ["semantic-release-cocoapods", {
-                            "podLint": false,
-                            "podPushArgs": "--allow-warnings"
-                        }]
-                  }]
-            ]
-        }],
+
         ["@semantic-release/git", {
-            "assets": ["*.podspec", "Source/**/*.generated.swift"],
+            "assets": ["Source/**/*.generated.swift"],
             "message": "chore: update metadata for release ${nextRelease.version}"
         }],
         ["@semantic-release/github", {

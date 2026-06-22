@@ -20,4 +20,4 @@ jobs:
           semantic_version: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+

@@ -36,21 +36,16 @@ jobs:
         # try and speedup the action by homebrew not having to do more then it needs when installing the coveralls tool 
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
   
-  compile-apps:
+  compile-app:
     runs-on: macos-latest    
-    strategy:
-      fail-fast: false # if one build fails, dont stop trying to finish the other. 
-      matrix:
-        os: ["ios"]
-        package-manager: ["cocoapods", "spm"]
     steps:
     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
     - uses: ./.github/actions/setup-ios
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Compile ${{ matrix.os }} app, using package manager ${{ matrix.package-manager }}
-      working-directory: app/${{ matrix.os }}
-      run: task app:build_${{ matrix.package-manager }}
+    - name: Compile iOS app using SPM
+      working-directory: app/ios
+      run: task app:build_spm
 
       

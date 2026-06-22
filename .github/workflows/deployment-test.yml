@@ -10,7 +10,7 @@ concurrency: # cancel previous workflow run if one exists.
 
 jobs:
   deployment:
-    runs-on: macos-latest # because cocoapods is already installed on these machines
+    runs-on: macos-latest
     permissions:
       contents: write # to set permissions for semantic-release dry-run to pass 
     steps:
@@ -27,4 +27,4 @@ jobs:
       run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "${{ github.ref_name }},main"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+
