@@ -38,4 +38,10 @@ class PendingTasksRunnerTest: TestClass {
         XCTAssertEqual(1, runAllTasksResult.numberSuccessfulTasks)
         XCTAssertEqual(1, runAllTasksResult.numberCancelledTasks)
     }
+
+    func test_setup_setsSemaphoreValue() {
+        let expectedValue = 2
+        Wendy.setup(taskRunner: taskRunnerStub, semaphoreValue: expectedValue)
+        XCTAssertEqual(WendyConfig.semaphoreValue, expectedValue)
+    }
 }
