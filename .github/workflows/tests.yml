@@ -28,13 +28,6 @@ jobs:
     
     - run: task test
     - run: task coverage
-    - name: Upload coverage for analysis 
-      uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2
-      with: 
-        file: .build/lcov.info
-      env:
-        # try and speedup the action by homebrew not having to do more then it needs when installing the coveralls tool 
-        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
   
   compile-app:
     runs-on: macos-latest    
