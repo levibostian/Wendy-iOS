@@ -1,34 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices", ":automergeDigest"],
-  "timezone": "America/Chicago",
-  "schedule": ["every weekend"],
-  "packageRules": [
-    {
-      "groupName": "Mint packages",
-      "matchManagers": [
-        "mint"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "automerge": true
-    },
-    {
-      "groupName": "GitHub Actions",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "automerge": true
-    }
+  "extends": [
+    "config:best-practices", 
+    ":automergeDigest",
+    ":automergeAll",
+    ":automergeRequireAllStatusChecks",
+    ":separateMultipleMajorReleases",
+    ":maintainLockFilesWeekly",
+    "schedule:weekends",
+    ":timezone(America/Chicago)"
   ],
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
-  }
 }
