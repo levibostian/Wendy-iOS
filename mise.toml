@@ -1,5 +1,5 @@
 [tools]
 sourcery = "2.3.0"
-xcodegen = "2.45.4"
+xcodegen = "2.46.0"
 swiftlint = "0.65.0"
 swiftformat = "0.58.7"
