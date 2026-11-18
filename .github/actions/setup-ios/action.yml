@@ -15,7 +15,7 @@ runs:
       repo-token: ${{ inputs.repo-token }}
 
   - name: Install CLI tools via mise
-    uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+    uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5
     
   - name: Generate code to allow project to compile 
     run: task codegen 
